@@ -4,6 +4,8 @@
  */
 
 import CoreBluetooth
+import AVFoundation
+import Foundation
 
 protocol BluetoothProtocol {
     func state(state: Bluetooth.State)
@@ -15,6 +17,7 @@ struct FtsContext {
     var filesCount: Int = 0
     var nextFileSize: Int = 0
     var receivedBytesCount: Int = 0
+    var currentFileURL: URL?
 }
 
 final class Bluetooth: NSObject {
@@ -40,9 +43,12 @@ final class Bluetooth: NSObject {
     private let fsInfoCharacteristicCBUUIDString: String = "03000005-4202-A882-EC11-B10DA4AE3CEB"
     private let pairingReadCharacteristicCBUUIDString: String = "03000006-4202-A882-EC11-B10DA4AE3CEB"
     
-    private var _context: FtsContext = FtsContext(filesCount: 0, nextFileSize: 0, receivedBytesCount: 0)
+    private let defaultDevRecordFileName: String = "demo_record.wav"
     
+    private var _context: FtsContext = FtsContext(filesCount: 0, nextFileSize: 0, receivedBytesCount: 0, currentFileURL: nil)
+    let fileManager: FileManager = .default
     let isPairedAlreadyKey: String = "isPaired"
+    private var player: AVAudioPlayer?
     
     private override init() {
         super.init()
@@ -84,7 +90,6 @@ final class Bluetooth: NSObject {
     }
     
     func startDownload() {
-        print("sending a download start request to the device")
         guard let characteristic = rxCharCharacteristic else { return }
         var request = 3
         let requestData = Data(bytes: &request,
@@ -93,7 +98,6 @@ final class Bluetooth: NSObject {
     }
     
     func requestNextFileSize() {
-        print("requesting size of the next file")
         guard let characteristic = rxCharCharacteristic else { return }
         var request = 2
         let requestData = Data(bytes: &request,
@@ -102,12 +106,82 @@ final class Bluetooth: NSObject {
     }
     
     func requestNextFileData() {
-        print("requesting next file data")
         guard let characteristic = rxCharCharacteristic else { return }
         var request = 1
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
         current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+    }
+    
+    func makeURL(forFileNamed fileName: String) -> URL? {
+        guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else
+        {
+            return nil
+        }
+        return url.appendingPathComponent(fileName)
+    }
+    
+    func cleanPreviousFile()
+    {
+        guard let url = makeURL(forFileNamed: defaultDevRecordFileName) else {
+            print("invalid directory")
+            return
+        }
+        do {
+            try fileManager.removeItem(at: url)
+        }
+        catch let error {
+            print("failed to remove previous record: \(error)")
+        }
+    }
+    
+    func generateFileName() -> String {
+        let today = Date()
+        let hours   = String(format: "%2d", Calendar.current.component(.hour, from: today))
+        let minutes = String(format: "%02d", Calendar.current.component(.minute, from: today))
+        let seconds = String(format: "%02d", Calendar.current.component(.second, from: today))
+        let day = String(format: "%02d", Calendar.current.component(.day, from: today))
+        let month = String(format: "%02d", Calendar.current.component(.month, from: today))
+        let year = String(Calendar.current.component(.year, from: today))
+        let fileName = "\(year).\(month).\(day)-\(hours):\(minutes):\(seconds)"
+        //let fileName = year + "-" + month + "-" + day + "_" + hours + ":" + minutes + ":"+ seconds
+        print(fileName)
+        return fileName
+    }
+    
+    func openRecordFile() -> URL?
+    {
+        generateFileName()
+        guard let url = makeURL(forFileNamed: defaultDevRecordFileName) else {
+            return nil
+        }
+        if fileManager.fileExists(atPath: url.absoluteString)
+        {
+            return nil
+        }
+        return url
+    }
+    
+    /**
+     TODO: move all files' related logic out of this file
+     */
+    func playbackRecord() {
+        guard let recordUrl = openRecordFile() else {
+            print("failed to open record")
+            return
+        }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            player = try AVAudioPlayer(contentsOf: recordUrl, fileTypeHint: AVFileType.wav.rawValue)
+            
+            guard let player = player else { return }
+            player.play()
+        }
+        catch let error {
+            print("playback error \(error)");
+        }
     }
     
     enum State { case unknown, resetting, unsupported, unauthorized, poweredOff, poweredOn, error, connected, disconnected }
@@ -167,6 +241,21 @@ extension Bluetooth: CBCentralManagerDelegate {
     }
 }
 
+extension Data {
+    func append(fileURL: URL) throws {
+        if let fileHandle = FileHandle(forWritingAtPath: fileURL.path) {
+            defer {
+                fileHandle.closeFile()
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(self)
+        }
+        else {
+            try write(to: fileURL, options: .atomic)
+        }
+    }
+}
+
 extension Bluetooth: CBPeripheralDelegate {
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
@@ -221,7 +310,16 @@ extension Bluetooth: CBPeripheralDelegate {
         print("update value for a descriptor")
     }
     
-    
+    /**
+         This function implements file transmission state machine for the dictofun.
+     BLE Central should implement following behavior:
+     - write value 0x03 to rx char (see \startDownload). This triggers a request on the file system information
+     - in the given callback on value update notification Central reads out the count of files. If files count == 0, end the state machine.
+     - if files count > 0, request next available file size by writing value 0x02 to rx char (see requestNextFileSize())
+     - in the given callback on value update notification Central receives the size of the next file that will be received
+     - request next file data by writing value 0x01 to rx char (see requestNextFileData())
+     - in the given callback on value update notification Central receives all of the files contents and stores the received data
+     */
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard let value = characteristic.value else { return }
         delegate?.value(data: value)
@@ -235,7 +333,7 @@ extension Bluetooth: CBPeripheralDelegate {
         {
             let value = [UInt8](characteristic.value!)
             print("fs file count = \(_context.filesCount)")
-            _context.filesCount = Int(value[0]) + 256 * Int(value[1]);
+            _context.filesCount = Int(value[1]) + 256 * Int(value[2]);
             requestNextFileSize()
         }
         if characteristic.uuid == CBUUID(string: fileInfoCharacteristicCBUUIDString)
@@ -249,17 +347,37 @@ extension Bluetooth: CBPeripheralDelegate {
             _context.receivedBytesCount = 0
             print("next file size = \(_context.nextFileSize)")
             requestNextFileData()
+            cleanPreviousFile()
+            _context.currentFileURL = openRecordFile()
         }
         if characteristic.uuid == CBUUID(string: txCharCharacteristicCBUUIDString)
         {
             _context.receivedBytesCount += (characteristic.value?.count ?? 0)
+
+            //let raw_data = [UInt8](characteristic.value!)
+            do
+            {
+                try characteristic.value!.append(fileURL: _context.currentFileURL!)
+            } catch {
+                debugPrint("storage error \(error)")
+            }
+            
             if _context.receivedBytesCount == _context.nextFileSize
             {
                 print("file received, requesting next one(\(_context.nextFileSize)/\(_context.receivedBytesCount))")
                 _context.filesCount -= 1
+                do {
+                    var data: Data?
+                    try data = Data(contentsOf: _context.currentFileURL!)
+                    
+                    print("Received file size: \(data?.count)")
+                }
+                catch {
+                    debugPrint("error")
+                    return
+                }
                 requestNextFileSize()
             }
-            
         }
     }
 }

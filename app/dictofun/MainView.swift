@@ -54,9 +54,12 @@ struct MainView: View {
                 Button("start scan") {
                     bluetooth.startScanning()
                 }
-                Spacer()
                 Button("start downloading procedure") {
                     bluetooth.startDownload()
+                }
+                Spacer()
+                Button("playback record") {
+                    bluetooth.playbackRecord()
                 }
             }
         }
