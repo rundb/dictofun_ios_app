@@ -8,6 +8,7 @@ import CoreBluetooth
 
 struct MainView: View {
     var bluetooth = Bluetooth.shared
+    var recordsManager: RecordsManager
     
     @State var presented: Bool = false
     @State var list = [Bluetooth.Device]()
@@ -41,6 +42,7 @@ struct MainView: View {
                 Text("Dictofun")
                 Spacer()
                 Text("Application automatically in the background attempts to download the records from the dictofun device")
+                    .font(.system(size: 12))
                 Spacer()
                 // // TODO: move this to a menu of settings
 //                Button("reset internal pairing info") {
@@ -52,17 +54,11 @@ struct MainView: View {
 //                    }
 //                }
 //                Spacer()
-                Button("start scan") {
-                    bluetooth.startScanning()
-                }
-                Button("playback record") {
-                    bluetooth.playbackRecord()
-                }
                 Spacer()
                 NavigationView() {
                     ZStack{
                         Color.cyan.edgesIgnoringSafeArea(.all)
-                        NavigationLink (destination: RecordsView(bluetooth: bluetooth, records: bluetooth.getRecords())){
+                        NavigationLink (destination: RecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
                             Text("List records")
                         }.buttonStyle(PlainButtonStyle())
                     }
@@ -99,11 +95,4 @@ extension MainView: BluetoothProtocol {
     
     func list(list: [Bluetooth.Device]) { self.list = list }
     
-}
-
-
-struct MainView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainView()
-    }
 }

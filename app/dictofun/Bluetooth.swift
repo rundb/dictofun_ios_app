@@ -36,6 +36,8 @@ final class Bluetooth: NSObject {
     var userDefaults: UserDefaults = .standard
     var isPaired: Bool = false {didSet {delegate?.state(state: state)} }
     
+    var recordsManager: RecordsManager?
+    
     private var manager: CBCentralManager?
     private var pairingReadCharacteristic: CBCharacteristic?
     private var rxCharCharacteristic: CBCharacteristic?
@@ -48,19 +50,16 @@ final class Bluetooth: NSObject {
     private let fileInfoCharacteristicCBUUIDString: String = "03000004-4202-A882-EC11-B10DA4AE3CEB"
     private let fsInfoCharacteristicCBUUIDString: String = "03000005-4202-A882-EC11-B10DA4AE3CEB"
     private let pairingReadCharacteristicCBUUIDString: String = "03000006-4202-A882-EC11-B10DA4AE3CEB"
-    
-    private let defaultDevRecordFileName: String = "demo_record.wav"
-    private let recordsFolder: String = "records"
+
     
     private var _context: FtsContext = FtsContext(filesCount: 0, nextFileSize: 0, receivedBytesCount: 0, currentFileURL: nil, state: .disconnected)
-    let fileManager: FileManager = .default
     let isPairedAlreadyKey: String = "isPaired"
-    var player: AVAudioPlayer?
     
     private override init() {
         super.init()
         manager = CBCentralManager(delegate: self, queue: .none)
         manager?.delegate = self
+        recordsManager = RecordsManager.shared
         
         let isPairedValue = userDefaults.value(forKey: "isPaired")
         if (isPairedValue != nil) == true
@@ -142,95 +141,6 @@ final class Bluetooth: NSObject {
                              count: MemoryLayout.size(ofValue: request))
         current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
         _context.state = .data_transmission
-    }
-    
-    func makeURL(forFileNamed fileName: String) -> URL? {
-        guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else
-        {
-            return nil
-        }
-        let recordsFolderUrl = url.appendingPathComponent(recordsFolder)
-        var isDir: ObjCBool = false
-        if !fileManager.fileExists(atPath: recordsFolderUrl.path, isDirectory: &isDir)
-        {
-            print("creating records folder")
-            do
-            {
-                try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: true)
-            }
-            catch {
-                print("failed to create the records folder")
-            }
-        }
-        return url.appendingPathComponent(recordsFolder).appendingPathComponent(fileName)
-    }
-    
-    func cleanPreviousFile()
-    {
-        guard let url = makeURL(forFileNamed: defaultDevRecordFileName) else {
-            print("invalid directory")
-            return
-        }
-        do {
-            try fileManager.removeItem(at: url)
-        }
-        catch let error {
-            print("failed to remove previous record \(error)")
-        }
-    }
-    
-    func generateFileName() -> String {
-        let today = Date()
-        let hours   = String(format: "%2d", Calendar.current.component(.hour, from: today))
-        let minutes = String(format: "%02d", Calendar.current.component(.minute, from: today))
-        let seconds = String(format: "%02d", Calendar.current.component(.second, from: today))
-        let day = String(format: "%02d", Calendar.current.component(.day, from: today))
-        let month = String(format: "%02d", Calendar.current.component(.month, from: today))
-        let year = String(Calendar.current.component(.year, from: today))
-        let fileName = "\(year).\(month).\(day)-\(hours):\(minutes):\(seconds).wav"
-        //let fileName = year + "-" + month + "-" + day + "_" + hours + ":" + minutes + ":"+ seconds
-        print(fileName)
-        return fileName
-    }
-    
-    func openRecordFile() -> URL?
-    {
-        guard let url = makeURL(forFileNamed: generateFileName()) else {
-            return nil
-        }
-        if fileManager.fileExists(atPath: url.absoluteString)
-        {
-            return nil
-        }
-        return url
-    }
-    
-    func getRecords() -> [Record] {
-        var records: [Record] = []
-        do {
-            guard let url = try fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
-            else { return []}
-            let recordsUrl = url.appendingPathComponent(recordsFolder)
-            let items = try fileManager.contentsOfDirectory(at: recordsUrl, includingPropertiesForKeys: nil)
-            for item in items {
-                records.append(Record(url: item, name: item.lastPathComponent, durationInSeconds: 0, transcription: ""))
-            }
-            return records
-        }
-        catch let error {
-            print("get records error \(error)")
-        }
-        return records
-    }
-    /**
-     TODO: move all files' related logic out of this file
-     */
-    func playbackRecord() {
-        let records = getRecords()
-        for record in records {
-            print(record.url!.absoluteString)
-        }
-
     }
     
     enum State { case unknown, resetting, unsupported, unauthorized, poweredOff, poweredOn, error, connected, disconnected }
@@ -406,13 +316,11 @@ extension Bluetooth: CBPeripheralDelegate {
             _context.receivedBytesCount = 0
             print("next file size = \(_context.nextFileSize)")
             requestNextFileData()
-            _context.currentFileURL = openRecordFile()
+            _context.currentFileURL = recordsManager!.openRecordFile()
         }
         if characteristic.uuid == CBUUID(string: txCharCharacteristicCBUUIDString)
         {
             _context.receivedBytesCount += (characteristic.value?.count ?? 0)
-
-            //let raw_data = [UInt8](characteristic.value!)
             do
             {
                 try characteristic.value!.append(fileURL: _context.currentFileURL!)

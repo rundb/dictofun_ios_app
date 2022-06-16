@@ -13,7 +13,7 @@ let sampleRecords: [Record] = [
 ]
 
 struct RecordsView: View {
-    var bluetooth: Bluetooth
+    var recordsManager: RecordsManager
     var records: [Record]
     var body: some View {
         List {
@@ -26,7 +26,6 @@ struct RecordsView: View {
                     Spacer()
                     HStack {
                         Button {
-                            // TODO: add playback of the record
                             playbackRecord(url: record.url!)
                         } label: {
                             Image(systemName: "play.fill")
@@ -48,8 +47,8 @@ struct RecordsView: View {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
 
-            bluetooth.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.wav.rawValue)
-            guard let player = bluetooth.player else { return }
+            recordsManager.player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.wav.rawValue)
+            guard let player = recordsManager.player else { return }
             player.play()
         }
         catch let error {
@@ -57,9 +56,3 @@ struct RecordsView: View {
         }
     }
 }
-
-//struct RecordsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        RecordsView(records: sampleRecords)
-//    }
-//}

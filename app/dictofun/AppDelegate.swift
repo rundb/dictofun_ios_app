@@ -7,9 +7,14 @@ import SwiftUI
 
 @main
 struct appApp: App {
+    init() {
+        recordsManager = RecordsManager()
+    }
+    
+    var recordsManager: RecordsManager
     var body: some Scene {
         WindowGroup{
-            MainView()
+            MainView(recordsManager: recordsManager)
         }
     }
 }
