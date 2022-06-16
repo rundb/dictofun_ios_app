@@ -64,6 +64,10 @@ struct MainView: View {
                     }
                     
                 }
+                Spacer()
+                Button("remove all records") {
+                    recordsManager.clearRecords()
+                }
             }
         }
     }

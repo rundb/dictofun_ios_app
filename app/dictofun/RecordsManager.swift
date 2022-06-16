@@ -74,4 +74,18 @@ class RecordsManager {
         }
         return records
     }
+    
+    func clearRecords() {
+        let records = getRecords()
+        for record in records
+        {
+            do {
+                try fileManager.removeItem(at: record.url!)
+            }
+            catch let error {
+                print("failed to remove file \(record.name)")
+            }
+            
+        }
+    }
 }

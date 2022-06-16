@@ -14,29 +14,36 @@ let sampleRecords: [Record] = [
 
 struct RecordsView: View {
     var recordsManager: RecordsManager
-    var records: [Record]
+    @State var records: [Record]
     var body: some View {
-        List {
-            ForEach(records) { record in
-                VStack {
-                    HStack {
-                        Text(record.name)
-                        Spacer()
-                    }
-                    Spacer()
-                    HStack {
-                        Button {
-                            playbackRecord(url: record.url!)
-                        } label: {
-                            Image(systemName: "play.fill")
+        HStack
+        {
+            List {
+                ForEach(records) { record in
+                    VStack {
+                        HStack {
+                            Text(record.name)
+                            Spacer()
                         }
                         Spacer()
-                        Text("\(record.durationInSeconds)")
+                        HStack {
+                            Button {
+                                playbackRecord(url: record.url!)
+                            } label: {
+                                Image(systemName: "play.fill")
+                            }
+                            Spacer()
+                            Text("\(record.durationInSeconds)")
+                        }
                     }
+    //                Button(record.name) {
+    //
+    //                }
                 }
-//                Button(record.name) {
-//
-//                }
+            }
+            .onAppear()
+            {
+                records = recordsManager.getRecords()
             }
         }
     }
