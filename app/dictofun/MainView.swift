@@ -42,6 +42,22 @@ struct MainView: View {
                 Spacer()
                 Text("Welcome to dictofun, we managed to pair")
                 Spacer()
+                Button("reset internal pairing info") {
+                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
+                    if isPairedValue != nil
+                    {
+                        print(isPairedValue!)
+                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
+                    }
+                }
+                Spacer()
+                Button("start scan") {
+                    bluetooth.startScanning()
+                }
+                Spacer()
+                Button("start downloading procedure") {
+                    bluetooth.startDownload()
+                }
             }
         }
     }
