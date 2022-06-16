@@ -4,8 +4,8 @@
  */
 
 import CoreBluetooth
-import AVFoundation
 import Foundation
+import AVFoundation
 
 protocol BluetoothProtocol {
     func state(state: Bluetooth.State)
@@ -13,12 +13,18 @@ protocol BluetoothProtocol {
     func value(data: Data)
 }
 
+enum FtsState {
+    case disconnected, expect_fs_info, expect_file_info, data_transmission
+}
+
 struct FtsContext {
     var filesCount: Int = 0
     var nextFileSize: Int = 0
     var receivedBytesCount: Int = 0
     var currentFileURL: URL?
+    var state: FtsState
 }
+
 
 final class Bluetooth: NSObject {
     static let shared = Bluetooth()
@@ -44,11 +50,12 @@ final class Bluetooth: NSObject {
     private let pairingReadCharacteristicCBUUIDString: String = "03000006-4202-A882-EC11-B10DA4AE3CEB"
     
     private let defaultDevRecordFileName: String = "demo_record.wav"
+    private let recordsFolder: String = "records"
     
-    private var _context: FtsContext = FtsContext(filesCount: 0, nextFileSize: 0, receivedBytesCount: 0, currentFileURL: nil)
+    private var _context: FtsContext = FtsContext(filesCount: 0, nextFileSize: 0, receivedBytesCount: 0, currentFileURL: nil, state: .disconnected)
     let fileManager: FileManager = .default
     let isPairedAlreadyKey: String = "isPaired"
-    private var player: AVAudioPlayer?
+    var player: AVAudioPlayer?
     
     private override init() {
         super.init()
@@ -76,12 +83,18 @@ final class Bluetooth: NSObject {
     }
     
     func startScanning() {
+        if _context.state != .disconnected
+        {
+            print("startScanning(): wrong state. No action taken")
+            return
+        }
         peripherals.removeAll()
         manager?.scanForPeripherals(withServices: nil, options: nil)
     }
     func stopScanning() {
         peripherals.removeAll()
         manager?.stopScan()
+        _context.state = .disconnected
     }
     
     func pair() {
@@ -90,27 +103,45 @@ final class Bluetooth: NSObject {
     }
     
     func startDownload() {
+        if _context.state != .disconnected
+        {
+            print("startDownload(): wrong state. No action taken")
+            return
+        }
         guard let characteristic = rxCharCharacteristic else { return }
         var request = 3
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
         current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+        _context.state = .expect_fs_info
     }
     
     func requestNextFileSize() {
+        if _context.state != .expect_fs_info && _context.state != .data_transmission
+        {
+            print("requestNextFileSize(): wrong state. No action taken")
+            return
+        }
         guard let characteristic = rxCharCharacteristic else { return }
         var request = 2
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
         current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+        _context.state = .expect_file_info
     }
     
     func requestNextFileData() {
+        if _context.state != .expect_file_info
+        {
+            print("requestNextFileData(): wrong state. No action taken")
+            return
+        }
         guard let characteristic = rxCharCharacteristic else { return }
         var request = 1
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
         current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+        _context.state = .data_transmission
     }
     
     func makeURL(forFileNamed fileName: String) -> URL? {
@@ -118,7 +149,20 @@ final class Bluetooth: NSObject {
         {
             return nil
         }
-        return url.appendingPathComponent(fileName)
+        let recordsFolderUrl = url.appendingPathComponent(recordsFolder)
+        var isDir: ObjCBool = false
+        if !fileManager.fileExists(atPath: recordsFolderUrl.path, isDirectory: &isDir)
+        {
+            print("creating records folder")
+            do
+            {
+                try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: true)
+            }
+            catch {
+                print("failed to create the records folder")
+            }
+        }
+        return url.appendingPathComponent(recordsFolder).appendingPathComponent(fileName)
     }
     
     func cleanPreviousFile()
@@ -131,7 +175,7 @@ final class Bluetooth: NSObject {
             try fileManager.removeItem(at: url)
         }
         catch let error {
-            print("failed to remove previous record: \(error)")
+            print("failed to remove previous record \(error)")
         }
     }
     
@@ -143,7 +187,7 @@ final class Bluetooth: NSObject {
         let day = String(format: "%02d", Calendar.current.component(.day, from: today))
         let month = String(format: "%02d", Calendar.current.component(.month, from: today))
         let year = String(Calendar.current.component(.year, from: today))
-        let fileName = "\(year).\(month).\(day)-\(hours):\(minutes):\(seconds)"
+        let fileName = "\(year).\(month).\(day)-\(hours):\(minutes):\(seconds).wav"
         //let fileName = year + "-" + month + "-" + day + "_" + hours + ":" + minutes + ":"+ seconds
         print(fileName)
         return fileName
@@ -151,8 +195,7 @@ final class Bluetooth: NSObject {
     
     func openRecordFile() -> URL?
     {
-        generateFileName()
-        guard let url = makeURL(forFileNamed: defaultDevRecordFileName) else {
+        guard let url = makeURL(forFileNamed: generateFileName()) else {
             return nil
         }
         if fileManager.fileExists(atPath: url.absoluteString)
@@ -162,26 +205,32 @@ final class Bluetooth: NSObject {
         return url
     }
     
+    func getRecords() -> [Record] {
+        var records: [Record] = []
+        do {
+            guard let url = try fileManager.urls(for: .documentDirectory, in: .userDomainMask).first
+            else { return []}
+            let recordsUrl = url.appendingPathComponent(recordsFolder)
+            let items = try fileManager.contentsOfDirectory(at: recordsUrl, includingPropertiesForKeys: nil)
+            for item in items {
+                records.append(Record(url: item, name: item.lastPathComponent, durationInSeconds: 0, transcription: ""))
+            }
+            return records
+        }
+        catch let error {
+            print("get records error \(error)")
+        }
+        return records
+    }
     /**
      TODO: move all files' related logic out of this file
      */
     func playbackRecord() {
-        guard let recordUrl = openRecordFile() else {
-            print("failed to open record")
-            return
+        let records = getRecords()
+        for record in records {
+            print(record.url!.absoluteString)
         }
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-            
-            player = try AVAudioPlayer(contentsOf: recordUrl, fileTypeHint: AVFileType.wav.rawValue)
-            
-            guard let player = player else { return }
-            player.play()
-        }
-        catch let error {
-            print("playback error \(error)");
-        }
+
     }
     
     enum State { case unknown, resetting, unsupported, unauthorized, poweredOff, poweredOn, error, connected, disconnected }
@@ -196,13 +245,18 @@ final class Bluetooth: NSObject {
 
 extension Bluetooth: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+
         switch manager?.state {
         case .unknown: state = .unknown
         case .resetting: state = .resetting
         case .unsupported: state = .unsupported
         case .unauthorized: state = .unauthorized
         case .poweredOff: state = .poweredOff
-        case .poweredOn: state = .poweredOn
+        case .poweredOn: do {
+            self.state = .poweredOn
+            print("reached powered on state")
+            startScanning()
+        }
         default: state = .error
         }
     }
@@ -215,7 +269,7 @@ extension Bluetooth: CBCentralManagerDelegate {
             let new = Device(id: peripherals.count, rssi: RSSI.intValue, uuid: uuid, peripheral: peripheral)
             peripherals.append(new)
             delegate?.list(list: peripherals)
-            if isPaired && name.starts(with: "dictofun")
+            if isPaired && name.starts(with: "dictofun") && state != .connected
             {
                 print("discovered paired dictofun, trying to connect")
                 self.connect(new.peripheral)
@@ -231,7 +285,8 @@ extension Bluetooth: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         current = nil
         state = .disconnected
-        print("disconnected peripheral")
+        _context.state = .disconnected
+        startScanning()
     }
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         current = peripheral
@@ -298,6 +353,10 @@ extension Bluetooth: CBPeripheralDelegate {
                 peripheral.setNotifyValue(true, for: characteristic)
             }
         }
+        if rxCharCharacteristic != nil && fileInfoCharacteristic != nil {
+            usleep(100000)
+            startDownload()
+        }
     }
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
         print("did write value for \(descriptor.uuid)")
@@ -332,8 +391,8 @@ extension Bluetooth: CBPeripheralDelegate {
         if characteristic.uuid == CBUUID(string: fsInfoCharacteristicCBUUIDString)
         {
             let value = [UInt8](characteristic.value!)
-            print("fs file count = \(_context.filesCount)")
             _context.filesCount = Int(value[1]) + 256 * Int(value[2]);
+            print("fs file count = \(_context.filesCount)")
             requestNextFileSize()
         }
         if characteristic.uuid == CBUUID(string: fileInfoCharacteristicCBUUIDString)
@@ -347,7 +406,6 @@ extension Bluetooth: CBPeripheralDelegate {
             _context.receivedBytesCount = 0
             print("next file size = \(_context.nextFileSize)")
             requestNextFileData()
-            cleanPreviousFile()
             _context.currentFileURL = openRecordFile()
         }
         if characteristic.uuid == CBUUID(string: txCharCharacteristicCBUUIDString)

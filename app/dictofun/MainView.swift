@@ -40,26 +40,33 @@ struct MainView: View {
             VStack{
                 Text("Dictofun")
                 Spacer()
-                Text("Welcome to dictofun, we managed to pair")
+                Text("Application automatically in the background attempts to download the records from the dictofun device")
                 Spacer()
-                Button("reset internal pairing info") {
-                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
-                    if isPairedValue != nil
-                    {
-                        print(isPairedValue!)
-                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
-                    }
-                }
-                Spacer()
+                // // TODO: move this to a menu of settings
+//                Button("reset internal pairing info") {
+//                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
+//                    if isPairedValue != nil
+//                    {
+//                        print(isPairedValue!)
+//                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
+//                    }
+//                }
+//                Spacer()
                 Button("start scan") {
                     bluetooth.startScanning()
                 }
-                Button("start downloading procedure") {
-                    bluetooth.startDownload()
-                }
-                Spacer()
                 Button("playback record") {
                     bluetooth.playbackRecord()
+                }
+                Spacer()
+                NavigationView() {
+                    ZStack{
+                        Color.cyan.edgesIgnoringSafeArea(.all)
+                        NavigationLink (destination: RecordsView(bluetooth: bluetooth, records: bluetooth.getRecords())){
+                            Text("List records")
+                        }.buttonStyle(PlainButtonStyle())
+                    }
+                    
                 }
             }
         }
