@@ -33,7 +33,7 @@ struct RecordsView: View {
                                 Image(systemName: "play.fill")
                             }
                             Spacer()
-                            Text("\(record.durationInSeconds)")
+                            Text(String(format: "%02d:%02d", record.durationInSeconds/60, record.durationInSeconds%60))
                         }
                     }
     //                Button(record.name) {

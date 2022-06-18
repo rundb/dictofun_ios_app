@@ -45,6 +45,9 @@ final class Bluetooth: NSObject {
     private var fsInfoCharacteristic: CBCharacteristic?
     private var fileInfoCharacteristic: CBCharacteristic?
     
+    private let ftsServiceCBUUIDString: String = "03000001-4202-A882-EC11-B10DA4AE3CEB"
+    //private let dictofunUUID: String = "9015D4D5-9B84-AE95-AF5E-4A3186C2CF7A"
+    
     private let rxCharCharacteristicCBUUIDString: String = "03000002-4202-A882-EC11-B10DA4AE3CEB"
     private let txCharCharacteristicCBUUIDString: String = "03000003-4202-A882-EC11-B10DA4AE3CEB"
     private let fileInfoCharacteristicCBUUIDString: String = "03000004-4202-A882-EC11-B10DA4AE3CEB"
@@ -88,7 +91,8 @@ final class Bluetooth: NSObject {
             return
         }
         peripherals.removeAll()
-        manager?.scanForPeripherals(withServices: nil, options: nil)
+        let ftsServiceCBUUID = CBUUID(string: ftsServiceCBUUIDString)
+        manager?.scanForPeripherals(withServices: [ftsServiceCBUUID])
     }
     func stopScanning() {
         peripherals.removeAll()
@@ -173,6 +177,7 @@ extension Bluetooth: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         let uuid = String(describing: peripheral.identifier)
+        //let tmp_name = peripheral.name
         let filtered = peripherals.filter{$0.uuid == uuid}
         if filtered.count == 0{
             guard let name = peripheral.name else { return }
@@ -226,6 +231,7 @@ extension Bluetooth: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
+            print("discovered service id: ", service.uuid)
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }

@@ -45,15 +45,15 @@ struct MainView: View {
                     .font(.system(size: 12))
                 Spacer()
                 // // TODO: move this to a menu of settings
-//                Button("reset internal pairing info") {
-//                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
-//                    if isPairedValue != nil
-//                    {
-//                        print(isPairedValue!)
-//                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
-//                    }
-//                }
-//                Spacer()
+                Button("reset internal pairing info") {
+                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
+                    if isPairedValue != nil
+                    {
+                        print(isPairedValue!)
+                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
+                    }
+                }
+                Spacer()
                 Spacer()
                 NavigationView() {
                     ZStack{

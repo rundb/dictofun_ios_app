@@ -65,7 +65,10 @@ class RecordsManager {
             let recordsUrl = url.appendingPathComponent(recordsFolder)
             let items = try fileManager.contentsOfDirectory(at: recordsUrl, includingPropertiesForKeys: nil)
             for item in items {
-                records.append(Record(url: item, name: item.lastPathComponent, durationInSeconds: 0, transcription: ""))
+                let asset = AVURLAsset(url: item)
+                let audioDuration = asset.duration
+                let audioDurationSeconds = Int(CMTimeGetSeconds(audioDuration))
+                records.append(Record(url: item, name: item.lastPathComponent, durationInSeconds: audioDurationSeconds, transcription: ""))
             }
             return records
         }
