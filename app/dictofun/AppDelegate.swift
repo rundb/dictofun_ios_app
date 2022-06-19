@@ -8,13 +8,15 @@ import SwiftUI
 @main
 struct appApp: App {
     init() {
-        recordsManager = RecordsManager()
+        recordsManager = RecordsManager.shared
+        recognizer = SpeechRecognizer.shared
     }
     
     var recordsManager: RecordsManager
+    var recognizer: SpeechRecognizer
     var body: some Scene {
         WindowGroup{
-            MainView(recordsManager: recordsManager)
+            MainView(recordsManager: recordsManager, recognizer: recognizer)
         }
     }
 }

@@ -20,6 +20,7 @@
 		30946DCA285B70C90098B37A /* RecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DC9285B70C90098B37A /* RecordsView.swift */; };
 		30946DCC285B798A0098B37A /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCB285B798A0098B37A /* Record.swift */; };
 		30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCD285BB8F00098B37A /* RecordsManager.swift */; };
+		30946DD0285F0F290098B37A /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCF285F0F280098B37A /* SpeechRecognizer.swift */; };
 		30B29BE6284213EE0013C7DA /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE5284213EE0013C7DA /* MainView.swift */; };
 		30B29BE8284215760013C7DA /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE7284215760013C7DA /* PairingView.swift */; };
 /* End PBXBuildFile section */
@@ -59,6 +60,7 @@
 		30946DC9285B70C90098B37A /* RecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsView.swift; sourceTree = "<group>"; };
 		30946DCB285B798A0098B37A /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		30946DCD285BB8F00098B37A /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
+		30946DCF285F0F280098B37A /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		30B29BE5284213EE0013C7DA /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		30B29BE7284215760013C7DA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -124,6 +126,7 @@
 				30946DC9285B70C90098B37A /* RecordsView.swift */,
 				30946DCB285B798A0098B37A /* Record.swift */,
 				30946DCD285BB8F00098B37A /* RecordsManager.swift */,
+				30946DCF285F0F280098B37A /* SpeechRecognizer.swift */,
 			);
 			path = dictofun;
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 			files = (
 				30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */,
 				303BBBF4283C248100F68138 /* extensions.swift in Sources */,
+				30946DD0285F0F290098B37A /* SpeechRecognizer.swift in Sources */,
 				30946DCA285B70C90098B37A /* RecordsView.swift in Sources */,
 				30946DCC285B798A0098B37A /* Record.swift in Sources */,
 				30B29BE8284215760013C7DA /* PairingView.swift in Sources */,

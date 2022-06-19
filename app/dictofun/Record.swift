@@ -5,17 +5,24 @@
 import SwiftUI
 
 struct Record: Identifiable {
-    let id: UUID
+    var id: String
     let url: URL?
     let name: String
     let durationInSeconds: Int
     let transcription: String
+    let transcriptionURL: URL?
     
-    init(id: UUID = UUID(), url: URL, name: String, durationInSeconds: Int, transcription: String) {
-        self.id = id
+    init(url: URL, name: String, durationInSeconds: Int, transcription: String, transcriptionURL: URL) {
+        // Using hashable string Name to sort the records in the chronological order
+        self.id = name
         self.name = name
         self.durationInSeconds = durationInSeconds
         self.transcription = transcription
         self.url = url
+        self.transcriptionURL = transcriptionURL
     }
+    
+    
+    
+    
 }

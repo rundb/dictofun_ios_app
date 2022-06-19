@@ -345,9 +345,11 @@ extension Bluetooth: CBPeripheralDelegate {
                     print("Received file size: \(data?.count)")
                 }
                 catch {
-                    debugPrint("error")
+                    debugPrint("failed to open the file that just has been recorded")
                     return
                 }
+                recordsManager?.finalizeRecord(recordURL: _context.currentFileURL!)
+                
                 requestNextFileSize()
             }
         }

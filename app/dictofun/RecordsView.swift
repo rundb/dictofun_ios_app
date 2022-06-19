@@ -8,8 +8,8 @@ import AVFoundation
 
 let sampleUrl: URL? = nil
 let sampleRecords: [Record] = [
-    Record(url: sampleUrl!, name: "rec 1", durationInSeconds: 30, transcription: "sample transcription 1"),
-    Record(url: sampleUrl!, name: "rec 2", durationInSeconds: 65, transcription: "sample transcription 2"),
+    Record(url: sampleUrl!, name: "rec 1", durationInSeconds: 30, transcription: "sample transcription 1", transcriptionURL: sampleUrl!),
+    Record(url: sampleUrl!, name: "rec 2", durationInSeconds: 65, transcription: "sample transcription 2", transcriptionURL: sampleUrl!),
 ]
 
 struct RecordsView: View {
@@ -26,14 +26,18 @@ struct RecordsView: View {
                             Spacer()
                         }
                         Spacer()
-                        HStack {
-                            Button {
-                                playbackRecord(url: record.url!)
-                            } label: {
-                                Image(systemName: "play.fill")
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Button {
+                                    playbackRecord(url: record.url!)
+                                } label: {
+                                    Image(systemName: "play.fill")
+                                }
+                                Spacer()
+                                Text(String(format: "%02d:%02d", record.durationInSeconds/60, record.durationInSeconds%60))
                             }
                             Spacer()
-                            Text(String(format: "%02d:%02d", record.durationInSeconds/60, record.durationInSeconds%60))
+                            Text(record.transcription).font(.system(size: 10))
                         }
                     }
     //                Button(record.name) {

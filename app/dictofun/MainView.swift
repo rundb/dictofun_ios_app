@@ -9,6 +9,7 @@ import CoreBluetooth
 struct MainView: View {
     var bluetooth = Bluetooth.shared
     var recordsManager: RecordsManager
+    var recognizer: SpeechRecognizer
     
     @State var presented: Bool = false
     @State var list = [Bluetooth.Device]()
@@ -44,15 +45,15 @@ struct MainView: View {
                 Text("Application automatically in the background attempts to download the records from the dictofun device")
                     .font(.system(size: 12))
                 Spacer()
-                // // TODO: move this to a menu of settings
-                Button("reset internal pairing info") {
-                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
-                    if isPairedValue != nil
-                    {
-                        print(isPairedValue!)
-                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
-                    }
-                }
+//                // // TODO: move this to a menu of settings
+//                Button("reset internal pairing info") {
+//                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
+//                    if isPairedValue != nil
+//                    {
+//                        print(isPairedValue!)
+//                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
+//                    }
+//                }
                 Spacer()
                 Spacer()
                 NavigationView() {
