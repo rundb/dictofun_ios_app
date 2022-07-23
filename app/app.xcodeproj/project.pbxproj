@@ -21,6 +21,7 @@
 		30946DCC285B798A0098B37A /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCB285B798A0098B37A /* Record.swift */; };
 		30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCD285BB8F00098B37A /* RecordsManager.swift */; };
 		30946DD0285F0F290098B37A /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCF285F0F280098B37A /* SpeechRecognizer.swift */; };
+		309BF552288C6C7600F941AB /* SideMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309BF551288C6C7600F941AB /* SideMenuView.swift */; };
 		30B29BE6284213EE0013C7DA /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE5284213EE0013C7DA /* MainView.swift */; };
 		30B29BE8284215760013C7DA /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE7284215760013C7DA /* PairingView.swift */; };
 /* End PBXBuildFile section */
@@ -61,6 +62,7 @@
 		30946DCB285B798A0098B37A /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		30946DCD285BB8F00098B37A /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
 		30946DCF285F0F280098B37A /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		309BF551288C6C7600F941AB /* SideMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuView.swift; sourceTree = "<group>"; };
 		30B29BE5284213EE0013C7DA /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		30B29BE7284215760013C7DA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -127,6 +129,7 @@
 				30946DCB285B798A0098B37A /* Record.swift */,
 				30946DCD285BB8F00098B37A /* RecordsManager.swift */,
 				30946DCF285F0F280098B37A /* SpeechRecognizer.swift */,
+				309BF551288C6C7600F941AB /* SideMenuView.swift */,
 			);
 			path = dictofun;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				30946DCA285B70C90098B37A /* RecordsView.swift in Sources */,
 				30946DCC285B798A0098B37A /* Record.swift in Sources */,
 				30B29BE8284215760013C7DA /* PairingView.swift in Sources */,
+				309BF552288C6C7600F941AB /* SideMenuView.swift in Sources */,
 				302E6CD728206BAD00C3CD69 /* ContentView.swift in Sources */,
 				303BBBF2283C245800F68138 /* ScanView.swift in Sources */,
 				303BBBF0283C186000F68138 /* Bluetooth.swift in Sources */,

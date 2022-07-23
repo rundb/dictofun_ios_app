@@ -16,60 +16,87 @@ struct MainView: View {
     @State var isConnected: Bool = Bluetooth.shared.current != nil { didSet { if isConnected { presented.toggle() } } }
     @State var dictofunPeripheral: CBPeripheral? = nil
     @State var isPaired: Bool = Bluetooth.shared.isPaired
+    @State var showSideMenu = false
     
-    var body: some View {
-        if !isPaired
-        {
-            VStack{
-                Text("Dictofun")
-                Spacer()
-                Text("Welcome to dictofun")
-                Spacer()
-                NavigationView() {
-                    ZStack{
-                        Color.cyan.edgesIgnoringSafeArea(.all)
-                        NavigationLink (destination: PairingView(bluetooth: bluetooth, presented: $presented, list: $list, isConnected: $isConnected,
-                             dictofunPeripheral: $dictofunPeripheral)){
-                            Text("Start pairing")
-                        }.buttonStyle(PlainButtonStyle())
-                    }
+    var defaultView: some View {
+        VStack{
+            Text("Dictofun")
+            Spacer()
+            Text("Welcome to dictofun")
+            Spacer()
+            NavigationView() {
+                ZStack{
+                    Color.cyan.edgesIgnoringSafeArea(.all)
+                    NavigationLink (destination: PairingView(bluetooth: bluetooth, presented: $presented, list: $list, isConnected: $isConnected,
+                         dictofunPeripheral: $dictofunPeripheral)){
+                        Text("Start pairing")
+                    }.buttonStyle(PlainButtonStyle())
                 }
-                .onAppear { bluetooth.delegate = self }
+            }
+            .onAppear { bluetooth.delegate = self }
+        }
+    }
+    
+    var defaultViewAfterPairing: some View {
+        VStack{
+            Text("Application automatically in the background attempts to download the records from the dictofun device")
+                .font(.system(size: 12))
+            Spacer()
+            NavigationView() {
+                ZStack{
+                    Color.cyan.edgesIgnoringSafeArea(.all)
+                    NavigationLink (destination: RecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
+                        Text("List records")
+                    }.buttonStyle(PlainButtonStyle())
+                }
+
             }
         }
-        else
-        {
-            VStack{
-                Text("Dictofun")
-                Spacer()
-                Text("Application automatically in the background attempts to download the records from the dictofun device")
-                    .font(.system(size: 12))
-                Spacer()
-//                // // TODO: move this to a menu of settings
-//                Button("reset internal pairing info") {
-//                    let isPairedValue = bluetooth.userDefaults.value(forKey: "isPaired")
-//                    if isPairedValue != nil
-//                    {
-//                        print(isPairedValue!)
-//                        bluetooth.userDefaults.removeObject(forKey: bluetooth.isPairedAlreadyKey)
-//                    }
-//                }
-                Spacer()
-                Spacer()
-                NavigationView() {
-                    ZStack{
-                        Color.cyan.edgesIgnoringSafeArea(.all)
-                        NavigationLink (destination: RecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
-                            Text("List records")
-                        }.buttonStyle(PlainButtonStyle())
-                    }
-                    
-                }
-                Spacer()
-                Button("remove all records") {
-                    recordsManager.clearRecords()
+    }
+    
+    var body: some View {
+        let drag = DragGesture()
+            .onEnded {_ in
+                withAnimation {
+                    self.showSideMenu = false
                 }
             }
+        
+        return NavigationView {
+            GeometryReader{ geometry in
+                ZStack(alignment: .leading) {
+                    if !isPaired
+                    {
+                        defaultView
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                    }
+                    else
+                    {
+                        defaultViewAfterPairing
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .offset(x: self.showSideMenu ? geometry.size.width/2 : 0)
+                            .disabled(self.showSideMenu)
+                    }
+
+                    if self.showSideMenu {
+                        SideMenuView(bluetooth: bluetooth, recordsManager: recordsManager)
+                            .frame(width: geometry.size.width/2)
+                            .transition(.move(edge: .leading))
+                    }
+                }
+                .gesture(drag)
+            }
+            .navigationBarTitle("Dictofun", displayMode: .inline)
+            .navigationBarItems(leading: (
+                Button(action: {
+                    withAnimation {
+                        self.showSideMenu.toggle()
+                    }
+                }) {
+                    Image(systemName: "line.horizontal.3")
+                        .imageScale(.large)
+                }
+            ))
         }
     }
 }

@@ -125,7 +125,17 @@ class RecordsManager {
                 let name = item.deletingPathExtension().lastPathComponent
                 let transcriptName = name + ".txt"
                 let transcriptionUrl = transcriptionsUrl.appendingPathComponent(transcriptName)
-                let transcript = getTranscription(transcriptionUrl: transcriptionUrl) ?? ""
+                let transcriptTry = getTranscription(transcriptionUrl: transcriptionUrl)
+                var transcript = ""
+                if transcriptTry == nil {
+                    // Perform an extra finalization call, if transcript doesn't exist.
+                    print("performing an extra transcription")
+                    finalizeRecord(recordURL: item)
+                }
+                else
+                {
+                    transcript = transcriptTry!
+                }
                 records.append(Record(url: item, name: item.lastPathComponent,
                                       durationInSeconds: audioDurationSeconds, transcription: transcript, transcriptionURL: transcriptionUrl))
             }
@@ -170,9 +180,10 @@ class RecordsManager {
         }
         else
         {
-            print("record under processing is not nil, waiting other 10 seconds")
-            sleep(10)
-            recordUnderProcessing = record
+            print("record under processing is not nil, recognition will be performed at another time")
+//            sleep(10)
+//            recordUnderProcessing = record
+            return;
         }
         recognizer.transcribe(record: record, handler: transcriptionCallback)
 
