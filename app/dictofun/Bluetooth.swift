@@ -87,7 +87,7 @@ final class Bluetooth: NSObject {
     func startScanning() {
         if _context.state != .disconnected
         {
-            print("startScanning(): wrong state. No action taken")
+            NSLog("startScanning(): wrong state. No action taken")
             return
         }
         peripherals.removeAll()
@@ -108,42 +108,60 @@ final class Bluetooth: NSObject {
     func startDownload() {
         if _context.state != .disconnected
         {
-            print("startDownload(): wrong state. No action taken")
+            //NSLog("startDownload(): wrong state. No action taken")
             return
         }
-        guard let characteristic = rxCharCharacteristic else { return }
+        else
+        {
+            NSLog("startDownload(): starting")
+        }
+        guard let characteristic = rxCharCharacteristic else
+        {
+            NSLog("rxChar assignment error (startDownload)")
+            return
+        }
         var request = 3
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
-        current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+        current?.writeValue(requestData, for: characteristic, type: .withResponse)
         _context.state = .expect_fs_info
     }
     
     func requestNextFileSize() {
+        NSLog("requesting next file size")
         if _context.state != .expect_fs_info && _context.state != .data_transmission
         {
-            print("requestNextFileSize(): wrong state. No action taken")
+            NSLog("requestNextFileSize(): wrong state. No action taken")
             return
         }
-        guard let characteristic = rxCharCharacteristic else { return }
+        guard let characteristic = rxCharCharacteristic else
+        {
+            NSLog("rxChar assignment error (requestNextFileSize)")
+            return
+        }
         var request = 2
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
-        current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+        current?.writeValue(requestData, for: characteristic, type: .withResponse)
         _context.state = .expect_file_info
     }
     
     func requestNextFileData() {
+        NSLog("requesting next file data")
         if _context.state != .expect_file_info
         {
-            print("requestNextFileData(): wrong state. No action taken")
+            NSLog("requestNextFileData(): wrong state. No action taken")
             return
         }
-        guard let characteristic = rxCharCharacteristic else { return }
+        guard let characteristic = rxCharCharacteristic else
+        {
+            NSLog("rxCharChar assignment error (requestNextFileData)")
+            return
+        }
         var request = 1
         let requestData = Data(bytes: &request,
                              count: MemoryLayout.size(ofValue: request))
-        current?.writeValue(requestData, for: characteristic, type: .withoutResponse)
+        current?.writeValue(requestData, for: characteristic, type: .withResponse)
         _context.state = .data_transmission
     }
     
@@ -168,7 +186,6 @@ extension Bluetooth: CBCentralManagerDelegate {
         case .poweredOff: state = .poweredOff
         case .poweredOn: do {
             self.state = .poweredOn
-            print("reached powered on state")
             startScanning()
         }
         default: state = .error
@@ -186,7 +203,7 @@ extension Bluetooth: CBCentralManagerDelegate {
             delegate?.list(list: peripherals)
             if isPaired && name.starts(with: "dictofun") && state != .connected
             {
-                print("discovered paired dictofun, trying to connect")
+                NSLog("discovered paired dictofun, trying to connect")
                 self.connect(new.peripheral)
             }
         }
@@ -194,8 +211,7 @@ extension Bluetooth: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?)
     {
-        print("failed to connect")
-        print(error!)
+        NSLog("failed to connect, error=\(error!.localizedDescription)")
     }
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         current = nil
@@ -231,7 +247,7 @@ extension Bluetooth: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
-            print("discovered service id: ", service.uuid)
+            NSLog("discovered service id: %@", service.uuid.uuidString)
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
@@ -269,20 +285,20 @@ extension Bluetooth: CBPeripheralDelegate {
                 peripheral.setNotifyValue(true, for: characteristic)
             }
         }
-        if rxCharCharacteristic != nil && fileInfoCharacteristic != nil {
+        if isPaired && rxCharCharacteristic != nil && fileInfoCharacteristic != nil {
             usleep(100000)
             startDownload()
         }
     }
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
-        print("did write value for \(descriptor.uuid)")
+        NSLog("did write value for \(descriptor.uuid)")
     }
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
-        print("did update notification state for \(characteristic)")
+        //NSLog("did update notification state for \(characteristic.uuid )")
         
     }
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor descriptor: CBDescriptor, error: Error?) {
-        print("update value for a descriptor")
+        NSLog("update value for a descriptor \(descriptor.uuid)")
     }
     
     /**
@@ -302,16 +318,16 @@ extension Bluetooth: CBPeripheralDelegate {
         {
             isPaired = true
             userDefaults.set(true, forKey: isPairedAlreadyKey)
-            print("pairing successfull")
+            NSLog("pairing successfull")
         }
-        if characteristic.uuid == CBUUID(string: fsInfoCharacteristicCBUUIDString)
+        else if characteristic.uuid == CBUUID(string: fsInfoCharacteristicCBUUIDString)
         {
             let value = [UInt8](characteristic.value!)
             _context.filesCount = Int(value[1]) + 256 * Int(value[2]);
-            print("fs file count = \(_context.filesCount)")
+            NSLog("fs file count = \(_context.filesCount)")
             requestNextFileSize()
         }
-        if characteristic.uuid == CBUUID(string: fileInfoCharacteristicCBUUIDString)
+        else if characteristic.uuid == CBUUID(string: fileInfoCharacteristicCBUUIDString)
         {
             let value = [UInt8](characteristic.value!)
             _context.nextFileSize =
@@ -320,11 +336,11 @@ extension Bluetooth: CBPeripheralDelegate {
                 256 * 256 * Int(value[3]) +
                 256 * 256 * 256 * Int(value[4]);
             _context.receivedBytesCount = 0
-            print("next file size = \(_context.nextFileSize)")
+            NSLog("next file size = \(_context.nextFileSize)")
             requestNextFileData()
             _context.currentFileURL = recordsManager!.openRecordFile()
         }
-        if characteristic.uuid == CBUUID(string: txCharCharacteristicCBUUIDString)
+        else if characteristic.uuid == CBUUID(string: txCharCharacteristicCBUUIDString)
         {
             _context.receivedBytesCount += (characteristic.value?.count ?? 0)
             do
@@ -336,13 +352,13 @@ extension Bluetooth: CBPeripheralDelegate {
             
             if _context.receivedBytesCount == _context.nextFileSize
             {
-                print("file received, requesting next one(\(_context.nextFileSize)/\(_context.receivedBytesCount))")
+                NSLog("file received, requesting next one(\(_context.nextFileSize)/\(_context.receivedBytesCount))")
                 _context.filesCount -= 1
                 do {
                     var data: Data?
                     try data = Data(contentsOf: _context.currentFileURL!)
                     
-                    print("Received file size: \(data?.count)")
+                    NSLog("Received file size: \(data?.count ?? 0)")
                 }
                 catch {
                     debugPrint("failed to open the file that just has been recorded")
@@ -352,6 +368,10 @@ extension Bluetooth: CBPeripheralDelegate {
                 
                 requestNextFileSize()
             }
+        }
+        else
+        {
+            NSLog("file reception: unknown condition")
         }
     }
 }

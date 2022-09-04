@@ -37,13 +37,13 @@ class RecordsManager {
         var isDir: ObjCBool = false
         if !fileManager.fileExists(atPath: recordsFolderUrl.path, isDirectory: &isDir)
         {
-            print("creating records folder")
+            NSLog("creating records folder")
             do
             {
                 try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: true)
             }
             catch {
-                print("failed to create the records folder")
+                NSLog("failed to create the records folder")
             }
         }
         
@@ -51,13 +51,13 @@ class RecordsManager {
         isDir = false
         if !fileManager.fileExists(atPath: transcriptionsFolderUrl.path, isDirectory: &isDir)
         {
-            print("creating transcriptions folder")
+            NSLog("creating transcriptions folder")
             do
             {
                 try fileManager.createDirectory(at: transcriptionsFolderUrl, withIntermediateDirectories: true)
             }
             catch {
-                print("failed to create the transcriptions folder")
+                NSLog("failed to create the transcriptions folder")
             }
         }
 
@@ -74,13 +74,13 @@ class RecordsManager {
         isDir = false
         if !fileManager.fileExists(atPath: transcriptionsFolderUrl.path, isDirectory: &isDir)
         {
-            print("creating transcriptions folder")
+            NSLog("creating transcriptions folder")
             do
             {
                 try fileManager.createDirectory(at: transcriptionsFolderUrl, withIntermediateDirectories: true)
             }
             catch {
-                print("failed to create the transcriptions folder")
+                NSLog("failed to create the transcriptions folder")
             }
         }
 
@@ -93,7 +93,7 @@ class RecordsManager {
             return transcript
         }
         catch {
-            print("no transcription found for \(transcriptionUrl.lastPathComponent)")
+            NSLog("no transcription found for \(transcriptionUrl.lastPathComponent)")
             return nil
         }
     }
@@ -129,7 +129,7 @@ class RecordsManager {
                 var transcript = ""
                 if transcriptTry == nil {
                     // Perform an extra finalization call, if transcript doesn't exist.
-                    print("performing an extra transcription")
+                    NSLog("performing an extra transcription")
                     finalizeRecord(recordURL: item)
                 }
                 else
@@ -139,10 +139,11 @@ class RecordsManager {
                 records.append(Record(url: item, name: item.lastPathComponent,
                                       durationInSeconds: audioDurationSeconds, transcription: transcript, transcriptionURL: transcriptionUrl))
             }
+            records = records.sorted(by: {$0.name > $1.name})
             return records
         }
         catch let error {
-            print("get records error \(error)")
+            NSLog("get records error \(error)")
         }
         return records
     }
@@ -150,25 +151,25 @@ class RecordsManager {
     func transcriptionCallback(speechRecognitionResult: SFSpeechRecognitionResult?, error: Error?) {
         var transcription: String = ""
         if let error = error {
-            print("transcription error: \(error)")
+            NSLog("transcription error: \(error.localizedDescription)")
         }
         else
         {
             transcription = (speechRecognitionResult?.bestTranscription.formattedString)!
-            print("transcription: \(transcription)")
+            NSLog("transcription: \(transcription)")
         }
         do {
             try transcription.write(to: (recordUnderProcessing?.transcriptionURL)!, atomically: false, encoding: .utf8)
         }
         catch {
-            print("failed to store transcription \(recordUnderProcessing?.name)")
+            NSLog("failed to store transcription \(recordUnderProcessing?.name)")
         }
         recordUnderProcessing = nil
     }
     
     func finalizeRecord(recordURL: URL)
     {
-        print("start record finalization")
+        NSLog("start record finalization")
         let transcriptName = recordURL.deletingPathExtension().lastPathComponent + ".txt"
         let recordName = recordURL.lastPathComponent
         let transcriptURL = makeTranscriptionURL(forFileNamed: transcriptName)
@@ -180,7 +181,7 @@ class RecordsManager {
         }
         else
         {
-            print("record under processing is not nil, recognition will be performed at another time")
+            NSLog("record under processing is not nil, recognition will be performed at another time")
 //            sleep(10)
 //            recordUnderProcessing = record
             return;
@@ -202,11 +203,11 @@ class RecordsManager {
             catch let _ {
                 if (!isRecordUrlRemovalSucceeded)
                 {
-                    print("failed to remove file \(record.name)")
+                    NSLog("failed to remove file \(record.name)")
                 }
                 else
                 {
-                    print("failed to remove transcript \(record.transcriptionURL?.lastPathComponent)")
+                    NSLog("failed to remove transcript \(record.transcriptionURL?.lastPathComponent)")
                 }
             }
             

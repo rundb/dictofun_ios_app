@@ -30,7 +30,7 @@ class SpeechRecognizer: ObservableObject
     var transcript: String = ""
     
     init() {
-        recognizer = SFSpeechRecognizer()
+        recognizer = SFSpeechRecognizer(locale: Locale.init(identifier: "en"))
         Task(priority: .background) {
               do {
                   guard recognizer != nil else {
@@ -62,15 +62,7 @@ class SpeechRecognizer: ObservableObject
     func transcribe(record: Record, handler: @escaping (SFSpeechRecognitionResult?, Error?) -> Void) {
         let request = SFSpeechURLRecognitionRequest(url: record.url!)
         request.shouldReportPartialResults = false
-//        recognizer?.recognitionTask(with: request,
-//                                    resultHandler: { (result, error) in
-//            if let error = error {
-//                print("recognition error: \(error)")
-//            } else if let result = result {
-//              print(result.bestTranscription.formattedString)
-//            }
-//        })
-        print("starting recognition task")
+        NSLog("starting recognition task")
         recognizer?.recognitionTask(with: request, resultHandler: handler)
     }
 }

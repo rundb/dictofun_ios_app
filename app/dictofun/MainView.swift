@@ -116,10 +116,10 @@ extension MainView: BluetoothProtocol {
         case .poweredOn: print("◦ everything is ok")
         case .error: print("• error")
         case .connected:
-            print("◦ connected to \(bluetooth.current?.name ?? "")")
+            NSLog("◦ connected to \(bluetooth.current?.name ?? "")")
             isConnected = true
         case .disconnected:
-            print("◦ disconnected")
+            NSLog("◦ disconnected")
             isConnected = false
         }
         isPaired = bluetooth.isPaired
