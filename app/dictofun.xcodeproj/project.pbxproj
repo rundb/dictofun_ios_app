@@ -49,9 +49,9 @@
 		302E6CD628206BAD00C3CD69 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		302E6CD828206BAF00C3CD69 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		302E6CDB28206BAF00C3CD69 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		302E6CE128206BAF00C3CD69 /* appTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = appTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		302E6CE128206BAF00C3CD69 /* dictofunTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = dictofunTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		302E6CE528206BAF00C3CD69 /* appTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appTests.swift; sourceTree = "<group>"; };
-		302E6CEB28206BAF00C3CD69 /* appUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = appUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		302E6CEB28206BAF00C3CD69 /* dictofunUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = dictofunUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		302E6CEF28206BAF00C3CD69 /* appUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appUITests.swift; sourceTree = "<group>"; };
 		302E6CF128206BAF00C3CD69 /* appUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		303BBBEF283C186000F68138 /* Bluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bluetooth.swift; sourceTree = "<group>"; };
@@ -106,8 +106,8 @@
 			isa = PBXGroup;
 			children = (
 				302E6CD128206BAD00C3CD69 /* dictofun.app */,
-				302E6CE128206BAF00C3CD69 /* appTests.xctest */,
-				302E6CEB28206BAF00C3CD69 /* appUITests.xctest */,
+				302E6CE128206BAF00C3CD69 /* dictofunTests.xctest */,
+				302E6CEB28206BAF00C3CD69 /* dictofunUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,9 +162,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		302E6CD028206BAD00C3CD69 /* app */ = {
+		302E6CD028206BAD00C3CD69 /* dictofun */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 302E6CF528206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "app" */;
+			buildConfigurationList = 302E6CF528206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "dictofun" */;
 			buildPhases = (
 				302E6CCD28206BAD00C3CD69 /* Sources */,
 				302E6CCE28206BAD00C3CD69 /* Frameworks */,
@@ -174,14 +174,14 @@
 			);
 			dependencies = (
 			);
-			name = app;
+			name = dictofun;
 			productName = app;
 			productReference = 302E6CD128206BAD00C3CD69 /* dictofun.app */;
 			productType = "com.apple.product-type.application";
 		};
-		302E6CE028206BAF00C3CD69 /* appTests */ = {
+		302E6CE028206BAF00C3CD69 /* dictofunTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 302E6CF828206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "appTests" */;
+			buildConfigurationList = 302E6CF828206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "dictofunTests" */;
 			buildPhases = (
 				302E6CDD28206BAF00C3CD69 /* Sources */,
 				302E6CDE28206BAF00C3CD69 /* Frameworks */,
@@ -192,14 +192,14 @@
 			dependencies = (
 				302E6CE328206BAF00C3CD69 /* PBXTargetDependency */,
 			);
-			name = appTests;
+			name = dictofunTests;
 			productName = appTests;
-			productReference = 302E6CE128206BAF00C3CD69 /* appTests.xctest */;
+			productReference = 302E6CE128206BAF00C3CD69 /* dictofunTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		302E6CEA28206BAF00C3CD69 /* appUITests */ = {
+		302E6CEA28206BAF00C3CD69 /* dictofunUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 302E6CFB28206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "appUITests" */;
+			buildConfigurationList = 302E6CFB28206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "dictofunUITests" */;
 			buildPhases = (
 				302E6CE728206BAF00C3CD69 /* Sources */,
 				302E6CE828206BAF00C3CD69 /* Frameworks */,
@@ -210,9 +210,9 @@
 			dependencies = (
 				302E6CED28206BAF00C3CD69 /* PBXTargetDependency */,
 			);
-			name = appUITests;
+			name = dictofunUITests;
 			productName = appUITests;
-			productReference = 302E6CEB28206BAF00C3CD69 /* appUITests.xctest */;
+			productReference = 302E6CEB28206BAF00C3CD69 /* dictofunUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -238,7 +238,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 302E6CCC28206BAD00C3CD69 /* Build configuration list for PBXProject "app" */;
+			buildConfigurationList = 302E6CCC28206BAD00C3CD69 /* Build configuration list for PBXProject "dictofun" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -251,9 +251,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				302E6CD028206BAD00C3CD69 /* app */,
-				302E6CE028206BAF00C3CD69 /* appTests */,
-				302E6CEA28206BAF00C3CD69 /* appUITests */,
+				302E6CD028206BAD00C3CD69 /* dictofun */,
+				302E6CE028206BAF00C3CD69 /* dictofunTests */,
+				302E6CEA28206BAF00C3CD69 /* dictofunUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -326,12 +326,12 @@
 /* Begin PBXTargetDependency section */
 		302E6CE328206BAF00C3CD69 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 302E6CD028206BAD00C3CD69 /* app */;
+			target = 302E6CD028206BAD00C3CD69 /* dictofun */;
 			targetProxy = 302E6CE228206BAF00C3CD69 /* PBXContainerItemProxy */;
 		};
 		302E6CED28206BAF00C3CD69 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 302E6CD028206BAD00C3CD69 /* app */;
+			target = 302E6CD028206BAD00C3CD69 /* dictofun */;
 			targetProxy = 302E6CEC28206BAF00C3CD69 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -527,7 +527,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/app.app/app";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dictofun.dictofun/dictofun";
 			};
 			name = Debug;
 		};
@@ -547,7 +547,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/app.app/app";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/dictofun.dictofun/dictofun";
 			};
 			name = Release;
 		};
@@ -590,7 +590,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		302E6CCC28206BAD00C3CD69 /* Build configuration list for PBXProject "app" */ = {
+		302E6CCC28206BAD00C3CD69 /* Build configuration list for PBXProject "dictofun" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				302E6CF328206BAF00C3CD69 /* Debug */,
@@ -599,7 +599,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		302E6CF528206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "app" */ = {
+		302E6CF528206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "dictofun" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				302E6CF628206BAF00C3CD69 /* Debug */,
@@ -608,7 +608,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		302E6CF828206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "appTests" */ = {
+		302E6CF828206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "dictofunTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				302E6CF928206BAF00C3CD69 /* Debug */,
@@ -617,7 +617,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		302E6CFB28206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "appUITests" */ = {
+		302E6CFB28206BAF00C3CD69 /* Build configuration list for PBXNativeTarget "dictofunUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				302E6CFC28206BAF00C3CD69 /* Debug */,
