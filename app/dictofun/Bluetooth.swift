@@ -39,20 +39,28 @@ final class Bluetooth: NSObject {
     var recordsManager: RecordsManager?
     
     private var manager: CBCentralManager?
-    private var pairingReadCharacteristic: CBCharacteristic?
-    private var rxCharCharacteristic: CBCharacteristic?
-    private var txCharCharacteristic: CBCharacteristic?
-    private var fsInfoCharacteristic: CBCharacteristic?
-    private var fileInfoCharacteristic: CBCharacteristic?
+//    private var pairingReadCharacteristic: CBCharacteristic?
+//    private var rxCharCharacteristic: CBCharacteristic?
+//    private var txCharCharacteristic: CBCharacteristic?
+//    private var fsInfoCharacteristic: CBCharacteristic?
+//    private var fileInfoCharacteristic: CBCharacteristic?
+    private var pairingWriteCharacteristic: CBCharacteristic?
+    private var ftsCPCharacteristic: CBCharacteristic?
+    private var ftsFileListCharacteristic: CBCharacteristic?
+    private var ftsFileInfoCharacteristic: CBCharacteristic?
+    private var ftsFileDataCharacteristic: CBCharacteristic?
+    private var ftsFSStatusCharacteristic: CBCharacteristic?
+    private var ftsStatusCharacteristic: CBCharacteristic?
     
-    private let ftsServiceCBUUIDString: String = "03000001-4202-A882-EC11-B10DA4AE3CEB"
-    //private let dictofunUUID: String = "9015D4D5-9B84-AE95-AF5E-4A3186C2CF7A"
+    private let ftsServiceCBUUIDString: String = "a0451001-b822-4820-8782-bd8faf68807b"
     
-    private let rxCharCharacteristicCBUUIDString: String = "03000002-4202-A882-EC11-B10DA4AE3CEB"
-    private let txCharCharacteristicCBUUIDString: String = "03000003-4202-A882-EC11-B10DA4AE3CEB"
-    private let fileInfoCharacteristicCBUUIDString: String = "03000004-4202-A882-EC11-B10DA4AE3CEB"
-    private let fsInfoCharacteristicCBUUIDString: String = "03000005-4202-A882-EC11-B10DA4AE3CEB"
-    private let pairingReadCharacteristicCBUUIDString: String = "03000006-4202-A882-EC11-B10DA4AE3CEB"
+    private let ftsCPCharacteristicCBUUIDString: String =        "00001002-0000-1000-8000-00805f9b34fb"
+    private let ftsFileListCharacteristicCBUUIDString: String =  "00001003-0000-1000-8000-00805f9b34fb"
+    private let ftsFileInfoCharacteristicCBUUIDString: String =  "00001004-0000-1000-8000-00805f9b34fb"
+    private let ftsFileDataCharacteristicCBUUIDString: String =  "00001005-0000-1000-8000-00805f9b34fb"
+    private let ftsFSStatusCharacteristicCBUUIDString: String =  "00001006-0000-1000-8000-00805f9b34fb"
+    private let ftsStatusCharacteristicCBUUIDString: String =    "00001007-0000-1000-8000-00805f9b34fb"
+    private let pairingWriteCharacteristicCBUUIDString: String = "000010fe-0000-1000-8000-00805f9b34fb"
 
     
     private var _context: FtsContext = FtsContext(filesCount: 0, nextFileSize: 0, receivedBytesCount: 0, currentFileURL: nil, state: .disconnected)
@@ -101,30 +109,35 @@ final class Bluetooth: NSObject {
     }
     
     func pair() {
-        guard let characteristic = pairingReadCharacteristic else { return }
-        current?.readValue(for: characteristic)
+        guard let characteristic = pairingWriteCharacteristic else { return }
+        
+        let value: UInt8 = 123
+        let dummy_data = Data([value])
+
+        current?.writeValue(dummy_data, for: characteristic, type: .withResponse)
     }
     
     func startDownload() {
         if _context.state != .disconnected
         {
-            //NSLog("startDownload(): wrong state. No action taken")
+            NSLog("startDownload(): wrong state. No action taken")
             return
         }
         else
         {
-            NSLog("startDownload(): starting")
+            NSLog("startDownload(): starting. Not implemented yet")
         }
-        guard let characteristic = rxCharCharacteristic else
-        {
-            NSLog("rxChar assignment error (startDownload)")
-            return
-        }
-        var request = 3
-        let requestData = Data(bytes: &request,
-                             count: MemoryLayout.size(ofValue: request))
-        current?.writeValue(requestData, for: characteristic, type: .withResponse)
-        _context.state = .expect_fs_info
+//        guard let characteristic = rxCharCharacteristic else
+//        {
+//            NSLog("rxChar assignment error (startDownload)")
+//            return
+//        }
+//        var request = 3
+//        let requestData = Data(bytes: &request,
+//                             count: MemoryLayout.size(ofValue: request))
+//        current?.writeValue(requestData, for: characteristic, type: .withResponse)
+//        _context.state = .expect_fs_info
+        
     }
     
     func requestNextFileSize() {
@@ -134,16 +147,17 @@ final class Bluetooth: NSObject {
             NSLog("requestNextFileSize(): wrong state. No action taken")
             return
         }
-        guard let characteristic = rxCharCharacteristic else
-        {
-            NSLog("rxChar assignment error (requestNextFileSize)")
-            return
-        }
-        var request = 2
-        let requestData = Data(bytes: &request,
-                             count: MemoryLayout.size(ofValue: request))
-        current?.writeValue(requestData, for: characteristic, type: .withResponse)
-        _context.state = .expect_file_info
+//        guard let characteristic = rxCharCharacteristic else
+//        {
+//            NSLog("rxChar assignment error (requestNextFileSize)")
+//            return
+//        }
+//        var request = 2
+//        let requestData = Data(bytes: &request,
+//                             count: MemoryLayout.size(ofValue: request))
+//        current?.writeValue(requestData, for: characteristic, type: .withResponse)
+//        _context.state = .expect_file_info
+        NSLog("request file size: not implemented yet")
     }
     
     func requestNextFileData() {
@@ -153,16 +167,17 @@ final class Bluetooth: NSObject {
             NSLog("requestNextFileData(): wrong state. No action taken")
             return
         }
-        guard let characteristic = rxCharCharacteristic else
-        {
-            NSLog("rxCharChar assignment error (requestNextFileData)")
-            return
-        }
-        var request = 1
-        let requestData = Data(bytes: &request,
-                             count: MemoryLayout.size(ofValue: request))
-        current?.writeValue(requestData, for: characteristic, type: .withResponse)
-        _context.state = .data_transmission
+//        guard let characteristic = rxCharCharacteristic else
+//        {
+//            NSLog("rxCharChar assignment error (requestNextFileData)")
+//            return
+//        }
+//        var request = 1
+//        let requestData = Data(bytes: &request,
+//                             count: MemoryLayout.size(ofValue: request))
+//        current?.writeValue(requestData, for: characteristic, type: .withResponse)
+//        _context.state = .data_transmission
+        NSLog("next file data: not yet implemented")
     }
     
     enum State { case unknown, resetting, unsupported, unauthorized, poweredOff, poweredOn, error, connected, disconnected }
@@ -201,7 +216,7 @@ extension Bluetooth: CBCentralManagerDelegate {
             let new = Device(id: peripherals.count, rssi: RSSI.intValue, uuid: uuid, peripheral: peripheral)
             peripherals.append(new)
             delegate?.list(list: peripherals)
-            if isPaired && name.starts(with: "dictofun") && state != .connected
+            if isPaired && name.starts(with: "dict") && state != .connected
             {
                 NSLog("discovered paired dictofun, trying to connect")
                 self.connect(new.peripheral)
@@ -254,44 +269,70 @@ extension Bluetooth: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard let characteristics = service.characteristics else { return }
 
-        let pairingCharacteristicCBUUID = CBUUID(string: self.pairingReadCharacteristicCBUUIDString);
-        let fsInfoCharacteristicCBUUID = CBUUID(string: self.fsInfoCharacteristicCBUUIDString);
-        let fileInfoCharacteristicCBUUID = CBUUID(string: self.fileInfoCharacteristicCBUUIDString);
-        let rxCharCharacteristicCBUUID = CBUUID(string: self.rxCharCharacteristicCBUUIDString);
-        let txCharCharacteristicCBUUID = CBUUID(string: self.txCharCharacteristicCBUUIDString);
+//        let pairingCharacteristicCBUUID = CBUUID(string: self.pairingReadCharacteristicCBUUIDString);
+//        let fsInfoCharacteristicCBUUID = CBUUID(string: self.fsInfoCharacteristicCBUUIDString);
+//        let fileInfoCharacteristicCBUUID = CBUUID(string: self.fileInfoCharacteristicCBUUIDString);
+//        let rxCharCharacteristicCBUUID = CBUUID(string: self.rxCharCharacteristicCBUUIDString);
+//        let txCharCharacteristicCBUUID = CBUUID(string: self.txCharCharacteristicCBUUIDString);
+        let pairingCharacteristicCBUUID = CBUUID(string: self.pairingWriteCharacteristicCBUUIDString);
+        let cpCharacteristicCBUUID = CBUUID(string: self.ftsCPCharacteristicCBUUIDString);
+        let fileListCharacteristicCBUUID = CBUUID(string: self.ftsFileListCharacteristicCBUUIDString);
+        let fileInfoCharacteristicCBUUID = CBUUID(string: self.ftsFileInfoCharacteristicCBUUIDString);
+        let fileDataCharacteristicCBUUID = CBUUID(string: self.ftsFileDataCharacteristicCBUUIDString);
+        let fsStatusCharacteristicCBUUID = CBUUID(string: self.ftsFSStatusCharacteristicCBUUIDString);
+        let statusCharacteristicCBUUID = CBUUID(string: self.ftsStatusCharacteristicCBUUIDString);
         for characteristic in characteristics {
             if characteristic.uuid.isEqual(pairingCharacteristicCBUUID)
             {
-                pairingReadCharacteristic = characteristic
+                pairingWriteCharacteristic = characteristic
             }
-            if characteristic.uuid.isEqual(fsInfoCharacteristicCBUUID)
+            if characteristic.uuid.isEqual(cpCharacteristicCBUUID)
             {
-                fsInfoCharacteristic = characteristic
+                ftsCPCharacteristic = characteristic
+            }
+            if characteristic.uuid.isEqual(fileListCharacteristicCBUUID)
+            {
+                ftsFileListCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: characteristic)
             }
             if characteristic.uuid.isEqual(fileInfoCharacteristicCBUUID)
             {
-                fileInfoCharacteristic = characteristic
+                ftsFileInfoCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: characteristic)
             }
-            if (characteristic.uuid.isEqual(rxCharCharacteristicCBUUID))
+            if (characteristic.uuid.isEqual(fileDataCharacteristicCBUUID))
             {
-                rxCharCharacteristic = characteristic
+                ftsFileDataCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: characteristic)
             }
-            if (characteristic.uuid.isEqual(txCharCharacteristicCBUUID))
+            if (characteristic.uuid.isEqual(fsStatusCharacteristicCBUUID))
             {
-                txCharCharacteristic = characteristic
+                ftsFSStatusCharacteristic = characteristic
+                peripheral.setNotifyValue(true, for: characteristic)
+            }
+            if (characteristic.uuid.isEqual(statusCharacteristicCBUUID))
+            {
+                ftsStatusCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: characteristic)
             }
         }
-        if isPaired && rxCharCharacteristic != nil && fileInfoCharacteristic != nil {
+        if isPaired && ftsCPCharacteristic != nil && ftsStatusCharacteristic != nil {
             usleep(100000)
-            startDownload()
+//            startDownload()
+            NSLog("peripheral discovered. TODO: implement application logic")
         }
     }
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
-        NSLog("did write value for \(descriptor.uuid)")
+        NSLog("did write descr value for \(descriptor.uuid)")
+    }
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        NSLog("did write char value for \(characteristic.uuid)")
+        if characteristic.uuid == CBUUID(string: pairingWriteCharacteristicCBUUIDString)
+        {
+            isPaired = true
+            userDefaults.set(true, forKey: isPairedAlreadyKey)
+            NSLog("pairing successfull")
+        }
     }
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         //NSLog("did update notification state for \(characteristic.uuid )")
@@ -314,60 +355,63 @@ extension Bluetooth: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard let value = characteristic.value else { return }
         delegate?.value(data: value)
-        if characteristic.uuid == CBUUID(string: pairingReadCharacteristicCBUUIDString)
+//        if characteristic.uuid == CBUUID(string: pairingReadCharacteristicCBUUIDString)
+//        {
+//            isPaired = true
+//            userDefaults.set(true, forKey: isPairedAlreadyKey)
+//            NSLog("pairing successfull")
+//        }
+        if characteristic.uuid == CBUUID(string: ftsFileListCharacteristicCBUUIDString)
         {
-            isPaired = true
-            userDefaults.set(true, forKey: isPairedAlreadyKey)
-            NSLog("pairing successfull")
+//            let value = [UInt8](characteristic.value!)
+//            _context.filesCount = Int(value[1]) + 256 * Int(value[2]);
+//            NSLog("fs file count = \(_context.filesCount)")
+//            requestNextFileSize()
+            NSLog("file list char value updated")
         }
-        else if characteristic.uuid == CBUUID(string: fsInfoCharacteristicCBUUIDString)
+        else if characteristic.uuid == CBUUID(string: ftsFileInfoCharacteristicCBUUIDString)
         {
-            let value = [UInt8](characteristic.value!)
-            _context.filesCount = Int(value[1]) + 256 * Int(value[2]);
-            NSLog("fs file count = \(_context.filesCount)")
-            requestNextFileSize()
+//            let value = [UInt8](characteristic.value!)
+//            _context.nextFileSize =
+//                Int(value[1]) +
+//                256 * Int(value[2]) +
+//                256 * 256 * Int(value[3]) +
+//                256 * 256 * 256 * Int(value[4]);
+//            _context.receivedBytesCount = 0
+//            NSLog("next file size = \(_context.nextFileSize)")
+//            requestNextFileData()
+//            _context.currentFileURL = recordsManager!.openRecordFile()
+            NSLog("file info char value updated")
         }
-        else if characteristic.uuid == CBUUID(string: fileInfoCharacteristicCBUUIDString)
+        else if characteristic.uuid == CBUUID(string: ftsFileDataCharacteristicCBUUIDString)
         {
-            let value = [UInt8](characteristic.value!)
-            _context.nextFileSize =
-                Int(value[1]) +
-                256 * Int(value[2]) +
-                256 * 256 * Int(value[3]) +
-                256 * 256 * 256 * Int(value[4]);
-            _context.receivedBytesCount = 0
-            NSLog("next file size = \(_context.nextFileSize)")
-            requestNextFileData()
-            _context.currentFileURL = recordsManager!.openRecordFile()
-        }
-        else if characteristic.uuid == CBUUID(string: txCharCharacteristicCBUUIDString)
-        {
-            _context.receivedBytesCount += (characteristic.value?.count ?? 0)
-            do
-            {
-                try characteristic.value!.append(fileURL: _context.currentFileURL!)
-            } catch {
-                debugPrint("storage error \(error)")
-            }
-            
-            if _context.receivedBytesCount == _context.nextFileSize
-            {
-                NSLog("file received, requesting next one(\(_context.nextFileSize)/\(_context.receivedBytesCount))")
-                _context.filesCount -= 1
-                do {
-                    var data: Data?
-                    try data = Data(contentsOf: _context.currentFileURL!)
-                    
-                    NSLog("Received file size: \(data?.count ?? 0)")
-                }
-                catch {
-                    debugPrint("failed to open the file that just has been recorded")
-                    return
-                }
-                recordsManager?.finalizeRecord(recordURL: _context.currentFileURL!)
-                
-                requestNextFileSize()
-            }
+            NSLog("file data char value updated")
+//            _context.receivedBytesCount += (characteristic.value?.count ?? 0)
+//            do
+//            {
+//                try characteristic.value!.append(fileURL: _context.currentFileURL!)
+//            } catch {
+//                debugPrint("storage error \(error)")
+//            }
+//
+//            if _context.receivedBytesCount == _context.nextFileSize
+//            {
+//                NSLog("file received, requesting next one(\(_context.nextFileSize)/\(_context.receivedBytesCount))")
+//                _context.filesCount -= 1
+//                do {
+//                    var data: Data?
+//                    try data = Data(contentsOf: _context.currentFileURL!)
+//
+//                    NSLog("Received file size: \(data?.count ?? 0)")
+//                }
+//                catch {
+//                    debugPrint("failed to open the file that just has been recorded")
+//                    return
+//                }
+//                recordsManager?.finalizeRecord(recordURL: _context.currentFileURL!)
+//
+//                requestNextFileSize()
+//            }
         }
         else
         {
