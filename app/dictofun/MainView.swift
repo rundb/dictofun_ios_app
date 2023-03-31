@@ -38,20 +38,22 @@ struct MainView: View {
     }
     
     var defaultViewAfterPairing: some View {
-        VStack{
-            Text("Application automatically in the background attempts to download the records from the dictofun device")
-                .font(.system(size: 12))
-            Spacer()
-            NavigationView() {
-                ZStack{
-                    Color.cyan.edgesIgnoringSafeArea(.all)
-                    NavigationLink (destination: RecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
-                        Text("List records")
-                    }.buttonStyle(PlainButtonStyle())
+        NavigationView() {
+            VStack {
+                Color.green.edgesIgnoringSafeArea(.all)
+                NavigationLink(destination: RecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
+                    Text("List records")
                 }
-
+                .buttonStyle(.borderedProminent)
+                
+                NavigationLink(destination: FtsTestsView(bluetooth: bluetooth, isConnected: $isConnected, dictofunPeripheral: $dictofunPeripheral)) {
+                    Text("FTS Tests")
+                }
+                .buttonStyle(.borderedProminent)
+                Spacer()
+                Color.green.edgesIgnoringSafeArea(.all)
             }
-        }
+        }.background(Color.green)
     }
     
     var body: some View {

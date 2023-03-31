@@ -39,11 +39,6 @@ final class Bluetooth: NSObject {
     var recordsManager: RecordsManager?
     
     private var manager: CBCentralManager?
-//    private var pairingReadCharacteristic: CBCharacteristic?
-//    private var rxCharCharacteristic: CBCharacteristic?
-//    private var txCharCharacteristic: CBCharacteristic?
-//    private var fsInfoCharacteristic: CBCharacteristic?
-//    private var fileInfoCharacteristic: CBCharacteristic?
     private var pairingWriteCharacteristic: CBCharacteristic?
     private var ftsCPCharacteristic: CBCharacteristic?
     private var ftsFileListCharacteristic: CBCharacteristic?

@@ -24,6 +24,7 @@
 		309BF552288C6C7600F941AB /* SideMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309BF551288C6C7600F941AB /* SideMenuView.swift */; };
 		30B29BE6284213EE0013C7DA /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE5284213EE0013C7DA /* MainView.swift */; };
 		30B29BE8284215760013C7DA /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE7284215760013C7DA /* PairingView.swift */; };
+		30D6660129D5B17E00F84327 /* FtsTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D6660029D5B17E00F84327 /* FtsTestsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		309BF551288C6C7600F941AB /* SideMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuView.swift; sourceTree = "<group>"; };
 		30B29BE5284213EE0013C7DA /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		30B29BE7284215760013C7DA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
+		30D6660029D5B17E00F84327 /* FtsTestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FtsTestsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +132,7 @@
 				30946DCD285BB8F00098B37A /* RecordsManager.swift */,
 				30946DCF285F0F280098B37A /* SpeechRecognizer.swift */,
 				309BF551288C6C7600F941AB /* SideMenuView.swift */,
+				30D6660029D5B17E00F84327 /* FtsTestsView.swift */,
 			);
 			path = dictofun;
 			sourceTree = "<group>";
@@ -298,6 +301,7 @@
 				309BF552288C6C7600F941AB /* SideMenuView.swift in Sources */,
 				302E6CD728206BAD00C3CD69 /* ContentView.swift in Sources */,
 				303BBBF2283C245800F68138 /* ScanView.swift in Sources */,
+				30D6660129D5B17E00F84327 /* FtsTestsView.swift in Sources */,
 				303BBBF0283C186000F68138 /* Bluetooth.swift in Sources */,
 				30B29BE6284213EE0013C7DA /* MainView.swift in Sources */,
 				302E6CD528206BAD00C3CD69 /* AppDelegate.swift in Sources */,
