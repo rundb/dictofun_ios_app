@@ -8,26 +8,29 @@ import SwiftUI
 @main
 struct appApp: App {
     init() {
-        recordsManager = RecordsManager.shared
-        recognizer = SpeechRecognizer.shared
+//        recordsManager = RecordsManager.shared
+//        recognizer = SpeechRecognizer.shared
+//        fts = FileTransferService()
     }
     
-    var recordsManager: RecordsManager
-    var recognizer: SpeechRecognizer
+//    var recordsManager: RecordsManager
+//    var recognizer: SpeechRecognizer
+//    var fts: FileTransferService
     var body: some Scene {
         WindowGroup{
-            MainView(recordsManager: recordsManager, recognizer: recognizer)
+            //MainView(recordsManager: recordsManager, recognizer: recognizer, fts: fts)
+            StartScreenView()
         }
     }
 }
 
 struct appButton: ButtonStyle {
     let color: Color
-    
+
     public init(color: Color = .accentColor) {
         self.color = color
     }
-    
+
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 8)

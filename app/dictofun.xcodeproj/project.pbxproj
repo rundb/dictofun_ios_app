@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		300055AA29DC5CF200FD5EF4 /* FileTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300055A929DC5CF200FD5EF4 /* FileTransferService.swift */; };
+		302371BB29F51709009279B5 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 302371BA29F51709009279B5 /* ComposableArchitecture */; };
 		302E6CD528206BAD00C3CD69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E6CD428206BAD00C3CD69 /* AppDelegate.swift */; };
 		302E6CD728206BAD00C3CD69 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E6CD628206BAD00C3CD69 /* ContentView.swift */; };
 		302E6CD928206BAF00C3CD69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 302E6CD828206BAF00C3CD69 /* Assets.xcassets */; };
@@ -17,7 +19,7 @@
 		303BBBF0283C186000F68138 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BBBEF283C186000F68138 /* Bluetooth.swift */; };
 		303BBBF2283C245800F68138 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BBBF1283C245800F68138 /* ScanView.swift */; };
 		303BBBF4283C248100F68138 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BBBF3283C248100F68138 /* extensions.swift */; };
-		30946DCA285B70C90098B37A /* RecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DC9285B70C90098B37A /* RecordsView.swift */; };
+		30946DCA285B70C90098B37A /* OldRecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DC9285B70C90098B37A /* OldRecordsView.swift */; };
 		30946DCC285B798A0098B37A /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCB285B798A0098B37A /* Record.swift */; };
 		30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCD285BB8F00098B37A /* RecordsManager.swift */; };
 		30946DD0285F0F290098B37A /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCF285F0F280098B37A /* SpeechRecognizer.swift */; };
@@ -25,6 +27,12 @@
 		30B29BE6284213EE0013C7DA /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE5284213EE0013C7DA /* MainView.swift */; };
 		30B29BE8284215760013C7DA /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B29BE7284215760013C7DA /* PairingView.swift */; };
 		30D6660129D5B17E00F84327 /* FtsTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30D6660029D5B17E00F84327 /* FtsTestsView.swift */; };
+		30ECCCF72A145FC800D77FD7 /* BleDevelopmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ECCCF62A145FC800D77FD7 /* BleDevelopmentView.swift */; };
+		30ECCCF92A1461CD00D77FD7 /* StartScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ECCCF82A1461CD00D77FD7 /* StartScreenView.swift */; };
+		30ECCCFC2A14631300D77FD7 /* BluetoothProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ECCCFB2A14631300D77FD7 /* BluetoothProtocol.swift */; };
+		30ECCCFF2A1466DF00D77FD7 /* BleControllerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ECCCFE2A1466DF00D77FD7 /* BleControllerMock.swift */; };
+		30ECCD012A14682D00D77FD7 /* BlePairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ECCD002A14682D00D77FD7 /* BlePairingView.swift */; };
+		30ECCD032A1468DC00D77FD7 /* RecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30ECCD022A1468DC00D77FD7 /* RecordsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		300055A929DC5CF200FD5EF4 /* FileTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferService.swift; sourceTree = "<group>"; };
 		302E6CD128206BAD00C3CD69 /* dictofun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		302E6CD428206BAD00C3CD69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		302E6CD628206BAD00C3CD69 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,7 +68,7 @@
 		303BBBF1283C245800F68138 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		303BBBF3283C248100F68138 /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
 		303BBBF5283C252200F68138 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		30946DC9285B70C90098B37A /* RecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsView.swift; sourceTree = "<group>"; };
+		30946DC9285B70C90098B37A /* OldRecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldRecordsView.swift; sourceTree = "<group>"; };
 		30946DCB285B798A0098B37A /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		30946DCD285BB8F00098B37A /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
 		30946DCF285F0F280098B37A /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
@@ -67,6 +76,12 @@
 		30B29BE5284213EE0013C7DA /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		30B29BE7284215760013C7DA /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
 		30D6660029D5B17E00F84327 /* FtsTestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FtsTestsView.swift; sourceTree = "<group>"; };
+		30ECCCF62A145FC800D77FD7 /* BleDevelopmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleDevelopmentView.swift; sourceTree = "<group>"; };
+		30ECCCF82A1461CD00D77FD7 /* StartScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartScreenView.swift; sourceTree = "<group>"; };
+		30ECCCFB2A14631300D77FD7 /* BluetoothProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothProtocol.swift; sourceTree = "<group>"; };
+		30ECCCFE2A1466DF00D77FD7 /* BleControllerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleControllerMock.swift; sourceTree = "<group>"; };
+		30ECCD002A14682D00D77FD7 /* BlePairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlePairingView.swift; sourceTree = "<group>"; };
+		30ECCD022A1468DC00D77FD7 /* RecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				302371BB29F51709009279B5 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +133,9 @@
 		302E6CD328206BAD00C3CD69 /* dictofun */ = {
 			isa = PBXGroup;
 			children = (
+				30ECCCFD2A1466D000D77FD7 /* mocks */,
+				30ECCCFA2A1462F800D77FD7 /* controllers */,
+				30ECCCF52A145F9700D77FD7 /* views */,
 				303BBBF5283C252200F68138 /* Info.plist */,
 				303BBBF1283C245800F68138 /* ScanView.swift */,
 				302E6CD428206BAD00C3CD69 /* AppDelegate.swift */,
@@ -127,12 +146,13 @@
 				302E6CD828206BAF00C3CD69 /* Assets.xcassets */,
 				302E6CDA28206BAF00C3CD69 /* Preview Content */,
 				303BBBF3283C248100F68138 /* extensions.swift */,
-				30946DC9285B70C90098B37A /* RecordsView.swift */,
+				30946DC9285B70C90098B37A /* OldRecordsView.swift */,
 				30946DCB285B798A0098B37A /* Record.swift */,
 				30946DCD285BB8F00098B37A /* RecordsManager.swift */,
 				30946DCF285F0F280098B37A /* SpeechRecognizer.swift */,
 				309BF551288C6C7600F941AB /* SideMenuView.swift */,
 				30D6660029D5B17E00F84327 /* FtsTestsView.swift */,
+				300055A929DC5CF200FD5EF4 /* FileTransferService.swift */,
 			);
 			path = dictofun;
 			sourceTree = "<group>";
@@ -162,6 +182,33 @@
 			path = appUITests;
 			sourceTree = "<group>";
 		};
+		30ECCCF52A145F9700D77FD7 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				30ECCCF62A145FC800D77FD7 /* BleDevelopmentView.swift */,
+				30ECCCF82A1461CD00D77FD7 /* StartScreenView.swift */,
+				30ECCD002A14682D00D77FD7 /* BlePairingView.swift */,
+				30ECCD022A1468DC00D77FD7 /* RecordsView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		30ECCCFA2A1462F800D77FD7 /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				30ECCCFB2A14631300D77FD7 /* BluetoothProtocol.swift */,
+			);
+			path = controllers;
+			sourceTree = "<group>";
+		};
+		30ECCCFD2A1466D000D77FD7 /* mocks */ = {
+			isa = PBXGroup;
+			children = (
+				30ECCCFE2A1466DF00D77FD7 /* BleControllerMock.swift */,
+			);
+			path = mocks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -178,6 +225,9 @@
 			dependencies = (
 			);
 			name = dictofun;
+			packageProductDependencies = (
+				302371BA29F51709009279B5 /* ComposableArchitecture */,
+			);
 			productName = app;
 			productReference = 302E6CD128206BAD00C3CD69 /* dictofun.app */;
 			productType = "com.apple.product-type.application";
@@ -250,6 +300,9 @@
 				Base,
 			);
 			mainGroup = 302E6CC828206BAD00C3CD69;
+			packageReferences = (
+				302371B929F51709009279B5 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			productRefGroup = 302E6CD228206BAD00C3CD69 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -292,17 +345,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30ECCCFC2A14631300D77FD7 /* BluetoothProtocol.swift in Sources */,
+				30ECCD012A14682D00D77FD7 /* BlePairingView.swift in Sources */,
+				30ECCCFF2A1466DF00D77FD7 /* BleControllerMock.swift in Sources */,
 				30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */,
+				30ECCCF72A145FC800D77FD7 /* BleDevelopmentView.swift in Sources */,
 				303BBBF4283C248100F68138 /* extensions.swift in Sources */,
+				300055AA29DC5CF200FD5EF4 /* FileTransferService.swift in Sources */,
 				30946DD0285F0F290098B37A /* SpeechRecognizer.swift in Sources */,
-				30946DCA285B70C90098B37A /* RecordsView.swift in Sources */,
+				30946DCA285B70C90098B37A /* OldRecordsView.swift in Sources */,
 				30946DCC285B798A0098B37A /* Record.swift in Sources */,
 				30B29BE8284215760013C7DA /* PairingView.swift in Sources */,
 				309BF552288C6C7600F941AB /* SideMenuView.swift in Sources */,
+				30ECCCF92A1461CD00D77FD7 /* StartScreenView.swift in Sources */,
 				302E6CD728206BAD00C3CD69 /* ContentView.swift in Sources */,
 				303BBBF2283C245800F68138 /* ScanView.swift in Sources */,
 				30D6660129D5B17E00F84327 /* FtsTestsView.swift in Sources */,
 				303BBBF0283C186000F68138 /* Bluetooth.swift in Sources */,
+				30ECCD032A1468DC00D77FD7 /* RecordsView.swift in Sources */,
 				30B29BE6284213EE0013C7DA /* MainView.swift in Sources */,
 				302E6CD528206BAD00C3CD69 /* AppDelegate.swift in Sources */,
 			);
@@ -472,6 +532,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -502,6 +563,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -631,6 +693,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		302371B929F51709009279B5 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.52.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		302371BA29F51709009279B5 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 302371B929F51709009279B5 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 302E6CC928206BAD00C3CD69 /* Project object */;
 }

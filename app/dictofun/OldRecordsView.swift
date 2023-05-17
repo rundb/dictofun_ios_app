@@ -12,7 +12,7 @@ let sampleRecords: [Record] = [
     Record(url: sampleUrl!, name: "rec 2", durationInSeconds: 65, transcription: "sample transcription 2", transcriptionURL: sampleUrl!),
 ]
 
-struct RecordsView: View {
+struct OldRecordsView: View {
     var recordsManager: RecordsManager
     @State var records: [Record]
     var body: some View {

@@ -5,11 +5,13 @@
 
 import SwiftUI
 import CoreBluetooth
+import ComposableArchitecture
 
 struct MainView: View {
     var bluetooth = Bluetooth.shared
     var recordsManager: RecordsManager
     var recognizer: SpeechRecognizer
+    var fts: FileTransferService
     
     @State var presented: Bool = false
     @State var list = [Bluetooth.Device]()
@@ -41,7 +43,7 @@ struct MainView: View {
         NavigationView() {
             VStack {
                 Color.green.edgesIgnoringSafeArea(.all)
-                NavigationLink(destination: RecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
+                NavigationLink(destination: OldRecordsView(recordsManager: recordsManager, records: recordsManager.getRecords())){
                     Text("List records")
                 }
                 .buttonStyle(.borderedProminent)
