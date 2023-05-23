@@ -11,7 +11,7 @@ struct MainView: View {
     var bluetooth = Bluetooth.shared
     var recordsManager: RecordsManager
     var recognizer: SpeechRecognizer
-    var fts: FileTransferService
+    var fts: FileTransferServiceOld
     
     @State var presented: Bool = false
     @State var list = [Bluetooth.Device]()

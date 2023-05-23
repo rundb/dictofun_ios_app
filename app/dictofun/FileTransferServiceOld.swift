@@ -6,7 +6,7 @@
 import Foundation
 import CoreBluetooth
 
-class FileTransferService {
+class FileTransferServiceOld {
     private var manager: CBCentralManager?
     private var pairingWriteCharacteristic: CBCharacteristic?
     private var ftsCPCharacteristic: CBCharacteristic?

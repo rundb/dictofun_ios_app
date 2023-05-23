@@ -10,10 +10,12 @@ import SwiftUI
 struct StartScreenView: View {
     var bleController: BleControlProtocol?
     var bleContext: BleContext
+    var fts: FileTransferServiceProtocol?
     
     init() {
         bleController = BleControllerMock()
         bleContext = BleContext(bleState: .idle, isPaired: false)
+        fts = FileTransferServiceMock()
     }
     
     var body: some View {
@@ -35,7 +37,12 @@ struct StartScreenView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 
-                NavigationLink(destination: BleDevelopmentView()) {
+                NavigationLink(destination: BleDevelopmentView(
+                    bleController: bleController!,
+                    bleContext: bleContext,
+                    fts: fts!)
+                )
+                {
                     Text("ble dev view")
                 }
                 .padding()

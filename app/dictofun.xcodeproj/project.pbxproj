@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		300055AA29DC5CF200FD5EF4 /* FileTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300055A929DC5CF200FD5EF4 /* FileTransferService.swift */; };
+		300055AA29DC5CF200FD5EF4 /* FileTransferServiceOld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300055A929DC5CF200FD5EF4 /* FileTransferServiceOld.swift */; };
+		3017CDF02A151CC4007F1FEC /* FileTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3017CDEF2A151CC4007F1FEC /* FileTransferService.swift */; };
+		3017CDF22A152F0F007F1FEC /* FileTransferProtocolMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3017CDF12A152F0F007F1FEC /* FileTransferProtocolMock.swift */; };
 		302371BB29F51709009279B5 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 302371BA29F51709009279B5 /* ComposableArchitecture */; };
 		302E6CD528206BAD00C3CD69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E6CD428206BAD00C3CD69 /* AppDelegate.swift */; };
 		302E6CD728206BAD00C3CD69 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E6CD628206BAD00C3CD69 /* ContentView.swift */; };
@@ -19,6 +21,7 @@
 		303BBBF0283C186000F68138 /* Bluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BBBEF283C186000F68138 /* Bluetooth.swift */; };
 		303BBBF2283C245800F68138 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BBBF1283C245800F68138 /* ScanView.swift */; };
 		303BBBF4283C248100F68138 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 303BBBF3283C248100F68138 /* extensions.swift */; };
+		3060525E2A1D270300B84C9B /* BluetoothController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3060525D2A1D270300B84C9B /* BluetoothController.swift */; };
 		30946DCA285B70C90098B37A /* OldRecordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DC9285B70C90098B37A /* OldRecordsView.swift */; };
 		30946DCC285B798A0098B37A /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCB285B798A0098B37A /* Record.swift */; };
 		30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30946DCD285BB8F00098B37A /* RecordsManager.swift */; };
@@ -53,7 +56,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		300055A929DC5CF200FD5EF4 /* FileTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferService.swift; sourceTree = "<group>"; };
+		300055A929DC5CF200FD5EF4 /* FileTransferServiceOld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferServiceOld.swift; sourceTree = "<group>"; };
+		3017CDEF2A151CC4007F1FEC /* FileTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferService.swift; sourceTree = "<group>"; };
+		3017CDF12A152F0F007F1FEC /* FileTransferProtocolMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferProtocolMock.swift; sourceTree = "<group>"; };
 		302E6CD128206BAD00C3CD69 /* dictofun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		302E6CD428206BAD00C3CD69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		302E6CD628206BAD00C3CD69 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -68,6 +73,7 @@
 		303BBBF1283C245800F68138 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
 		303BBBF3283C248100F68138 /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
 		303BBBF5283C252200F68138 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3060525D2A1D270300B84C9B /* BluetoothController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothController.swift; sourceTree = "<group>"; };
 		30946DC9285B70C90098B37A /* OldRecordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldRecordsView.swift; sourceTree = "<group>"; };
 		30946DCB285B798A0098B37A /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		30946DCD285BB8F00098B37A /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
@@ -152,7 +158,7 @@
 				30946DCF285F0F280098B37A /* SpeechRecognizer.swift */,
 				309BF551288C6C7600F941AB /* SideMenuView.swift */,
 				30D6660029D5B17E00F84327 /* FtsTestsView.swift */,
-				300055A929DC5CF200FD5EF4 /* FileTransferService.swift */,
+				300055A929DC5CF200FD5EF4 /* FileTransferServiceOld.swift */,
 			);
 			path = dictofun;
 			sourceTree = "<group>";
@@ -197,6 +203,8 @@
 			isa = PBXGroup;
 			children = (
 				30ECCCFB2A14631300D77FD7 /* BluetoothProtocol.swift */,
+				3017CDEF2A151CC4007F1FEC /* FileTransferService.swift */,
+				3060525D2A1D270300B84C9B /* BluetoothController.swift */,
 			);
 			path = controllers;
 			sourceTree = "<group>";
@@ -205,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				30ECCCFE2A1466DF00D77FD7 /* BleControllerMock.swift */,
+				3017CDF12A152F0F007F1FEC /* FileTransferProtocolMock.swift */,
 			);
 			path = mocks;
 			sourceTree = "<group>";
@@ -346,12 +355,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				30ECCCFC2A14631300D77FD7 /* BluetoothProtocol.swift in Sources */,
+				3060525E2A1D270300B84C9B /* BluetoothController.swift in Sources */,
 				30ECCD012A14682D00D77FD7 /* BlePairingView.swift in Sources */,
 				30ECCCFF2A1466DF00D77FD7 /* BleControllerMock.swift in Sources */,
+				3017CDF02A151CC4007F1FEC /* FileTransferService.swift in Sources */,
 				30946DCE285BB8F00098B37A /* RecordsManager.swift in Sources */,
 				30ECCCF72A145FC800D77FD7 /* BleDevelopmentView.swift in Sources */,
 				303BBBF4283C248100F68138 /* extensions.swift in Sources */,
-				300055AA29DC5CF200FD5EF4 /* FileTransferService.swift in Sources */,
+				300055AA29DC5CF200FD5EF4 /* FileTransferServiceOld.swift in Sources */,
+				3017CDF22A152F0F007F1FEC /* FileTransferProtocolMock.swift in Sources */,
 				30946DD0285F0F290098B37A /* SpeechRecognizer.swift in Sources */,
 				30946DCA285B70C90098B37A /* OldRecordsView.swift in Sources */,
 				30946DCC285B798A0098B37A /* Record.swift in Sources */,
