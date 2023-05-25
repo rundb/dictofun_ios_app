@@ -10,6 +10,7 @@ import SwiftUI
 struct BlePairingView: View {
     var bleController: BleControlProtocol?
     @Binding var bleContext: BleContext
+    @State private var updatesCount: Int = 0
     
     var body: some View {
         VStack {
@@ -27,6 +28,7 @@ struct BlePairingView: View {
             Button(action: {
                 bleController?.startScan()
                 NSLog("ble:: start scanning")
+                updatesCount += 1
             })
             {
                 Text("start scanning")
@@ -35,10 +37,12 @@ struct BlePairingView: View {
             .background(($bleContext.wrappedValue.bleState == .ready) ? .cyan : .gray)
             .foregroundColor(.white)
             .cornerRadius(10)
+            .disabled($bleContext.wrappedValue.bleState != .ready)
             
             Button(action: {
                 bleController?.stopScan()
                 NSLog("ble:: stop scanning")
+                updatesCount += 1
             })
             {
                 Text("stop scanning")
@@ -47,6 +51,7 @@ struct BlePairingView: View {
             .background(($bleContext.wrappedValue.bleState == .scanning) ? .cyan : .gray)
             .foregroundColor(.white)
             .cornerRadius(10)
+            .disabled($bleContext.wrappedValue.bleState != .scanning)
             
             Button(action: {})
             {
@@ -56,6 +61,9 @@ struct BlePairingView: View {
             .background(bleContext.bleState == .connected && !bleContext.isPaired ? .cyan : .gray)
             .foregroundColor(.white)
             .cornerRadius(10)
+            
+            // This is a workaround to enforce the view to update on the buttons' presses
+            Text(String(updatesCount)).hidden()
         }
     }
 }
