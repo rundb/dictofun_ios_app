@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 /// Mock implementation of File Transfer Service Protocol
 class FileTransferServiceMock: FileTransferServiceProtocol
@@ -14,6 +15,8 @@ class FileTransferServiceMock: FileTransferServiceProtocol
     private var targetFileSize: Int? = nil
     private var targetFileData: Array<UInt8>? = nil
     private var isDFConnected: Bool = false
+    
+    private let serviceCBUUIDString: String = "a0451001-b822-4820-8782-bd8faf68807b"
     
     // Mock values'setters
     func setFilesList(list: Array<String>?) {
@@ -45,5 +48,8 @@ class FileTransferServiceMock: FileTransferServiceProtocol
         return isDFConnected
     }
     
+    func getServiceUUID() -> CBUUID {
+        return CBUUID(string: serviceCBUUIDString)
+    }
 
 }

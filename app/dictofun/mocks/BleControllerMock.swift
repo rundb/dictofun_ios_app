@@ -6,18 +6,16 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 class BleControllerMock: BleControlProtocol
 {
-//    var context: BleContext
-    
-//    init(context: BleContext)
-//    {
-//        self.context = context
-//    }
-    
     func startScan() {
         print("start scan called")
+    }
+    
+    func stopScan() {
+        print("stop scan called")
     }
     
     func connect() {
@@ -28,5 +26,8 @@ class BleControllerMock: BleControlProtocol
         print("disconnect called")
     }
     
+    func registerService(serviceUUID: CBUUID) {
+        
+    }
     
 }

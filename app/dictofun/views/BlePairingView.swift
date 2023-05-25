@@ -9,7 +9,8 @@ import SwiftUI
 
 struct BlePairingView: View {
     var bleController: BleControlProtocol?
-    var bleContext: BleContext
+    @Binding var bleContext: BleContext
+    
     var body: some View {
         VStack {
             Text("Welcome to Dictofun")
@@ -21,23 +22,29 @@ struct BlePairingView: View {
             .multilineTextAlignment(.center)
             
             Text("Connection status: \n\t" +
-                 (bleContext.bleState == .connected ? "connected" : "disconnected") + "\n\t" +
-                 (bleContext.isPaired ? "paired" : "not paired"))
-            Button(action: {})
+                 ($bleContext.wrappedValue.bleState == .connected ? "connected" : "disconnected") + "\n\t" +
+                 ($bleContext.wrappedValue.isPaired ? "paired" : "not paired"))
+            Button(action: {
+                bleController?.startScan()
+                NSLog("ble:: start scanning")
+            })
             {
                 Text("start scanning")
             }
             .padding()
-            .background( bleContext.bleState == .idle ? .cyan : .gray)
+            .background(($bleContext.wrappedValue.bleState == .ready) ? .cyan : .gray)
             .foregroundColor(.white)
             .cornerRadius(10)
             
-            Button(action: {})
+            Button(action: {
+                bleController?.stopScan()
+                NSLog("ble:: stop scanning")
+            })
             {
                 Text("stop scanning")
             }
             .padding()
-            .background(bleContext.bleState == .scanning ? .cyan : .gray)
+            .background(($bleContext.wrappedValue.bleState == .scanning) ? .cyan : .gray)
             .foregroundColor(.white)
             .cornerRadius(10)
             
@@ -54,10 +61,11 @@ struct BlePairingView: View {
 }
 
 struct BlePairingView_Previews: PreviewProvider {
+    @State static var bleContext: BleContext = BleContext(bleState: .idle, isPaired: false)
     static var previews: some View {
         BlePairingView(
             bleController: BleControllerMock(),
-            bleContext: BleContext(bleState: .idle, isPaired: true)
+            bleContext: $bleContext
         )
     }
 }

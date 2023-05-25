@@ -11,15 +11,34 @@ struct appApp: App {
 //        recordsManager = RecordsManager.shared
 //        recognizer = SpeechRecognizer.shared
 //        fts = FileTransferService()
+        
+        let defaultContext = BleContext(bleState: .idle, isPaired: false)
+        _bleContext = State(initialValue: defaultContext)
+        
+        var bleImplementedController = BluetoothController()
+        bleImplementedController.registerBleContext(bleContext: &bleContext)
+        
+        bleController = bleImplementedController
+        bleControllerMock = BleControllerMock()
+        ftsController = FileTransferService()
+        //  bleController: bleControllerMock)
+        
+        
+        ftsController!.registerBleComponents(bleContext: &bleContext, bleController: bleController!)
+        bleController!.registerService(serviceUUID: ftsController!.getServiceUUID())
     }
     
 //    var recordsManager: RecordsManager
 //    var recognizer: SpeechRecognizer
 //    var fts: FileTransferService
+    @State var bleContext : BleContext
+    var bleController: BleControlProtocol?
+    var bleControllerMock: BleControllerMock?
+    var ftsController: FileTransferService?
     var body: some Scene {
         WindowGroup{
             //MainView(recordsManager: recordsManager, recognizer: recognizer, fts: fts)
-            StartScreenView()
+            StartScreenView(bleController: bleController!, bleContext: $bleContext)
         }
     }
 }

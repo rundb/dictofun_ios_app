@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 /**
  This protocol describes expected behavior from a BLE FTS implementation
@@ -21,6 +22,8 @@ protocol FileTransferServiceProtocol
     /// Returns file transfer progress in integer percents, or nil, if no active transfers exist
     func getFileTransferProgress() -> Int?
     func isConnected() -> Bool
+    
+    func getServiceUUID() -> CBUUID
 }
 
 /**
@@ -29,12 +32,19 @@ protocol FileTransferServiceProtocol
  */
 class FileTransferService: FileTransferServiceProtocol
 {
-    private var bleContext: BleContext
-    private var bleController: BleControlProtocol
+    private var bleContext: BleContext?
+    private var bleController: BleControlProtocol?
     
-    init(bleContext: BleContext, bleController: BleControlProtocol) {
+    private let serviceCBUUIDString: String = "a0451001-b822-4820-8782-bd8faf68807b"
+
+    func registerBleComponents(bleContext: inout BleContext, bleController: BleControlProtocol)
+    {
         self.bleContext = bleContext
         self.bleController = bleController
+    }
+    
+    func getServiceUUID() -> CBUUID {
+        return CBUUID(string: serviceCBUUIDString)
     }
     
     func getFilesList() -> Array<String>? {
@@ -58,7 +68,7 @@ class FileTransferService: FileTransferServiceProtocol
     }
     
     func isConnected() -> Bool {
-        return bleContext.bleState == .connected
+        return bleContext!.bleState == .connected
     }
     
     
