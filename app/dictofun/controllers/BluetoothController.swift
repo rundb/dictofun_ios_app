@@ -24,6 +24,10 @@ final class BluetoothController: NSObject {
     private var peripherals = [Device]()
     private var currentPeripheral: CBPeripheral?
     
+    // Pairing stuff, hardcoded here
+    private var pairingWriteCharacteristic: CBCharacteristic?
+    private let pairingWriteCharacteristicCBUUIDString: String = "000010fe-0000-1000-8000-00805f9b34fb"
+    
     struct Device: Identifiable {
         let id: Int
         let rssi: Int
@@ -34,7 +38,6 @@ final class BluetoothController: NSObject {
     override init() {
         super.init()
         cbCentralManager = CBCentralManager(delegate: self, queue: .none) // TODO: figure out what queue could be used here and why?
-        //cbCentralManager?.delegate = self // is this line needed? doesn't seem so
     }
     
     func registerBleContext(bleContext: inout BleContext)
@@ -45,6 +48,30 @@ final class BluetoothController: NSObject {
         {
             self.bleContext!.isPaired = true
         }
+    }
+    
+    func pair() -> Bool {
+        if bleContext?.bleState != .connected {
+            return false
+        }
+        
+        // it is hardcoded here, it's bad, so maybe a better way should be used for pairing
+        if pairingWriteCharacteristic == nil {
+            NSLog("no pairing characteristic found")
+            return false
+        }
+        
+        var request = 1
+        let requestData = Data(bytes: &request, count: MemoryLayout.size(ofValue: request))
+        currentPeripheral?.writeValue(requestData, for: pairingWriteCharacteristic!, type: .withResponse)
+        
+        // First write the pairing characteristic, then in case of success - update the context (TODO: move writing to the userDefaults into the delegate call)
+        return true
+    }
+    
+    func unpair() {
+        userDefaults.setValue(false, forKey: self.isPairedKey)
+        self.bleContext?.isPaired = false
     }
     
     
@@ -73,8 +100,22 @@ extension BluetoothController: BleControlProtocol {
         self.bleContext!.bleState = .ready
     }
     
+    // At the moment works if and only if one single peripheral is discovered
+    // Behavior in the case when multiple devices are found is TBD
     func connect() {
         NSLog("ble::connect is called")
+        if peripherals.count != 1 {
+            NSLog("ble::connect error - discovered devices' count != 1")
+            return
+        }
+        if bleContext?.bleState == .connected {
+            NSLog("ble::connect error - attempt to connect while another connection exists")
+            return
+        }
+        let device = peripherals[0]
+        cbCentralManager?.connect(device.peripheral, options: nil)
+        bleContext?.bleState = .connecting
+        NSLog("connect - entering state connecting")
     }
     
     func disconnect() {
@@ -133,7 +174,60 @@ extension BluetoothController: CBCentralManagerDelegate {
             peripherals.append(new)
 //            cbCentralManager?.list(list: peripherals)
             print("discovered device " + uuid + " " + name)
+            bleContext?.discoveredDevicesCount += 1
         }
     }
     
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        bleContext?.bleState = .connected
+        // TODO: define further actions
+        NSLog("centralManager: entering state connected")
+        peripheral.delegate = self
+        peripheral.discoverServices(nil)
+        currentPeripheral = peripheral
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        bleContext?.bleState = .ready // TBD, maybe it's scanning
+        NSLog("centralManager: disconnected, entering state ready")
+    }
+}
+
+
+// Peripheral delegate funcrtions
+extension BluetoothController: CBPeripheralDelegate {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        guard let services = peripheral.services else { return }
+        for service in services {
+            NSLog("discovered service id: %@", service.uuid.uuidString)
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+    }
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        guard let characteristics = service.characteristics else { return }
+        NSLog("discovered characteristics")
+        let pairingWriteCharacteristicCBUUID = CBUUID(string: pairingWriteCharacteristicCBUUIDString)
+        for characteristic in characteristics {
+            NSLog("discovered char id: %@", characteristic.uuid.uuidString)
+            if characteristic.uuid.isEqual(pairingWriteCharacteristicCBUUID)
+            {
+                pairingWriteCharacteristic = characteristic
+                peripheral.setNotifyValue(true, for: pairingWriteCharacteristic!)
+                NSLog("found pairing characteristic")
+            }
+        }
+    }
+    
+
+    
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
+        NSLog("did write descr value for \(descriptor.uuid)")
+        let pairingWriteCharacteristicCBUUID = CBUUID(string: pairingWriteCharacteristicCBUUIDString)
+        if descriptor.uuid.isEqual(pairingWriteCharacteristicCBUUID)
+        {
+            NSLog("pairing has been completed")
+            userDefaults.setValue(true, forKey: self.isPairedKey)
+            self.bleContext?.isPaired = true
+        }
+    }
 }

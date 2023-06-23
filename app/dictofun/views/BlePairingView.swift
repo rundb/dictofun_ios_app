@@ -22,8 +22,8 @@ struct BlePairingView: View {
             .padding()
             .multilineTextAlignment(.center)
             
-            Text("Connection status: \n\t" +
-                 ($bleContext.wrappedValue.bleState == .connected ? "connected" : "disconnected") + "\n\t" +
+            Text("Conn. st:" +
+                 ($bleContext.wrappedValue.bleState == .connected ? "connected," : "disconnected,") + 
                  ($bleContext.wrappedValue.isPaired ? "paired" : "not paired"))
             Button(action: {
                 bleController?.startScan()
@@ -53,14 +53,46 @@ struct BlePairingView: View {
             .cornerRadius(10)
             .disabled($bleContext.wrappedValue.bleState != .scanning)
             
-            Button(action: {})
+            Button(action: {
+                bleController?.connect()
+                NSLog("connecting to discovered device")
+                updatesCount += 1
+            })
+            {
+                Text("connect")
+            }
+            .padding()
+            .background(($bleContext.wrappedValue.discoveredDevicesCount == 1) ? .cyan : .gray)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .disabled($bleContext.wrappedValue.discoveredDevicesCount != 1)
+            
+            Button(action: {
+                let pairingResult = bleController?.pair()
+                NSLog("attempting pairing " + (pairingResult! ? "ok" : "failed"))
+                updatesCount += 1
+            })
             {
                 Text("pair")
             }
             .padding()
-            .background(bleContext.bleState == .connected && !bleContext.isPaired ? .cyan : .gray)
+            .background($bleContext.wrappedValue.bleState == .connected && !$bleContext.wrappedValue.isPaired ? .cyan : .gray)
             .foregroundColor(.white)
             .cornerRadius(10)
+            
+            Button(action: {
+                bleController?.unpair()
+                NSLog("unpaired")
+                updatesCount += 1
+            })
+            {
+                Text("unpair")
+            }
+            .padding()
+            .background($bleContext.wrappedValue.bleState == .connected && $bleContext.wrappedValue.isPaired ? .cyan : .gray)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .disabled(!($bleContext.wrappedValue.bleState == .connected && $bleContext.wrappedValue.isPaired))
             
             // This is a workaround to enforce the view to update on the buttons' presses
             Text(String(updatesCount)).hidden()

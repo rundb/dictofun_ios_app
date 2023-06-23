@@ -30,4 +30,12 @@ class BleControllerMock: BleControlProtocol
         
     }
     
+    func pair() -> Bool {
+        return false
+    }
+    
+    func unpair() {
+        
+    }
+    
 }

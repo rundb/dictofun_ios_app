@@ -17,6 +17,9 @@ public protocol BleControlProtocol {
     func connect()
     func disconnect()
     func registerService(serviceUUID: CBUUID)
+    // TODO: fix this questionable return type
+    func pair() -> Bool
+    func unpair()
 }
 
 enum BleState {
@@ -33,9 +36,12 @@ enum BleState {
 class BleContext {
     var bleState: BleState
     var isPaired: Bool
+    var discoveredDevicesCount: Int
+    
     init(bleState: BleState, isPaired: Bool)
     {
         self.bleState = bleState
         self.isPaired = isPaired
+        self.discoveredDevicesCount = 0
     }
 }
