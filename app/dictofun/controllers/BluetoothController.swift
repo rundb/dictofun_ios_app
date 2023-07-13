@@ -122,7 +122,6 @@ extension BluetoothController: BleControlProtocol {
         NSLog("ble::disconnect is called")
     }
     
-    
 }
 
 extension BluetoothController: CBCentralManagerDelegate {
@@ -217,11 +216,9 @@ extension BluetoothController: CBPeripheralDelegate {
             }
         }
     }
-    
-
-    
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
-        NSLog("did write descr value for \(descriptor.uuid)")
+        
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        NSLog("did write descr value for \(characteristic.uuid)")
         let pairingWriteCharacteristicCBUUID = CBUUID(string: pairingWriteCharacteristicCBUUIDString)
         if descriptor.uuid.isEqual(pairingWriteCharacteristicCBUUID)
         {
@@ -229,5 +226,9 @@ extension BluetoothController: CBPeripheralDelegate {
             userDefaults.setValue(true, forKey: self.isPairedKey)
             self.bleContext?.isPaired = true
         }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        NSLog("char \(characteristic.uuid) has updated value")
     }
 }

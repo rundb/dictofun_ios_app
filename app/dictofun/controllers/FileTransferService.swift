@@ -48,6 +48,14 @@ class FileTransferService: FileTransferServiceProtocol
     }
     
     func getFilesList() -> Array<String>? {
+        // subscribe to files_list characteristic
+        
+        // write to the CP characteristic
+        
+        // wait until notification from files list has arrived
+        
+        // convert binary data to the files list
+        
         return nil
     }
     
