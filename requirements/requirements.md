@@ -6,7 +6,7 @@ This application is the iPhone counterpart of the communication system.
 
 From here on this iPhone application shall be referred to as `application`, Dictofun shall be referred to as `device`.
 
-## High-level requirements
+## High-level requirements (v1.0.0)
 
 ### 1. Communication
 
@@ -78,4 +78,4 @@ From here on this iPhone application shall be referred to as `application`, Dict
 
 2.3. `Application` should be capable of removing the records.
 
-2.3.1. If a record is removed, it shouldn't trigger a download from the device at the next communication session. 
+2.3.1. If a record is removed, it shouldn't trigger a download from the device at the next communication session.
