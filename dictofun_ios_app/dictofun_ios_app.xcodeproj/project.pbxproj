@@ -20,6 +20,10 @@
 		30998CF22A669C10002157B3 /* ServiceIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF12A669C10002157B3 /* ServiceIdentifiers.swift */; };
 		30998CF42A66B718002157B3 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF32A66B718002157B3 /* Logger.swift */; };
 		30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF52A66B863002157B3 /* Data+Ext.swift */; };
+		30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF72A66D4E7002157B3 /* PrintLogger.swift */; };
+		30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */; };
+		30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */; };
+		30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +42,10 @@
 		30998CF12A669C10002157B3 /* ServiceIdentifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdentifiers.swift; sourceTree = "<group>"; };
 		30998CF32A66B718002157B3 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		30998CF52A66B863002157B3 /* Data+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Ext.swift"; sourceTree = "<group>"; };
+		30998CF72A66D4E7002157B3 /* PrintLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLogger.swift; sourceTree = "<group>"; };
+		30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredPeripheral.swift; sourceTree = "<group>"; };
+		30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredDeviceCell.swift; sourceTree = "<group>"; };
+		30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DiscoveredDeviceCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +97,8 @@
 				30998CF12A669C10002157B3 /* ServiceIdentifiers.swift */,
 				30998CF32A66B718002157B3 /* Logger.swift */,
 				30998CF52A66B863002157B3 /* Data+Ext.swift */,
+				30998CF72A66D4E7002157B3 /* PrintLogger.swift */,
+				30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -97,6 +107,8 @@
 			isa = PBXGroup;
 			children = (
 				30998CD02A607198002157B3 /* Main.storyboard */,
+				30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */,
+				30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -171,6 +183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30998CD72A607199002157B3 /* LaunchScreen.storyboard in Resources */,
+				30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */,
 				30998CD42A607199002157B3 /* Assets.xcassets in Resources */,
 				30998CD22A607198002157B3 /* Main.storyboard in Resources */,
 			);
@@ -184,6 +197,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				30998CEA2A61483D002157B3 /* ConnectionViewController.swift in Sources */,
+				30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */,
+				30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */,
+				30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */,
 				30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */,
 				30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */,
 				30998CF22A669C10002157B3 /* ServiceIdentifiers.swift in Sources */,

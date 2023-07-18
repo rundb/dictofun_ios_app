@@ -1,34 +1,34 @@
 /*
-* Copyright (c) 2020, Nordic Semiconductor
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification,
-* are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-*    list of conditions and the following disclaimer.
-*
-* 2. Redistributions in binary form must reproduce the above copyright notice, this
-*    list of conditions and the following disclaimer in the documentation and/or
-*    other materials provided with the distribution.
-*
-* 3. Neither the name of the copyright holder nor the names of its contributors may
-*    be used to endorse or promote products derived from this software without
-*    specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-* NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-* PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*
-* 2023: Modifications introduced by Roman Turkin
-*/
+ * Copyright (c) 2020, Nordic Semiconductor
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this
+ *    list of conditions and the following disclaimer in the documentation and/or
+ *    other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors may
+ *    be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * 2023: Modifications introduced by Roman Turkin
+ */
 
 
 
@@ -77,6 +77,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     //MARK: - Delegate Properties
     var delegate: BluetoothManagerDelegate?
     var logger: Logger?
+    var scannerDelegate: ScannerDelegate?
     
     //MARK: - Class Properties
     fileprivate let FTSServiceUUID             : CBUUID
@@ -99,6 +100,14 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         centralManager.delegate = self
     }
     
+    func startScanning() {
+        log(withLevel: .info, andMessage: "start scanning")
+        centralManager.scanForPeripherals(withServices: [FTSServiceUUID])
+    }
+    
+    func stopScanning() {
+        centralManager.stopScan()
+    }
     /**
      * Connects to the given peripheral.
      *
@@ -106,7 +115,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
      */
     func connectPeripheral(peripheral aPeripheral : CBPeripheral) {
         delegate?.requestedConnect(peripheral: aPeripheral)
-
+        
         bluetoothPeripheral = aPeripheral
         
         // we assign the bluetoothPeripheral property after we establish a connection, in the callback
@@ -156,99 +165,99 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     func isConnected() -> Bool {
         return connected
     }
-//
-//    /**
-//     * This method sends the given test to the UART RX characteristic.
-//     * Depending on whether the characteristic has the Write Without Response or Write properties the behaviour is different.
-//     * In the latter case the Long Write may be used. To enable it you have to change the flag below in the code.
-//     * Otherwise, in both cases, texts longer than 20 (MTU) bytes (not characters) will be splitted into up-to 20-byte packets.
-//     *
-//     * - parameter aText: text to be sent to the peripheral using Nordic UART Service
-//     */
-//    func send(text aText : String) {
-//        guard let uartRXCharacteristic = uartRXCharacteristic else {
-//            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
-//            return
-//        }
-//
-//        // Check what kind of Write Type is supported. By default it will try Without Response.
-//        // If the RX charactereisrtic have Write property the Write Request type will be used.
-//        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
-//        let mtu  = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
-//
-//        // The following code will split the text into packets
-//        aText.split(by: mtu).forEach {
-//            send(text: $0, withType: type)
-//        }
-//    }
-//
-//    /**
-//     * Sends the given text to the UART RX characteristic using the given write type.
-//     * This method does not split the text into parts. If the given write type is withResponse
-//     * and text is longer than 20-bytes the long write will be used.
-//     *
-//     * - parameters:
-//     *     - aText: text to be sent to the peripheral using Nordic UART Service
-//     *     - aType: write type to be used
-//     */
-//    func send(text aText : String, withType aType : CBCharacteristicWriteType) {
-//        guard uartRXCharacteristic != nil else {
-//            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
-//            return
-//        }
-//
-//        let typeAsString = aType == .withoutResponse ? ".withoutResponse" : ".withResponse"
-//        let data = aText.data(using: String.Encoding.utf8)!
-//
-//        // Do some logging
-//        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic!.uuid.uuidString)")
-//        log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\(data.hexString), for: \(uartRXCharacteristic!.uuid.uuidString), type: \(typeAsString))")
-//        bluetoothPeripheral!.writeValue(data, for: uartRXCharacteristic!, type: aType)
-//        // The transmitted data is not available after the method returns. We have to log the text here.
-//        // The callback peripheral:didWriteValueForCharacteristic:error: is called only when the Write Request type was used,
-//        // but even if, the data is not available there.
-//        log(withLevel: .application, andMessage: "\"\(aText)\" sent")
-//    }
-//
-//    /// Sends the given command to the UART characteristic
-//    /// - Parameter aCommand: command that will be send to UART peripheral.
-//    func send(command aCommand: UARTCommandModel) {
-//        guard let uartRXCharacteristic = self.uartRXCharacteristic else {
-//            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
-//            return
-//        }
-//
-//        // Check what kind of Write Type is supported. By default it will try Without Response.
-//        // If the RX characteristic have Write property the Write Request type will be used.
-//        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
-//        let mtu = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
-//
-//        let data = aCommand.data.split(by: mtu)
-//        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic.uuid.uuidString)")
-//        let typeAsString = type == .withoutResponse ? ".withoutResponse" : ".withResponse"
-//        data.forEach {
-//            self.bluetoothPeripheral!.writeValue($0, for: uartRXCharacteristic, type: type)
-//            log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\($0.hexString), for: \(uartRXCharacteristic.uuid.uuidString), type: \(typeAsString))")
-//        }
-//        log(withLevel: .application, andMessage: "Sent command: \(aCommand.title)")
-//
-//    }
-//
-//    func send(macro: UARTMacro) {
-//
-//        btQueue.async {
-//            macro.commands.forEach { (element) in
-//                switch element {
-//                case let command as UARTCommandModel:
-//                    self.send(command: command)
-//                case let timeInterval as UARTMacroTimeInterval:
-//                    usleep(useconds_t(timeInterval.milliseconds * 1000))
-//                default:
-//                    break
-//                }
-//            }
-//        }
-//    }
+    //
+    //    /**
+    //     * This method sends the given test to the UART RX characteristic.
+    //     * Depending on whether the characteristic has the Write Without Response or Write properties the behaviour is different.
+    //     * In the latter case the Long Write may be used. To enable it you have to change the flag below in the code.
+    //     * Otherwise, in both cases, texts longer than 20 (MTU) bytes (not characters) will be splitted into up-to 20-byte packets.
+    //     *
+    //     * - parameter aText: text to be sent to the peripheral using Nordic UART Service
+    //     */
+    //    func send(text aText : String) {
+    //        guard let uartRXCharacteristic = uartRXCharacteristic else {
+    //            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
+    //            return
+    //        }
+    //
+    //        // Check what kind of Write Type is supported. By default it will try Without Response.
+    //        // If the RX charactereisrtic have Write property the Write Request type will be used.
+    //        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
+    //        let mtu  = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
+    //
+    //        // The following code will split the text into packets
+    //        aText.split(by: mtu).forEach {
+    //            send(text: $0, withType: type)
+    //        }
+    //    }
+    //
+    //    /**
+    //     * Sends the given text to the UART RX characteristic using the given write type.
+    //     * This method does not split the text into parts. If the given write type is withResponse
+    //     * and text is longer than 20-bytes the long write will be used.
+    //     *
+    //     * - parameters:
+    //     *     - aText: text to be sent to the peripheral using Nordic UART Service
+    //     *     - aType: write type to be used
+    //     */
+    //    func send(text aText : String, withType aType : CBCharacteristicWriteType) {
+    //        guard uartRXCharacteristic != nil else {
+    //            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
+    //            return
+    //        }
+    //
+    //        let typeAsString = aType == .withoutResponse ? ".withoutResponse" : ".withResponse"
+    //        let data = aText.data(using: String.Encoding.utf8)!
+    //
+    //        // Do some logging
+    //        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic!.uuid.uuidString)")
+    //        log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\(data.hexString), for: \(uartRXCharacteristic!.uuid.uuidString), type: \(typeAsString))")
+    //        bluetoothPeripheral!.writeValue(data, for: uartRXCharacteristic!, type: aType)
+    //        // The transmitted data is not available after the method returns. We have to log the text here.
+    //        // The callback peripheral:didWriteValueForCharacteristic:error: is called only when the Write Request type was used,
+    //        // but even if, the data is not available there.
+    //        log(withLevel: .application, andMessage: "\"\(aText)\" sent")
+    //    }
+    //
+    //    /// Sends the given command to the UART characteristic
+    //    /// - Parameter aCommand: command that will be send to UART peripheral.
+    //    func send(command aCommand: UARTCommandModel) {
+    //        guard let uartRXCharacteristic = self.uartRXCharacteristic else {
+    //            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
+    //            return
+    //        }
+    //
+    //        // Check what kind of Write Type is supported. By default it will try Without Response.
+    //        // If the RX characteristic have Write property the Write Request type will be used.
+    //        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
+    //        let mtu = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
+    //
+    //        let data = aCommand.data.split(by: mtu)
+    //        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic.uuid.uuidString)")
+    //        let typeAsString = type == .withoutResponse ? ".withoutResponse" : ".withResponse"
+    //        data.forEach {
+    //            self.bluetoothPeripheral!.writeValue($0, for: uartRXCharacteristic, type: type)
+    //            log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\($0.hexString), for: \(uartRXCharacteristic.uuid.uuidString), type: \(typeAsString))")
+    //        }
+    //        log(withLevel: .application, andMessage: "Sent command: \(aCommand.title)")
+    //
+    //    }
+    //
+    //    func send(macro: UARTMacro) {
+    //
+    //        btQueue.async {
+    //            macro.commands.forEach { (element) in
+    //                switch element {
+    //                case let command as UARTCommandModel:
+    //                    self.send(command: command)
+    //                case let timeInterval as UARTMacroTimeInterval:
+    //                    usleep(useconds_t(timeInterval.milliseconds * 1000))
+    //                default:
+    //                    break
+    //                }
+    //            }
+    //        }
+    //    }
     
     //MARK: - Logger API
     
@@ -279,8 +288,16 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             state = "Unknown"
         }
         
-        log(withLevel: .debug, andMessage: "[Callback] Central Manager did update state to: \(state)")
+        log(withLevel: .info, andMessage: "[Callback] Central Manager did update state to: \(state)")
     }
+    
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        log(withLevel: .info, andMessage: "discovered \(peripheral.identifier) with RSSI \(RSSI.intValue)")
+        if let d = scannerDelegate {
+            d.didDiscoverPeripheral(with: peripheral)
+        }
+    }
+    
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         log(withLevel: .debug, andMessage: "[Callback] Central Manager did connect peripheral")
@@ -367,23 +384,23 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         if service.uuid.isEqual(FTSServiceUUID) {
             for aCharacteristic : CBCharacteristic in service.characteristics! {
                 //TODO: replace this with FTS characteristics
-//                if aCharacteristic.uuid.isEqual(UARTTXCharacteristicUUID) {
-//                    log(withLevel: .verbose, andMessage: "TX Characteristic found")
-//                    uartTXCharacteristic = aCharacteristic
-//                } else if aCharacteristic.uuid.isEqual(UARTRXCharacteristicUUID) {
-//                    log(withLevel: .verbose, andMessage: "RX Characteristic found")
-//                    uartRXCharacteristic = aCharacteristic
-//                }
+                //                if aCharacteristic.uuid.isEqual(UARTTXCharacteristicUUID) {
+                //                    log(withLevel: .verbose, andMessage: "TX Characteristic found")
+                //                    uartTXCharacteristic = aCharacteristic
+                //                } else if aCharacteristic.uuid.isEqual(UARTRXCharacteristicUUID) {
+                //                    log(withLevel: .verbose, andMessage: "RX Characteristic found")
+                //                    uartRXCharacteristic = aCharacteristic
+                //                }
             }
-//            if (uartTXCharacteristic != nil && uartRXCharacteristic != nil) {
-//                log(withLevel: .verbose, andMessage: "Enabling notifications for \(uartTXCharacteristic!.uuid.uuidString)")
-//                log(withLevel: .debug, andMessage: "peripheral.setNotifyValue(true, for: \(uartTXCharacteristic!.uuid.uuidString))")
-//                bluetoothPeripheral!.setNotifyValue(true, for: uartTXCharacteristic!)
-//            } else {
-//                log(withLevel: .warning, andMessage: "UART service does not have required characteristics. Try to turn Bluetooth Off and On again to clear cache.")
-//                delegate?.peripheralNotSupported()
-//                cancelPeripheralConnection()
-//            }
+            //            if (uartTXCharacteristic != nil && uartRXCharacteristic != nil) {
+            //                log(withLevel: .verbose, andMessage: "Enabling notifications for \(uartTXCharacteristic!.uuid.uuidString)")
+            //                log(withLevel: .debug, andMessage: "peripheral.setNotifyValue(true, for: \(uartTXCharacteristic!.uuid.uuidString))")
+            //                bluetoothPeripheral!.setNotifyValue(true, for: uartTXCharacteristic!)
+            //            } else {
+            //                log(withLevel: .warning, andMessage: "UART service does not have required characteristics. Try to turn Bluetooth Off and On again to clear cache.")
+            //                delegate?.peripheralNotSupported()
+            //                cancelPeripheralConnection()
+            //            }
         }
     }
     
