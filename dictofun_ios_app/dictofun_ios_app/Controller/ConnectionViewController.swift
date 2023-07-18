@@ -15,7 +15,9 @@ class ConnectionViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-
+    @IBAction func searchButtonPressed(_ sender: UIButton) {
+    }
+    
     /*
     // MARK: - Navigation
 

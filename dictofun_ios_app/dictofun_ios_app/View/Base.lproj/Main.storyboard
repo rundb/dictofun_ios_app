@@ -25,33 +25,47 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dictofun" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cfb-Zx-QJj" userLabel="dictofunNameLabel">
-                                        <rect key="frame" x="0.0" y="240.00000000000003" width="353" height="118.33333333333334"/>
-                                        <fontDescription key="fontDescription" name="Zapfino" family="Zapfino" pointSize="35"/>
+                                        <rect key="frame" x="0.0" y="240" width="353" height="100"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="Cdw-XV-Lfu"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="AppleSymbols" family="Apple Symbols" pointSize="35"/>
                                         <color key="textColor" systemColor="systemRedColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="justified" lineBreakMode="wordWrap" numberOfLines="9" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uOv-64-GRW" userLabel="initialScreenDescriptionLabel">
-                                        <rect key="frame" x="0.0" y="358.33333333333331" width="353" height="163.33333333333331"/>
+                                        <rect key="frame" x="0.0" y="340" width="353" height="258"/>
                                         <string key="text">Welcome to Dictofun. It's a software that is necessary to use your Dictofun device. It displays all of the records you've recorded, transcribes them to text. This application needs a Bluetooth enabled, so if you still haven't enabled it - please do so. When you're ready, you can press "get started"</string>
-                                        <fontDescription key="fontDescription" name="Noteworthy-Light" family="Noteworthy" pointSize="17"/>
+                                        <fontDescription key="fontDescription" name="AppleSymbols" family="Apple Symbols" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hNv-z7-Guz" userLabel="initalScreenSpacer">
-                                        <rect key="frame" x="0.0" y="521.66666666666663" width="353" height="50"/>
+                                        <rect key="frame" x="0.0" y="598" width="353" height="50"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="51"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A49-9G-QAf" userLabel="initialScreenGetStarted">
-                                        <rect key="frame" x="0.0" y="571.66666666666663" width="353" height="146.33333333333337"/>
+                                        <rect key="frame" x="0.0" y="648" width="353" height="70"/>
                                         <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="70" id="5ka-vn-7J5"/>
+                                        </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Get started"/>
+                                        <connections>
+                                            <segue destination="wai-BE-eFh" kind="show" id="hfm-aW-1EE"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="uOv-64-GRW" firstAttribute="top" secondItem="cfb-Zx-QJj" secondAttribute="bottom" constant="20" id="YHK-Qu-g7O"/>
+                                    <constraint firstItem="vbR-kB-5Ob" firstAttribute="top" secondItem="cMN-nY-czW" secondAttribute="top" constant="20" id="Zu1-ca-f49"/>
+                                    <constraint firstItem="hNv-z7-Guz" firstAttribute="top" secondItem="uOv-64-GRW" secondAttribute="bottom" constant="20" id="kwu-dM-fyD"/>
+                                </constraints>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -65,8 +79,8 @@
                             <constraint firstItem="cMN-nY-czW" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="50" id="pIN-nQ-haW"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="g6o-vM-rof"/>
                     <connections>
-                        <segue destination="wai-BE-eFh" kind="presentation" id="kYh-0N-oKg"/>
                         <segue destination="r6K-GI-Z82" kind="presentation" id="f6o-ea-ZZo"/>
                     </connections>
                 </viewController>
@@ -323,41 +337,45 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="LU5-QG-otC">
-                                <rect key="frame" x="20" y="20" width="353" height="812"/>
+                                <rect key="frame" x="20" y="40" width="414.66666666666669" height="772"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Let's find and connect to your Dictofun" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FIz-js-gid" userLabel="connectionViewDescriptionLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="353" height="291.66666666666669"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414.66666666666669" height="201.66666666666666"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FXt-cv-FQq" userLabel="connectionViewSearchButton">
-                                        <rect key="frame" x="0.0" y="291.66666666666669" width="353" height="50"/>
+                                        <rect key="frame" x="0.0" y="201.66666666666666" width="414.66666666666669" height="50"/>
                                         <color key="backgroundColor" systemColor="systemRedColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="qeD-WE-bPZ"/>
+                                            <constraint firstAttribute="width" constant="300" id="uGU-Dd-4FX"/>
                                         </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Search"/>
+                                        <connections>
+                                            <action selector="searchButtonPressed:" destination="wai-BE-eFh" eventType="touchUpInside" id="jYZ-87-aU7"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Discovered devices" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HTk-2f-pxQ" userLabel="connectionViewDiscoveredDevicesLabel">
-                                        <rect key="frame" x="0.0" y="341.66666666666669" width="353" height="20.333333333333314"/>
+                                        <rect key="frame" x="0.0" y="251.66666666666671" width="414.66666666666669" height="20.333333333333343"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="LKo-VT-zd5" userLabel="connectionViewDiscoveredDevicesList">
-                                        <rect key="frame" x="0.0" y="362" width="353" height="400"/>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="LKo-VT-zd5" userLabel="connectionViewDiscoveredDevicesList">
+                                        <rect key="frame" x="0.0" y="272" width="414.66666666666669" height="400"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="400" id="Tjx-d7-Lpg"/>
                                         </constraints>
                                     </tableView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: disconnected, not paired" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RAR-xV-qsG" userLabel="connectionViewStatusLabel">
-                                        <rect key="frame" x="0.0" y="762" width="353" height="50"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Status: disconnected, not paired" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RAR-xV-qsG" userLabel="connectionViewStatusLabel">
+                                        <rect key="frame" x="0.0" y="672" width="414.66666666666669" height="100"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="Ny7-gh-aOk"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="0bN-sH-L9d"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -369,12 +387,13 @@
                         <viewLayoutGuide key="safeArea" id="05d-vC-6zq"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="05d-vC-6zq" firstAttribute="trailing" secondItem="LU5-QG-otC" secondAttribute="trailing" constant="20" id="UV5-AI-XDB"/>
-                            <constraint firstItem="05d-vC-6zq" firstAttribute="bottom" secondItem="LU5-QG-otC" secondAttribute="bottom" constant="10" id="UjR-Am-THd"/>
-                            <constraint firstItem="LU5-QG-otC" firstAttribute="leading" secondItem="05d-vC-6zq" secondAttribute="leading" constant="20" id="Zy6-Bo-smk"/>
-                            <constraint firstItem="LU5-QG-otC" firstAttribute="top" secondItem="05d-vC-6zq" secondAttribute="top" constant="20" id="pFv-i4-pmO"/>
+                            <constraint firstItem="05d-vC-6zq" firstAttribute="bottom" secondItem="LU5-QG-otC" secondAttribute="bottom" constant="30" id="7pc-3r-qtw"/>
+                            <constraint firstItem="05d-vC-6zq" firstAttribute="trailing" secondItem="LU5-QG-otC" secondAttribute="trailing" constant="20" id="CLo-3h-jLZ"/>
+                            <constraint firstItem="LU5-QG-otC" firstAttribute="top" secondItem="05d-vC-6zq" secondAttribute="top" constant="40" id="Rog-6B-id3"/>
+                            <constraint firstItem="LU5-QG-otC" firstAttribute="leading" secondItem="05d-vC-6zq" secondAttribute="leading" constant="20" id="UoN-ql-PTc"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="MMm-bb-bm8"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dMd-GW-InY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
