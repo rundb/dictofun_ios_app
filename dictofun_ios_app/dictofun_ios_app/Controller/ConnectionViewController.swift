@@ -13,12 +13,10 @@ protocol ScannerDelegate {
 }
 
 class ConnectionViewController: UIViewController {
-    
     @IBOutlet weak var devicesTableView: UITableView!
-    
     var bluetoothManager: BluetoothManager?
-    
     var discoveredPeripherals: [DiscoveredPeripheral] = []
+    var selectedTableRow = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +31,14 @@ class ConnectionViewController: UIViewController {
     @IBAction func searchButtonPressed(_ sender: UIButton) {
         if let bm = bluetoothManager {
             bm.startScanning()
+        }
+    }
+    
+    // Pairing segue preparation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == K.pairingViewSegueName {
+            let destinationVC = segue.destination as! PairingViewController
+            destinationVC.targetPeripheral = discoveredPeripherals[selectedTableRow].peripheral
         }
     }
 }
@@ -57,9 +63,9 @@ extension ConnectionViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension ConnectionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("row \(indexPath.row) is clicked")
-    }
-    
+        selectedTableRow = indexPath.row
+        self.performSegue(withIdentifier: K.pairingViewSegueName, sender: self)
+    }    
 }
 
 

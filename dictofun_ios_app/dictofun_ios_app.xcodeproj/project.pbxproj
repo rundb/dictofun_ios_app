@@ -24,6 +24,8 @@
 		30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */; };
 		30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */; };
 		30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */; };
+		30998D042A67C2C2002157B3 /* PairingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998D032A67C2C2002157B3 /* PairingViewController.swift */; };
+		30998D062A67C668002157B3 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998D052A67C668002157B3 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +48,8 @@
 		30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredPeripheral.swift; sourceTree = "<group>"; };
 		30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredDeviceCell.swift; sourceTree = "<group>"; };
 		30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DiscoveredDeviceCell.xib; sourceTree = "<group>"; };
+		30998D032A67C2C2002157B3 /* PairingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingViewController.swift; sourceTree = "<group>"; };
+		30998D052A67C668002157B3 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +90,7 @@
 				30998CD32A607199002157B3 /* Assets.xcassets */,
 				30998CD52A607199002157B3 /* LaunchScreen.storyboard */,
 				30998CD82A607199002157B3 /* Info.plist */,
+				30998D052A67C668002157B3 /* Constants.swift */,
 			);
 			path = dictofun_ios_app;
 			sourceTree = "<group>";
@@ -120,6 +125,7 @@
 				30998CE92A61483D002157B3 /* ConnectionViewController.swift */,
 				30998CEB2A614855002157B3 /* RecordsViewController.swift */,
 				30998CED2A614862002157B3 /* MenuViewController.swift */,
+				30998D032A67C2C2002157B3 /* PairingViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -201,6 +207,7 @@
 				30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */,
 				30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */,
 				30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */,
+				30998D062A67C668002157B3 /* Constants.swift in Sources */,
 				30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */,
 				30998CF22A669C10002157B3 /* ServiceIdentifiers.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
@@ -209,6 +216,7 @@
 				30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */,
 				30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */,
 				30998CEC2A614855002157B3 /* RecordsViewController.swift in Sources */,
+				30998D042A67C2C2002157B3 /* PairingViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

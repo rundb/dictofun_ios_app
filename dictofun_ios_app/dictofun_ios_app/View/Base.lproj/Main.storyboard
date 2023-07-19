@@ -393,11 +393,100 @@
                     <navigationItem key="navigationItem" id="MMm-bb-bm8"/>
                     <connections>
                         <outlet property="devicesTableView" destination="LKo-VT-zd5" id="Wxf-4N-m2z"/>
+                        <segue destination="RRe-8p-WBw" kind="show" identifier="goToPairing" id="PlS-u5-QxV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dMd-GW-InY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="998" y="-2"/>
+        </scene>
+        <!--Pairing View Controller-->
+        <scene sceneID="79O-rD-qrl">
+            <objects>
+                <viewController id="RRe-8p-WBw" userLabel="Pairing View Controller" customClass="PairingViewController" customModule="dictofun_ios_app" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="KaH-h1-HiA">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="29" translatesAutoresizingMaskIntoConstraints="NO" id="K8P-V3-VCf">
+                                <rect key="frame" x="50" y="99.999999999999972" width="293" height="337.33333333333326"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Discovered device" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gAm-CN-iDI" userLabel="pairingTitleLabel">
+                                        <rect key="frame" x="72.333333333333329" y="0.0" width="148.66666666666669" height="20.333333333333332"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name: dictofun_v1.3" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fAa-zp-aAw" userLabel="pairingDeviceNameLabel">
+                                        <rect key="frame" x="68.333333333333329" y="49.333333333333343" width="156.66666666666669" height="20.333333333333329"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ID:0000-00-000000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8IH-Dc-fCH" userLabel="pairingDeviceIdName">
+                                        <rect key="frame" x="92" y="98.666666666666657" width="109" height="13.333333333333329"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RSSI: -57dB" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CME-7u-NRf" userLabel="pairingRSSILabel">
+                                        <rect key="frame" x="100.66666666666666" y="141" width="91.666666666666657" height="20.333333333333343"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8QQ-Ob-YKu" userLabel="pairingConnectDisconnectButton">
+                                        <rect key="frame" x="102.33333333333334" y="190.33333333333331" width="88.666666666666657" height="34.333333333333343"/>
+                                        <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Connect"/>
+                                        <connections>
+                                            <action selector="connectDisconnectButtonPressed:" destination="RRe-8p-WBw" eventType="touchUpInside" id="q0z-tq-mI4"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Jl-7u-pDU" userLabel="pairingPairButton">
+                                        <rect key="frame" x="120" y="253.66666666666671" width="53" height="34.333333333333343"/>
+                                        <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Pair"/>
+                                        <connections>
+                                            <action selector="pairButtonPressed:" destination="RRe-8p-WBw" eventType="touchUpInside" id="t6E-8T-VEh"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="spacer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XeY-6l-ADB">
+                                        <rect key="frame" x="120.66666666666666" y="317" width="52" height="20.333333333333314"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="9Im-DZ-g7V"/>
+                        <color key="backgroundColor" red="1" green="0.79836433592295775" blue="0.87774293650759194" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="K8P-V3-VCf" firstAttribute="top" secondItem="9Im-DZ-g7V" secondAttribute="top" constant="100" id="7R9-L9-QTB"/>
+                            <constraint firstItem="9Im-DZ-g7V" firstAttribute="trailing" secondItem="K8P-V3-VCf" secondAttribute="trailing" constant="50" id="AUc-Hd-ahq"/>
+                            <constraint firstItem="K8P-V3-VCf" firstAttribute="leading" secondItem="9Im-DZ-g7V" secondAttribute="leading" constant="50" id="o7O-bz-Yl1"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="35x-r4-ca7"/>
+                    <connections>
+                        <outlet property="deviceConnectDisconnectButton" destination="8QQ-Ob-YKu" id="b8E-up-3rE"/>
+                        <outlet property="deviceIDLabel" destination="8IH-Dc-fCH" id="lL0-Ql-SlT"/>
+                        <outlet property="deviceNameLabel" destination="fAa-zp-aAw" id="uWM-jY-qnf"/>
+                        <outlet property="devicePairButton" destination="1Jl-7u-pDU" id="gZl-gu-cL7"/>
+                        <outlet property="deviceRSSILabel" destination="CME-7u-NRf" id="1at-WZ-bSb"/>
+                        <outlet property="titleLabel" destination="gAm-CN-iDI" id="RPY-Nq-yfs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="F9C-QG-4WB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2005" y="-2"/>
         </scene>
     </scenes>
     <resources>
