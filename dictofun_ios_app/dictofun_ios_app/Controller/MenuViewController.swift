@@ -25,5 +25,9 @@ class MenuViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
+    @IBAction func menuUnpairButtonPressed(_ sender: UIButton) {
+        getBluetoothManager().unpair()
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
 }

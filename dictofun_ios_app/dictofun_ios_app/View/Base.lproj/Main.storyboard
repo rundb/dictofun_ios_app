@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="RCf-2y-zeC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="d3l-sY-U5Q">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -12,7 +12,7 @@
         <!--Initial View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" userLabel="Initial View Controller" customClass="InitialViewController" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" userLabel="Initial View Controller" customClass="InitialViewController" customModule="dictofun_ios_app" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -33,7 +33,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="tmp-unpair"/>
                                         <connections>
-                                            <action selector="unpairButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pXp-Zr-rBw"/>
+                                            <action selector="unpairButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zF1-KB-m4G"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dictofun" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cfb-Zx-QJj" userLabel="dictofunNameLabel">
@@ -68,7 +68,7 @@
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Get started"/>
                                         <connections>
-                                            <segue destination="wai-BE-eFh" kind="show" id="hfm-aW-1EE"/>
+                                            <action selector="getStartedButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Smx-tE-hEr"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -95,11 +95,12 @@
                     <connections>
                         <segue destination="r6K-GI-Z82" kind="presentation" id="f6o-ea-ZZo"/>
                         <segue destination="Jme-Cm-0XP" kind="show" identifier="initialToMenu" id="GCh-MY-dsx"/>
+                        <segue destination="wai-BE-eFh" kind="show" identifier="connectionViewSegue" id="Sut-cE-DoW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="889.3129770992366" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="1816.030534351145" y="-2.1126760563380285"/>
         </scene>
         <!--Records View Controller-->
         <scene sceneID="w4m-cF-ahZ">
@@ -110,7 +111,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" alpha="0.45000000000000001" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="h8A-DW-o2u">
-                                <rect key="frame" x="20" y="30" width="353" height="782"/>
+                                <rect key="frame" x="20" y="29.999999999999993" width="353" height="120.33333333333331"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9pN-ci-o4Z" userLabel="recordsMenuButton">
                                         <rect key="frame" x="0.0" y="0.0" width="353" height="50"/>
@@ -133,10 +134,11 @@
                                     </label>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="PE7-a4-KYM" userLabel="recordsListTable">
                                         <rect key="frame" x="0.0" y="100" width="353" height="612"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </tableView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: connected, idle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NlK-zC-zMo" userLabel="recordsStatusLabel">
-                                        <rect key="frame" x="0.0" y="712" width="353" height="70"/>
+                                        <rect key="frame" x="0.0" y="100" width="353" height="20.333333333333371"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="H9r-Qe-gYa"/>
                                         </constraints>
@@ -163,7 +165,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IoW-zt-oNG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-37" y="800"/>
+            <point key="canvasLocation" x="1656" y="800"/>
         </scene>
         <!--Menu View Controller-->
         <scene sceneID="fsf-gA-9Jv">
@@ -194,6 +196,9 @@
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Unpair device"/>
+                                        <connections>
+                                            <action selector="menuUnpairButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="GJF-aG-MpD"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vaQ-hq-sfx" userLabel="menuSpacer1Label">
                                         <rect key="frame" x="0.0" y="75" width="333" height="10"/>
@@ -340,7 +345,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hqp-i1-gi7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="999" y="800"/>
+            <point key="canvasLocation" x="2653" y="800"/>
         </scene>
         <!--Connection View Controller-->
         <scene sceneID="LnV-xf-BdA">
@@ -412,7 +417,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dMd-GW-InY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1924.4274809160304" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="2851.1450381679388" y="-2.1126760563380285"/>
         </scene>
         <!--Pairing View Controller-->
         <scene sceneID="79O-rD-qrl">
@@ -506,25 +511,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F9C-QG-4WB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2930.5343511450383" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="3857.2519083969464" y="-2.1126760563380285"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="r3J-KE-SdU">
+        <scene sceneID="SDe-E5-leX">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="RCf-2y-zeC" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="d3l-sY-U5Q" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="6DK-cY-wU6">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="41w-9X-CGd">
                         <rect key="frame" x="0.0" y="59" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="cKv-ia-cAm"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="LPp-Ie-4Py"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iIC-gu-P1O" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dsz-cQ-uUW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-37.404580152671755" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="889.3129770992366" y="-2.1126760563380285"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
