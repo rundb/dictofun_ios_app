@@ -76,6 +76,12 @@ class PairingViewController: UIViewController {
     
     @IBAction func pairButtonPressed(_ sender: UIButton) {
         bluetoothManager?.pairDelegate = self
+        if let p = targetPeripheral {
+            let pairImmediateResult = bluetoothManager?.pairWithPeripheral(p)
+            if pairImmediateResult != nil {
+                print("pairing has failed. Nothing is going to happen")
+            }
+        }
     }
     
 }
@@ -99,6 +105,12 @@ extension PairingViewController : ConnectDelegate {
 
 extension PairingViewController : PairDelegate {
     func didPairWithPeripheral(error: Error?) {
-        
+        guard error == nil else {
+            print("pairing view: pairing error detected, \(error!.localizedDescription)")
+            return
+        }
+        // At this point we are done and can close all views back to initial one
+        print("Pairing view: did pair with peripheral. Rolling back to initial view")
+        self.navigationController?.popToRootViewController(animated: true)
     }
 }

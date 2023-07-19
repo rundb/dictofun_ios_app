@@ -17,7 +17,7 @@
 		30998CEC2A614855002157B3 /* RecordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CEB2A614855002157B3 /* RecordsViewController.swift */; };
 		30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CED2A614862002157B3 /* MenuViewController.swift */; };
 		30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CEF2A669A1F002157B3 /* BluetoothManager.swift */; };
-		30998CF22A669C10002157B3 /* ServiceIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF12A669C10002157B3 /* ServiceIdentifiers.swift */; };
+		30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF12A669C10002157B3 /* ServiceIds.swift */; };
 		30998CF42A66B718002157B3 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF32A66B718002157B3 /* Logger.swift */; };
 		30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF52A66B863002157B3 /* Data+Ext.swift */; };
 		30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF72A66D4E7002157B3 /* PrintLogger.swift */; };
@@ -41,7 +41,7 @@
 		30998CEB2A614855002157B3 /* RecordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsViewController.swift; sourceTree = "<group>"; };
 		30998CED2A614862002157B3 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		30998CEF2A669A1F002157B3 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
-		30998CF12A669C10002157B3 /* ServiceIdentifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdentifiers.swift; sourceTree = "<group>"; };
+		30998CF12A669C10002157B3 /* ServiceIds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIds.swift; sourceTree = "<group>"; };
 		30998CF32A66B718002157B3 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		30998CF52A66B863002157B3 /* Data+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Ext.swift"; sourceTree = "<group>"; };
 		30998CF72A66D4E7002157B3 /* PrintLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLogger.swift; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				30998CEF2A669A1F002157B3 /* BluetoothManager.swift */,
-				30998CF12A669C10002157B3 /* ServiceIdentifiers.swift */,
+				30998CF12A669C10002157B3 /* ServiceIds.swift */,
 				30998CF32A66B718002157B3 /* Logger.swift */,
 				30998CF52A66B863002157B3 /* Data+Ext.swift */,
 				30998CF72A66D4E7002157B3 /* PrintLogger.swift */,
@@ -209,7 +209,7 @@
 				30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */,
 				30998D062A67C668002157B3 /* Constants.swift in Sources */,
 				30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */,
-				30998CF22A669C10002157B3 /* ServiceIdentifiers.swift in Sources */,
+				30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,

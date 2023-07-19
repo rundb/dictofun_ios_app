@@ -8,12 +8,20 @@
 import UIKit
 
 class InitialViewController: UIViewController {
-
+    @IBOutlet weak var unpairButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        print("Rotu: view will appear")
     }
 
-
+//    @IBAction func unpairButtonPressed(_ sender: UIButton) {
+//        print("unpair")
+//    }
+    @IBAction func unpairButtonPressed(_ sender: UIButton) {
+    }
 }
 
