@@ -437,18 +437,24 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8QQ-Ob-YKu" userLabel="pairingConnectDisconnectButton">
-                                        <rect key="frame" x="102.33333333333334" y="190.33333333333331" width="88.666666666666657" height="34.333333333333343"/>
+                                        <rect key="frame" x="81.666666666666657" y="190.33333333333331" width="130" height="34.333333333333343"/>
                                         <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="PDU-Sd-RIi"/>
+                                        </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Connect"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Disconnect"/>
                                         <connections>
                                             <action selector="connectDisconnectButtonPressed:" destination="RRe-8p-WBw" eventType="touchUpInside" id="q0z-tq-mI4"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Jl-7u-pDU" userLabel="pairingPairButton">
-                                        <rect key="frame" x="120" y="253.66666666666671" width="53" height="34.333333333333343"/>
+                                        <rect key="frame" x="81.666666666666657" y="253.66666666666671" width="130" height="34.333333333333343"/>
                                         <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="7rm-fN-ocf"/>
+                                        </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Pair"/>

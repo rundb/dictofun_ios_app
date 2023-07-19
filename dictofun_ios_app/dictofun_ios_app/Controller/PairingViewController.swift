@@ -8,6 +8,15 @@
 import UIKit
 import CoreBluetooth
 
+protocol ConnectDelegate {
+    func didConnectToPeripheral(error: Error?)
+    func didDisconnectFromPeripheral()
+}
+
+protocol PairDelegate {
+    func didPairWithPeripheral(error: Error?)
+}
+
 class PairingViewController: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
@@ -19,6 +28,11 @@ class PairingViewController: UIViewController {
     
     var targetPeripheral: CBPeripheral?
     var bluetoothManager: BluetoothManager?
+    
+    func setState(button: UIButton, active state: Bool) {
+        button.isEnabled = state
+        button.backgroundColor = (state) ? .red : .gray
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,15 +51,54 @@ class PairingViewController: UIViewController {
         }
         else {
             print("targetPeripheral has been nil")
+            assert(false)
         }
         
-        
+        setState(button: devicePairButton, active: false)
+        deviceConnectDisconnectButton.titleLabel?.text = K.Pairing.connectButtonText
     }
     
     @IBAction func connectDisconnectButtonPressed(_ sender: UIButton) {
+        if let bm = bluetoothManager, let p = targetPeripheral {
+            bm.connectDelegate = self
+            if bm.isConnected() {
+                bm.cancelPeripheralConnection()
+            }
+            else {
+                bm.connectPeripheral(peripheral: p)
+            }
+        }
+        else {
+            print("Error: bluetoothManager is not initialized")
+            assert(false)
+        }
     }
     
     @IBAction func pairButtonPressed(_ sender: UIButton) {
+        bluetoothManager?.pairDelegate = self
     }
     
+}
+
+extension PairingViewController : ConnectDelegate {
+    func didConnectToPeripheral(error: Error?) {
+        if let e = error {
+            print("Peripheral has failed to connect, error: \(e.localizedDescription)")
+            return
+        }
+        deviceConnectDisconnectButton.titleLabel?.text = K.Pairing.disconnectButtonText
+        
+        setState(button: devicePairButton, active: true)
+    }
+    
+    func didDisconnectFromPeripheral() {
+        deviceConnectDisconnectButton.titleLabel?.text = K.Pairing.connectButtonText
+        setState(button: devicePairButton, active: false)
+    }
+}
+
+extension PairingViewController : PairDelegate {
+    func didPairWithPeripheral(error: Error?) {
+        
+    }
 }

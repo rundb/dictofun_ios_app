@@ -78,6 +78,8 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     var delegate: BluetoothManagerDelegate?
     var logger: Logger?
     var scannerDelegate: ScannerDelegate?
+    var connectDelegate: ConnectDelegate?
+    var pairDelegate: PairDelegate?
     
     //MARK: - Class Properties
     fileprivate let FTSServiceUUID             : CBUUID
@@ -311,6 +313,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         bluetoothPeripheral = peripheral
         bluetoothPeripheral!.delegate = self
         delegate?.didConnectPeripheral(deviceName: peripheral.name)
+        connectDelegate?.didConnectToPeripheral(error: nil)
         log(withLevel: .verbose, andMessage: "Discovering services...")
         log(withLevel: .debug, andMessage: "peripheral.discoverServices([\(FTSServiceUUID.uuidString)])")
         peripheral.discoverServices([FTSServiceUUID])
@@ -328,6 +331,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         delegate?.didDisconnectPeripheral()
         bluetoothPeripheral!.delegate = nil
         bluetoothPeripheral = nil
+        connectDelegate?.didDisconnectFromPeripheral()
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -343,6 +347,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         delegate?.didDisconnectPeripheral()
         bluetoothPeripheral!.delegate = nil
         bluetoothPeripheral = nil
+        connectDelegate?.didConnectToPeripheral(error: error)
     }
     
     //MARK: - CBPeripheralDelegate
