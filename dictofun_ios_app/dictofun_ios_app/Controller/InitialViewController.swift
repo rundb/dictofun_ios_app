@@ -15,7 +15,11 @@ class InitialViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if getBluetoothManager().paired {
+            print("dictofun is paired, continue to menu view")
             self.performSegue(withIdentifier: K.initialToMenuSegueName, sender: self)
+        }
+        else {
+            print("dictofun is not yet paired, stay at intro menu view")
         }
     }
 

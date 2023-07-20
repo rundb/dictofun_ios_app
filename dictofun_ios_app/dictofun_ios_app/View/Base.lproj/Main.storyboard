@@ -111,7 +111,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" alpha="0.45000000000000001" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="h8A-DW-o2u">
-                                <rect key="frame" x="20" y="29.999999999999993" width="353" height="120.33333333333331"/>
+                                <rect key="frame" x="20" y="30" width="353" height="782"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9pN-ci-o4Z" userLabel="recordsMenuButton">
                                         <rect key="frame" x="0.0" y="0.0" width="353" height="50"/>
@@ -134,11 +134,10 @@
                                     </label>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="PE7-a4-KYM" userLabel="recordsListTable">
                                         <rect key="frame" x="0.0" y="100" width="353" height="612"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </tableView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: connected, idle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NlK-zC-zMo" userLabel="recordsStatusLabel">
-                                        <rect key="frame" x="0.0" y="100" width="353" height="20.333333333333371"/>
+                                        <rect key="frame" x="0.0" y="712" width="353" height="70"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="H9r-Qe-gYa"/>
                                         </constraints>
@@ -278,6 +277,9 @@
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Test FTS 1"/>
+                                                <connections>
+                                                    <action selector="testFts1ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="nkl-PU-SCS"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qqw-M5-Lch">
                                                 <rect key="frame" x="100" y="0.0" width="10" height="150"/>
