@@ -23,10 +23,16 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func testFts1ButtonPressed(_ sender: UIButton) {
-        print("Fts 1 button pressed: get files' list")
-        let filesListResult = fts?.requestFilesList()
-        guard filesListResult == nil else {
-            print("Files List request has failed")
+//        print("Fts 1 button pressed: get files' list")
+//        let filesListResult = fts?.requestFilesList()
+//        guard filesListResult == nil else {
+//            print("Files List request has failed")
+//            return
+//        }
+        print("Fts 1 button pressed: get file system status")
+        let fsStatusResult = fts?.requestFileSystemStatus()
+        guard fsStatusResult == nil else {
+            print("File System status request has failed")
             return
         }
     }

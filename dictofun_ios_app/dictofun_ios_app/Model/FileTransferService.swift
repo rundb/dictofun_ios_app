@@ -19,6 +19,8 @@ class FileTransferService : CharNotificationDelegate {
     private let fileListCharCBUUID = CBUUID(string: ServiceIds.FTS.fileListCh)
     private let fileInfoCharCBUUID = CBUUID(string: ServiceIds.FTS.fileInfoCh)
     private let fileDataCharCBUUID = CBUUID(string: ServiceIds.FTS.fileDataCh)
+    private let statusCharCBUUID = CBUUID(string: ServiceIds.FTS.statusCh)
+    private let fsStatusCharCBUUID = CBUUID(string: ServiceIds.FTS.fsStatusCh)
     
     private let fileIdSize = 8
     
@@ -49,6 +51,16 @@ class FileTransferService : CharNotificationDelegate {
         }
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileDataCharCBUUID, delegate: self) == nil else {
             print("failed to register notification delegate for \(fileDataCharCBUUID.uuidString)")
+            assert(false)
+            return
+        }
+        guard bluetoothManager.registerNotificationDelegate(forCharacteristic: statusCharCBUUID, delegate: self) == nil else {
+            print("failed to register notification delegate for \(statusCharCBUUID.uuidString)")
+            assert(false)
+            return
+        }
+        guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fsStatusCharCBUUID, delegate: self) == nil else {
+            print("failed to register notification delegate for \(fsStatusCharCBUUID.uuidString)")
             assert(false)
             return
         }
@@ -114,6 +126,21 @@ class FileTransferService : CharNotificationDelegate {
         return nil
     }
     
+    func requestFileSystemStatus() -> Error? {
+        let requestData = Data([UInt8(4)])
+        
+        guard bluetoothManager.setNotificationStateFor(characteristic: fsStatusCharCBUUID, toEnabled: true) == nil else {
+            print("Failed to enable notifications for char \(fsStatusCharCBUUID.uuidString)")
+            return .some(FtsOpResult.setupError)
+        }
+        guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
+            print("Failed to send request to  \(cpCharCBUUID.uuidString)")
+            return .some(FtsOpResult.communicationError)
+        }
+
+        return nil
+    }
+    
     // File (atm) is an 8-byte long ID
     struct FileId {
         let value: Data
@@ -135,6 +162,12 @@ class FileTransferService : CharNotificationDelegate {
         let s: Int
         let f: Int
         let c: Int
+    }
+    
+    struct FileSystemInformation {
+        let free: Int
+        let occupied: Int
+        let count: Int
     }
     
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?) {
@@ -169,6 +202,19 @@ class FileTransferService : CharNotificationDelegate {
                 }
             }
         }
+        
+        if char.uuidString == ServiceIds.FTS.fsStatusCh {
+            if let safeData = data {
+                print("received file system status, \(safeData.count) bytes")
+                let fsInfo = parseFileSystemInformation(with: safeData)
+                if let safeFsInfo = fsInfo {
+                    print("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
+                }
+                else {
+                    print("Failed to parse received FileSystem info")
+                }
+            }
+        }
     }
     
     private func parseFilesList(with data: Data?) -> [FileId] {
@@ -197,7 +243,7 @@ class FileTransferService : CharNotificationDelegate {
         if let safeData = data {
             let expectedDataSize = Int(safeData[0]) + (Int(safeData[1]) << 8)
             if safeData.count != expectedDataSize + 2 {
-                print("Failed to parse file info: mismatch in size (\(safeData.count) != \(expectedDataSize + 1))")
+                print("Failed to parse file info: mismatch in size (\(safeData.count) != \(expectedDataSize + 2))")
                 return nil
             }
             if let fileInfoRawString = String(bytes: safeData.subdata(in: 2..<(expectedDataSize + 2)), encoding: .ascii) {
@@ -205,6 +251,25 @@ class FileTransferService : CharNotificationDelegate {
                 return fileInfo
             }
             return nil
+        }
+        return nil
+    }
+    
+    private func parseFileSystemInformation(with data: Data?) -> FileSystemInformation? {
+        if let safeData = data {
+            let expectedDataSize = Int(safeData[0]) + (Int(safeData[1]) << 8)
+            if safeData.count != expectedDataSize  {
+                print("Failed to parse file system stats: mismatch in size (\(safeData.count) != \(expectedDataSize))")
+                return nil
+            }
+            let freeSpaceRaw = safeData.subdata(in: 2..<6)
+            let occupiedSpaceRaw = safeData.subdata(in: 6..<10)
+            let countRaw = safeData.subdata(in: 10..<14)
+            let freeSpace = Int(UInt32(littleEndian: freeSpaceRaw.withUnsafeBytes { $0.pointee }))
+            let occupiedSpace = Int(UInt32(littleEndian: occupiedSpaceRaw.withUnsafeBytes { $0.pointee }))
+            let count = Int(UInt32(littleEndian: countRaw.withUnsafeBytes { $0.pointee }))
+            let fileSystemInformation = FileSystemInformation(free: freeSpace, occupied: occupiedSpace, count: count)
+            return fileSystemInformation
         }
         return nil
     }
