@@ -111,7 +111,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" alpha="0.45000000000000001" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="h8A-DW-o2u">
-                                <rect key="frame" x="20" y="29.999999999999993" width="353" height="120.33333333333331"/>
+                                <rect key="frame" x="20" y="30" width="353" height="782"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9pN-ci-o4Z" userLabel="recordsMenuButton">
                                         <rect key="frame" x="0.0" y="0.0" width="353" height="50"/>
@@ -134,11 +134,10 @@
                                     </label>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="PE7-a4-KYM" userLabel="recordsListTable">
                                         <rect key="frame" x="0.0" y="100" width="353" height="612"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </tableView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: connected, idle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NlK-zC-zMo" userLabel="recordsStatusLabel">
-                                        <rect key="frame" x="0.0" y="100" width="353" height="20.333333333333371"/>
+                                        <rect key="frame" x="0.0" y="712" width="353" height="70"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="H9r-Qe-gYa"/>
                                         </constraints>
@@ -176,10 +175,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="XfM-Ha-KgP">
-                                <rect key="frame" x="30" y="133" width="333" height="655"/>
+                                <rect key="frame" x="10" y="113" width="373" height="695"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Menu" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CIC-Oz-6Lc" userLabel="menuViewMenuLabel">
-                                        <rect key="frame" x="0.0" y="0.0" width="333" height="35"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="373" height="35"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="35" id="3na-rK-X2k"/>
                                         </constraints>
@@ -188,7 +187,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Baf-8U-IK5" userLabel="menuUnpairDeviceButton">
-                                        <rect key="frame" x="0.0" y="35" width="333" height="40"/>
+                                        <rect key="frame" x="0.0" y="35" width="373" height="40"/>
                                         <color key="backgroundColor" systemColor="systemBlueColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="Dhs-T0-xl2"/>
@@ -201,7 +200,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vaQ-hq-sfx" userLabel="menuSpacer1Label">
-                                        <rect key="frame" x="0.0" y="75" width="333" height="10"/>
+                                        <rect key="frame" x="0.0" y="75" width="373" height="10"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="10" id="Rui-85-aoK"/>
                                         </constraints>
@@ -210,7 +209,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QAj-61-MQd" userLabel="menuGetVersionInfoButton">
-                                        <rect key="frame" x="0.0" y="85" width="333" height="40"/>
+                                        <rect key="frame" x="0.0" y="85" width="373" height="40"/>
                                         <color key="backgroundColor" systemColor="systemBlueColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="0uV-xv-kGO"/>
@@ -220,7 +219,7 @@
                                         <buttonConfiguration key="configuration" style="plain" title="Get version information"/>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y1P-Ml-8N0" userLabel="menuSpacer2Label">
-                                        <rect key="frame" x="0.0" y="125" width="333" height="10"/>
+                                        <rect key="frame" x="0.0" y="125" width="373" height="10"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="10" id="TCK-tn-wTZ"/>
                                         </constraints>
@@ -229,7 +228,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3ND-iQ-Paf" userLabel="menuCheckFWUpdateButton">
-                                        <rect key="frame" x="0.0" y="135" width="333" height="40"/>
+                                        <rect key="frame" x="0.0" y="135" width="373" height="40"/>
                                         <color key="backgroundColor" systemColor="systemBlueColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="Kkd-FF-GC4"/>
@@ -239,7 +238,7 @@
                                         <buttonConfiguration key="configuration" style="plain" title="Check FW Updates"/>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jQd-Uu-rDs" userLabel="menuSpacer4Label">
-                                        <rect key="frame" x="0.0" y="175" width="333" height="10"/>
+                                        <rect key="frame" x="0.0" y="175" width="373" height="10"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="10" id="CvM-OR-3Ru"/>
                                         </constraints>
@@ -248,7 +247,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UT0-nZ-8sZ" userLabel="menuSetCurrentTimeButton">
-                                        <rect key="frame" x="0.0" y="185" width="333" height="40"/>
+                                        <rect key="frame" x="0.0" y="185" width="373" height="40"/>
                                         <color key="backgroundColor" systemColor="systemBlueColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="RbW-SU-d8S"/>
@@ -258,7 +257,7 @@
                                         <buttonConfiguration key="configuration" style="plain" title="Set current time"/>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KA9-US-4xb" userLabel="menuSpacer4Label">
-                                        <rect key="frame" x="0.0" y="225" width="333" height="20"/>
+                                        <rect key="frame" x="0.0" y="225" width="373" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="nNu-5p-M5y"/>
                                         </constraints>
@@ -267,7 +266,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Ba-C3-7Lx">
-                                        <rect key="frame" x="0.0" y="245" width="333" height="150"/>
+                                        <rect key="frame" x="0.0" y="245" width="373" height="150"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dAW-II-5cr" userLabel="testFTS1Button">
                                                 <rect key="frame" x="0.0" y="0.0" width="100" height="150"/>
@@ -278,6 +277,9 @@
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Test FTS 1"/>
+                                                <connections>
+                                                    <action selector="testFts1ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="nkl-PU-SCS"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qqw-M5-Lch">
                                                 <rect key="frame" x="100" y="0.0" width="10" height="150"/>
@@ -297,6 +299,9 @@
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Test FTS 2"/>
+                                                <connections>
+                                                    <action selector="testFts2ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="ygd-4x-83Z"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u0A-rG-X0Z">
                                                 <rect key="frame" x="210" y="0.0" width="10" height="150"/>
@@ -308,7 +313,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HfB-F8-Y5O" userLabel="testFTS3Button">
-                                                <rect key="frame" x="220" y="0.0" width="113" height="150"/>
+                                                <rect key="frame" x="220" y="0.0" width="153" height="150"/>
                                                 <color key="backgroundColor" systemColor="systemBlueColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="ONQ-RR-Rws"/>
@@ -316,6 +321,9 @@
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Test FTS 3"/>
+                                                <connections>
+                                                    <action selector="testFts3ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="xaN-Kw-Tog"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <constraints>
@@ -323,7 +331,7 @@
                                         </constraints>
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: -connected       -battery: 70%   -time: 15:21" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CqX-vk-vuv">
-                                        <rect key="frame" x="0.0" y="395" width="333" height="260"/>
+                                        <rect key="frame" x="0.0" y="395" width="373" height="300"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -333,12 +341,12 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="gmu-Yu-pJ0"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="gmu-Yu-pJ0" firstAttribute="bottom" secondItem="XfM-Ha-KgP" secondAttribute="bottom" constant="30" id="1hb-QA-flf"/>
-                            <constraint firstItem="XfM-Ha-KgP" firstAttribute="top" secondItem="gmu-Yu-pJ0" secondAttribute="top" constant="30" id="HEY-OJ-8Vd"/>
-                            <constraint firstItem="gmu-Yu-pJ0" firstAttribute="trailing" secondItem="XfM-Ha-KgP" secondAttribute="trailing" constant="30" id="oBL-nx-UiQ"/>
-                            <constraint firstItem="XfM-Ha-KgP" firstAttribute="leading" secondItem="gmu-Yu-pJ0" secondAttribute="leading" constant="30" id="rfU-U7-eQI"/>
+                            <constraint firstItem="gmu-Yu-pJ0" firstAttribute="trailing" secondItem="XfM-Ha-KgP" secondAttribute="trailing" constant="10" id="CY5-0p-VxI"/>
+                            <constraint firstItem="XfM-Ha-KgP" firstAttribute="leading" secondItem="gmu-Yu-pJ0" secondAttribute="leading" constant="10" id="Jjb-zH-kzv"/>
+                            <constraint firstItem="gmu-Yu-pJ0" firstAttribute="bottom" secondItem="XfM-Ha-KgP" secondAttribute="bottom" constant="10" id="Jx8-Ip-Wyz"/>
+                            <constraint firstItem="XfM-Ha-KgP" firstAttribute="top" secondItem="gmu-Yu-pJ0" secondAttribute="top" constant="10" id="YAm-aM-0D2"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Ocb-MQ-esX"/>

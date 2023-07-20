@@ -107,6 +107,48 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     private let btQueue = DispatchQueue(label: "com.nRF-toolbox.bluetoothManager", qos: .utility)
     
+    // MARK: - public API intended for use by services
+    var charNotifyDelegates: [CBUUID : CharNotificationDelegate] = [:]
+    
+    enum CharOpError: Error {
+        case notFound
+        case notImplemented
+        case other
+    }
+    
+    private func getCharByCBUUID(with cbuuid: CBUUID) -> CBCharacteristic? {
+        if let c = ftsChars[cbuuid.uuidString] {
+            return c
+        }
+        return nil
+    }
+    
+    func writeTo(characteristic char: CBUUID, with data: Data) -> Error? {
+        if let characteristic = getCharByCBUUID(with: char) {
+            bluetoothPeripheral?.writeValue(data, for: characteristic, type: .withResponse)
+            return nil
+        }
+        return .some(CharOpError.notImplemented)
+    }
+    
+    func readFrom(characteristic char: CBUUID) -> Data? {
+        return nil
+    }
+    
+    func setNotificationStateFor(characteristic char: CBUUID, toEnabled state: Bool) -> Error? {
+        if let characteristic = getCharByCBUUID(with: char) {
+            bluetoothPeripheral?.setNotifyValue(state, for: characteristic)
+            return nil
+        }
+        
+        return .some(CharOpError.notImplemented)
+    }
+    
+    func registerNotificationDelegate(forCharacteristic char: CBUUID, delegate: CharNotificationDelegate?) -> Error? {
+        charNotifyDelegates[char] = delegate
+        return nil
+    }
+    
     //MARK: - BluetoothManager API
     
     required init(withManager aManager : CBCentralManager = CBCentralManager()) {
@@ -128,6 +170,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         }
         else {
             log(withLevel: .info, andMessage: "User default value for paired found, value: \(isPairedValue as! Bool ? "true" : "false")")
+            paired = isPairedValue as! Bool
         }
     }
     
@@ -242,99 +285,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         userDefaults.setValue(false, forKey: K.isPairedKey)
         log(withLevel: .info, andMessage: "Completed unpairing, user defaults were reset")
     }
-    //
-    //    /**
-    //     * This method sends the given test to the UART RX characteristic.
-    //     * Depending on whether the characteristic has the Write Without Response or Write properties the behaviour is different.
-    //     * In the latter case the Long Write may be used. To enable it you have to change the flag below in the code.
-    //     * Otherwise, in both cases, texts longer than 20 (MTU) bytes (not characters) will be splitted into up-to 20-byte packets.
-    //     *
-    //     * - parameter aText: text to be sent to the peripheral using Nordic UART Service
-    //     */
-    //    func send(text aText : String) {
-    //        guard let uartRXCharacteristic = uartRXCharacteristic else {
-    //            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
-    //            return
-    //        }
-    //
-    //        // Check what kind of Write Type is supported. By default it will try Without Response.
-    //        // If the RX charactereisrtic have Write property the Write Request type will be used.
-    //        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
-    //        let mtu  = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
-    //
-    //        // The following code will split the text into packets
-    //        aText.split(by: mtu).forEach {
-    //            send(text: $0, withType: type)
-    //        }
-    //    }
-    //
-    //    /**
-    //     * Sends the given text to the UART RX characteristic using the given write type.
-    //     * This method does not split the text into parts. If the given write type is withResponse
-    //     * and text is longer than 20-bytes the long write will be used.
-    //     *
-    //     * - parameters:
-    //     *     - aText: text to be sent to the peripheral using Nordic UART Service
-    //     *     - aType: write type to be used
-    //     */
-    //    func send(text aText : String, withType aType : CBCharacteristicWriteType) {
-    //        guard uartRXCharacteristic != nil else {
-    //            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
-    //            return
-    //        }
-    //
-    //        let typeAsString = aType == .withoutResponse ? ".withoutResponse" : ".withResponse"
-    //        let data = aText.data(using: String.Encoding.utf8)!
-    //
-    //        // Do some logging
-    //        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic!.uuid.uuidString)")
-    //        log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\(data.hexString), for: \(uartRXCharacteristic!.uuid.uuidString), type: \(typeAsString))")
-    //        bluetoothPeripheral!.writeValue(data, for: uartRXCharacteristic!, type: aType)
-    //        // The transmitted data is not available after the method returns. We have to log the text here.
-    //        // The callback peripheral:didWriteValueForCharacteristic:error: is called only when the Write Request type was used,
-    //        // but even if, the data is not available there.
-    //        log(withLevel: .application, andMessage: "\"\(aText)\" sent")
-    //    }
-    //
-    //    /// Sends the given command to the UART characteristic
-    //    /// - Parameter aCommand: command that will be send to UART peripheral.
-    //    func send(command aCommand: UARTCommandModel) {
-    //        guard let uartRXCharacteristic = self.uartRXCharacteristic else {
-    //            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
-    //            return
-    //        }
-    //
-    //        // Check what kind of Write Type is supported. By default it will try Without Response.
-    //        // If the RX characteristic have Write property the Write Request type will be used.
-    //        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
-    //        let mtu = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
-    //
-    //        let data = aCommand.data.split(by: mtu)
-    //        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic.uuid.uuidString)")
-    //        let typeAsString = type == .withoutResponse ? ".withoutResponse" : ".withResponse"
-    //        data.forEach {
-    //            self.bluetoothPeripheral!.writeValue($0, for: uartRXCharacteristic, type: type)
-    //            log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\($0.hexString), for: \(uartRXCharacteristic.uuid.uuidString), type: \(typeAsString))")
-    //        }
-    //        log(withLevel: .application, andMessage: "Sent command: \(aCommand.title)")
-    //
-    //    }
-    //
-    //    func send(macro: UARTMacro) {
-    //
-    //        btQueue.async {
-    //            macro.commands.forEach { (element) in
-    //                switch element {
-    //                case let command as UARTCommandModel:
-    //                    self.send(command: command)
-    //                case let timeInterval as UARTMacroTimeInterval:
-    //                    usleep(useconds_t(timeInterval.milliseconds * 1000))
-    //                default:
-    //                    break
-    //                }
-    //            }
-    //        }
-    //    }
+
     
     //MARK: - Logger API
     
@@ -353,6 +304,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         switch central.state {
         case .poweredOn:
             state = "Powered ON"
+            if paired {
+                startScanning()
+            }
         case .poweredOff:
             state = "Powered OFF"
         case .resetting:
@@ -370,6 +324,11 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         log(withLevel: .info, andMessage: "discovered \(peripheral.identifier) with RSSI \(RSSI.intValue)")
+        // TODO: at this point make sure that it's our peripheral (so ID is matching with what we paired to)
+        if paired {
+            connectPeripheral(peripheral: peripheral)
+        }
+        
         if let d = scannerDelegate {
             d.didDiscoverPeripheral(with: peripheral)
         }
@@ -506,9 +465,6 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 log(withLevel: .info, andMessage: "launching pairing callback with nil-error")
                 pairingCallback(error: nil)
             }
-            else {
-                log(withLevel: .warning, andMessage: "mismatch between stored and actual char ID")
-            }
         }
         else {
             log(withLevel: .warning, andMessage: "no stored pairing char found")
@@ -531,19 +487,28 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             return
         }
         
-        // try to print a friendly string of received bytes if they can be parsed as UTF8
-        guard let bytesReceived = characteristic.value else {
-            log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with empty value")
-            log(withLevel: .application, andMessage: "Empty packet received")
-            return
+        if let ftsDelegate = charNotifyDelegates[characteristic.uuid], let ftsChar = getCharByCBUUID(with: characteristic.uuid) {
+            guard let bytesReceived = characteristic.value else {
+                log(withLevel: .info, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), with empty value")
+                return
+            }
+//            log(withLevel: .debug, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), \(bytesReceived.count) bytes")
+            ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
         }
+//
+//        // try to print a friendly string of received bytes if they can be parsed as UTF8
+//        guard let bytesReceived = characteristic.value else {
+//            log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with empty value")
+//            log(withLevel: .application, andMessage: "Empty packet received")
+//            return
+//        }
         
-        log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with value: 0x\(bytesReceived.hexString)")
-        if let validUTF8String = String(data: bytesReceived, encoding: .utf8) {
-            log(withLevel: .application, andMessage: "\"\(validUTF8String)\" received")
-        } else {
-            log(withLevel: .application, andMessage: "\"0x\(bytesReceived.hexString)\" received")
-        }
+//        log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with value: 0x\(bytesReceived.hexString)")
+//        if let validUTF8String = String(data: bytesReceived, encoding: .utf8) {
+//            log(withLevel: .application, andMessage: "\"\(validUTF8String)\" received")
+//        } else {
+//            log(withLevel: .application, andMessage: "\"0x\(bytesReceived.hexString)\" received")
+//        }
     }
 }
 
@@ -578,3 +543,98 @@ private extension String {
     }
     
 }
+
+
+//
+//    /**
+//     * This method sends the given test to the UART RX characteristic.
+//     * Depending on whether the characteristic has the Write Without Response or Write properties the behaviour is different.
+//     * In the latter case the Long Write may be used. To enable it you have to change the flag below in the code.
+//     * Otherwise, in both cases, texts longer than 20 (MTU) bytes (not characters) will be splitted into up-to 20-byte packets.
+//     *
+//     * - parameter aText: text to be sent to the peripheral using Nordic UART Service
+//     */
+//    func send(text aText : String) {
+//        guard let uartRXCharacteristic = uartRXCharacteristic else {
+//            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
+//            return
+//        }
+//
+//        // Check what kind of Write Type is supported. By default it will try Without Response.
+//        // If the RX charactereisrtic have Write property the Write Request type will be used.
+//        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
+//        let mtu  = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
+//
+//        // The following code will split the text into packets
+//        aText.split(by: mtu).forEach {
+//            send(text: $0, withType: type)
+//        }
+//    }
+//
+//    /**
+//     * Sends the given text to the UART RX characteristic using the given write type.
+//     * This method does not split the text into parts. If the given write type is withResponse
+//     * and text is longer than 20-bytes the long write will be used.
+//     *
+//     * - parameters:
+//     *     - aText: text to be sent to the peripheral using Nordic UART Service
+//     *     - aType: write type to be used
+//     */
+//    func send(text aText : String, withType aType : CBCharacteristicWriteType) {
+//        guard uartRXCharacteristic != nil else {
+//            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
+//            return
+//        }
+//
+//        let typeAsString = aType == .withoutResponse ? ".withoutResponse" : ".withResponse"
+//        let data = aText.data(using: String.Encoding.utf8)!
+//
+//        // Do some logging
+//        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic!.uuid.uuidString)")
+//        log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\(data.hexString), for: \(uartRXCharacteristic!.uuid.uuidString), type: \(typeAsString))")
+//        bluetoothPeripheral!.writeValue(data, for: uartRXCharacteristic!, type: aType)
+//        // The transmitted data is not available after the method returns. We have to log the text here.
+//        // The callback peripheral:didWriteValueForCharacteristic:error: is called only when the Write Request type was used,
+//        // but even if, the data is not available there.
+//        log(withLevel: .application, andMessage: "\"\(aText)\" sent")
+//    }
+//
+//    /// Sends the given command to the UART characteristic
+//    /// - Parameter aCommand: command that will be send to UART peripheral.
+//    func send(command aCommand: UARTCommandModel) {
+//        guard let uartRXCharacteristic = self.uartRXCharacteristic else {
+//            log(withLevel: .warning, andMessage: "UART RX Characteristic not found")
+//            return
+//        }
+//
+//        // Check what kind of Write Type is supported. By default it will try Without Response.
+//        // If the RX characteristic have Write property the Write Request type will be used.
+//        let type: CBCharacteristicWriteType = uartRXCharacteristic.properties.contains(.writeWithoutResponse) ? .withoutResponse : .withResponse
+//        let mtu = bluetoothPeripheral?.maximumWriteValueLength(for: type) ?? 20
+//
+//        let data = aCommand.data.split(by: mtu)
+//        log(withLevel: .verbose, andMessage: "Writing to characteristic: \(uartRXCharacteristic.uuid.uuidString)")
+//        let typeAsString = type == .withoutResponse ? ".withoutResponse" : ".withResponse"
+//        data.forEach {
+//            self.bluetoothPeripheral!.writeValue($0, for: uartRXCharacteristic, type: type)
+//            log(withLevel: .debug, andMessage: "peripheral.writeValue(0x\($0.hexString), for: \(uartRXCharacteristic.uuid.uuidString), type: \(typeAsString))")
+//        }
+//        log(withLevel: .application, andMessage: "Sent command: \(aCommand.title)")
+//
+//    }
+//
+//    func send(macro: UARTMacro) {
+//
+//        btQueue.async {
+//            macro.commands.forEach { (element) in
+//                switch element {
+//                case let command as UARTCommandModel:
+//                    self.send(command: command)
+//                case let timeInterval as UARTMacroTimeInterval:
+//                    usleep(useconds_t(timeInterval.milliseconds * 1000))
+//                default:
+//                    break
+//                }
+//            }
+//        }
+//    }

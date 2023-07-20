@@ -26,6 +26,7 @@
 		30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */; };
 		30998D042A67C2C2002157B3 /* PairingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998D032A67C2C2002157B3 /* PairingViewController.swift */; };
 		30998D062A67C668002157B3 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998D052A67C668002157B3 /* Constants.swift */; };
+		30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998D072A691B6D002157B3 /* FileTransferService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DiscoveredDeviceCell.xib; sourceTree = "<group>"; };
 		30998D032A67C2C2002157B3 /* PairingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingViewController.swift; sourceTree = "<group>"; };
 		30998D052A67C668002157B3 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		30998D072A691B6D002157B3 /* FileTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTransferService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 				30998CF52A66B863002157B3 /* Data+Ext.swift */,
 				30998CF72A66D4E7002157B3 /* PrintLogger.swift */,
 				30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */,
+				30998D072A691B6D002157B3 /* FileTransferService.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -212,6 +215,7 @@
 				30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
+				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,
 				30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */,
 				30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */,
