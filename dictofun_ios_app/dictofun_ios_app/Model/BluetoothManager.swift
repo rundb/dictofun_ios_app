@@ -108,13 +108,26 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     private let btQueue = DispatchQueue(label: "com.nRF-toolbox.bluetoothManager", qos: .utility)
     
     // MARK: - public API intended for use by services
+    var charNotifyDelegates: [CBUUID : CharNotificationDelegate] = [:]
+    
     enum CharOpError: Error {
         case notFound
         case notImplemented
         case other
     }
     
+    private func getCharByCBUUID(with cbuuid: CBUUID) -> CBCharacteristic? {
+        if let c = ftsChars[cbuuid.uuidString] {
+            return c
+        }
+        return nil
+    }
+    
     func writeTo(characteristic char: CBUUID, with data: Data) -> Error? {
+        if let characteristic = getCharByCBUUID(with: char) {
+            bluetoothPeripheral?.writeValue(data, for: characteristic, type: .withResponse)
+            return nil
+        }
         return .some(CharOpError.notImplemented)
     }
     
@@ -123,11 +136,17 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     }
     
     func setNotificationStateFor(characteristic char: CBUUID, toEnabled state: Bool) -> Error? {
+        if let characteristic = getCharByCBUUID(with: char) {
+            bluetoothPeripheral?.setNotifyValue(state, for: characteristic)
+            return nil
+        }
+        
         return .some(CharOpError.notImplemented)
     }
     
     func registerNotificationDelegate(forCharacteristic char: CBUUID, delegate: CharNotificationDelegate?) -> Error? {
-        return .some(CharOpError.notImplemented)
+        charNotifyDelegates[char] = delegate
+        return nil
     }
     
     //MARK: - BluetoothManager API
@@ -285,6 +304,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         switch central.state {
         case .poweredOn:
             state = "Powered ON"
+            if paired {
+                startScanning()
+            }
         case .poweredOff:
             state = "Powered OFF"
         case .resetting:
@@ -302,6 +324,11 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         log(withLevel: .info, andMessage: "discovered \(peripheral.identifier) with RSSI \(RSSI.intValue)")
+        // TODO: at this point make sure that it's our peripheral (so ID is matching with what we paired to)
+        if paired {
+            connectPeripheral(peripheral: peripheral)
+        }
+        
         if let d = scannerDelegate {
             d.didDiscoverPeripheral(with: peripheral)
         }
@@ -438,9 +465,6 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 log(withLevel: .info, andMessage: "launching pairing callback with nil-error")
                 pairingCallback(error: nil)
             }
-            else {
-                log(withLevel: .warning, andMessage: "mismatch between stored and actual char ID")
-            }
         }
         else {
             log(withLevel: .warning, andMessage: "no stored pairing char found")
@@ -461,6 +485,15 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             log(withLevel: .warning, andMessage: "Updating characteristic has failed")
             logError(error: error!)
             return
+        }
+        
+        if let ftsDelegate = charNotifyDelegates[characteristic.uuid], let ftsChar = getCharByCBUUID(with: characteristic.uuid) {
+            guard let bytesReceived = characteristic.value else {
+                log(withLevel: .info, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), with empty value")
+                return
+            }
+            log(withLevel: .debug, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), \(bytesReceived.count) bytes")
+            ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
         }
         
         // try to print a friendly string of received bytes if they can be parsed as UTF8
