@@ -18,13 +18,24 @@ class FileTransferService : CharNotificationDelegate {
     private let cpCharCBUUID = CBUUID(string: ServiceIds.FTS.controlPointCh)
     private let fileListCharCBUUID = CBUUID(string: ServiceIds.FTS.fileListCh)
     private let fileInfoCharCBUUID = CBUUID(string: ServiceIds.FTS.fileInfoCh)
+    private let fileDataCharCBUUID = CBUUID(string: ServiceIds.FTS.fileDataCh)
     
     private let fileIdSize = 8
     
     private var fileIds: [FileId] = []
     
+    private struct CurrentFile {
+        var fileId: FileId
+        var size: Int
+        var receivedSize: Int
+        var data: Data
+    }
+    
+    private var currentFile: CurrentFile
+    
     init(with bluetoothManager: BluetoothManager) {
         self.bluetoothManager = bluetoothManager
+        self.currentFile = CurrentFile(fileId: FileId(value: Data([0,0,0,0,0,0,0,0])), size: 0, receivedSize: 0, data: Data([]))
         
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileListCharCBUUID, delegate: self) == nil else {
             print("failed to register notification delegate for \(fileListCharCBUUID.uuidString)")
@@ -33,6 +44,11 @@ class FileTransferService : CharNotificationDelegate {
         }
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileInfoCharCBUUID, delegate: self) == nil else {
             print("failed to register notification delegate for \(fileInfoCharCBUUID.uuidString)")
+            assert(false)
+            return
+        }
+        guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileDataCharCBUUID, delegate: self) == nil else {
+            print("failed to register notification delegate for \(fileDataCharCBUUID.uuidString)")
             assert(false)
             return
         }
@@ -67,9 +83,6 @@ class FileTransferService : CharNotificationDelegate {
         var requestData = Data([UInt8(2)])
         requestData.append(fileId.value)
         
-        print("\t\(requestData.map { String(format: "%02x", $0) }.joined() )")
-        print("\(requestData.count)")
-        
         guard bluetoothManager.setNotificationStateFor(characteristic: fileInfoCharCBUUID, toEnabled: true) == nil else {
             print("Failed to enable notifications for char \(fileInfoCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
@@ -78,6 +91,26 @@ class FileTransferService : CharNotificationDelegate {
             print("Failed to send request to  \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
+        self.currentFile.fileId = fileId
+        self.currentFile.size = 0
+        self.currentFile.data = Data([])
+        return nil
+    }
+    
+    func requestFileData(with fileId: FileId) -> Error? {
+        var requestData = Data([UInt8(3)])
+        requestData.append(fileId.value)
+
+        guard bluetoothManager.setNotificationStateFor(characteristic: fileDataCharCBUUID, toEnabled: true) == nil else {
+            print("Failed to enable notifications for char \(fileDataCharCBUUID.uuidString)")
+            return .some(FtsOpResult.setupError)
+        }
+        guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
+            print("Failed to send request to  \(cpCharCBUUID.uuidString)")
+            return .some(FtsOpResult.communicationError)
+        }
+        currentFile.data = Data([])
+        currentFile.receivedSize = 0
         return nil
     }
     
@@ -116,9 +149,24 @@ class FileTransferService : CharNotificationDelegate {
         if char.uuidString == ServiceIds.FTS.fileInfoCh {
             if let fileInfo = parseFileInformation(with: data) {
                 print("Requested file information: size \(fileInfo.s), freq \(fileInfo.f), codec \(fileInfo.c)")
+                currentFile.size = fileInfo.s
             }
             else {
                 print("Received file info is invalid")
+            }
+        }
+        
+        if char.uuidString == ServiceIds.FTS.fileDataCh {
+            if let safeData = data {
+                print("receiving file data (\(safeData.count) bytes)")
+                currentFile.data.append(safeData)
+                currentFile.receivedSize += safeData.count
+                if currentFile.receivedSize == currentFile.size {
+                    print("file reception complete")
+                }
+                else {
+                    print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
+                }
             }
         }
     }

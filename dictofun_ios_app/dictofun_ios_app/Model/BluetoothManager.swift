@@ -492,23 +492,23 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 log(withLevel: .info, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), with empty value")
                 return
             }
-            log(withLevel: .debug, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), \(bytesReceived.count) bytes")
+//            log(withLevel: .debug, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), \(bytesReceived.count) bytes")
             ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
         }
+//
+//        // try to print a friendly string of received bytes if they can be parsed as UTF8
+//        guard let bytesReceived = characteristic.value else {
+//            log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with empty value")
+//            log(withLevel: .application, andMessage: "Empty packet received")
+//            return
+//        }
         
-        // try to print a friendly string of received bytes if they can be parsed as UTF8
-        guard let bytesReceived = characteristic.value else {
-            log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with empty value")
-            log(withLevel: .application, andMessage: "Empty packet received")
-            return
-        }
-        
-        log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with value: 0x\(bytesReceived.hexString)")
-        if let validUTF8String = String(data: bytesReceived, encoding: .utf8) {
-            log(withLevel: .application, andMessage: "\"\(validUTF8String)\" received")
-        } else {
-            log(withLevel: .application, andMessage: "\"0x\(bytesReceived.hexString)\" received")
-        }
+//        log(withLevel: .info, andMessage: "Notification received from: \(characteristic.uuid.uuidString), with value: 0x\(bytesReceived.hexString)")
+//        if let validUTF8String = String(data: bytesReceived, encoding: .utf8) {
+//            log(withLevel: .application, andMessage: "\"\(validUTF8String)\" received")
+//        } else {
+//            log(withLevel: .application, andMessage: "\"0x\(bytesReceived.hexString)\" received")
+//        }
     }
 }
 

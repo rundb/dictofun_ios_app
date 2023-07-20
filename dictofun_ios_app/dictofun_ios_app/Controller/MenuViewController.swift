@@ -44,5 +44,15 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func testFts3ButtonPressed(_ sender: UIButton) {
+        print("Fts 3 button pressed: test file data request")
+        let filesIds = fts?.getFileIds()
+        if (filesIds?.count ?? 0) > 0 {
+            let count = filesIds!.count
+            let lastId = filesIds![0]
+            let error = fts?.requestFileData(with: lastId)
+            if error != nil {
+                print("FTS file data request has failed")
+            }
+        }
     }
 }
