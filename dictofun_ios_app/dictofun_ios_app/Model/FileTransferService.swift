@@ -166,8 +166,8 @@ class FileTransferService {
     
     struct FileInformation: Decodable {
         let s: Int
-        let f: Int
-        let c: Int
+        let f: Int?
+        let c: Int?
     }
     
     struct FileSystemInformation {
@@ -188,6 +188,10 @@ class FileTransferService {
                 return []
             }
             var fileIds: [FileId] = []
+            print("FTS: \(filesCount) files are present on the Dictofun")
+            if filesCount == 0 {
+                return []
+            }
             for i in 0...(filesCount-1) {
                 let fileIdBytes = safeData.subdata(in: (fileIdSize * (i+1))..<(fileIdSize * (i + 2)) )
                 let fileId = FileId(value: fileIdBytes)
@@ -206,8 +210,17 @@ class FileTransferService {
                 return nil
             }
             if let fileInfoRawString = String(bytes: safeData.subdata(in: 2..<(expectedDataSize + 2)), encoding: .ascii) {
-                let fileInfo: FileInformation = try! JSONDecoder().decode(FileInformation.self, from: fileInfoRawString.data(using: .ascii)!)
-                return fileInfo
+                do {
+                    let fileInfo: FileInformation = try JSONDecoder().decode(FileInformation.self, from: fileInfoRawString.data(using: .ascii)!)
+                    return fileInfo
+                }
+                catch let DecodingError.keyNotFound(key, context) {
+                    print("error: \(key) key was not found in the json")
+                }
+                catch {
+                    print("error: general decoding error in JSONDecoder")
+                }
+                return nil
             }
             return nil
         }

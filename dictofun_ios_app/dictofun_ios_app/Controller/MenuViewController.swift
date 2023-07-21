@@ -29,19 +29,13 @@ class MenuViewController: UIViewController {
             print("Files List request has failed")
             return
         }
-//        print("Fts 1 button pressed: get file system status")
-//        let fsStatusResult = fts?.requestFileSystemStatus()
-//        guard fsStatusResult == nil else {
-//            print("File System status request has failed")
-//            return
-//        }
     }
     @IBAction func testFts2ButtonPressed(_ sender: UIButton) {
         print("Fts 2 button pressed: test file info request")
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
-            let lastId = filesIds![count - 1]
+            let lastId = filesIds![0]
             let error = fts?.requestFileInfo(with: lastId)
             if error != nil {
                 print("FTS file info request has failed")
