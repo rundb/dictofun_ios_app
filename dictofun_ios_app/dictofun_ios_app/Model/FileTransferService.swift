@@ -6,12 +6,12 @@ protocol CharNotificationDelegate {
 }
 
 /**
-    This class implements all functions needed for file transfer service to operate, according to FTS specification:
-     - get files' list from the device
-     - get information about a particular file
-     - download the file from the device
+ This class implements all functions needed for file transfer service to operate, according to FTS specification:
+ - get files' list from the device
+ - get information about a particular file
+ - download the file from the device
  */
-class FileTransferService : CharNotificationDelegate {
+class FileTransferService {
     
     private var bluetoothManager: BluetoothManager
     
@@ -79,6 +79,12 @@ class FileTransferService : CharNotificationDelegate {
             print("Failed to enable notifications for char \(fileListCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
+        // At this point also enable notifications for status char, as this operation should always be the first in the chain of FTS calls
+        guard bluetoothManager.setNotificationStateFor(characteristic: statusCharCBUUID, toEnabled: true) == nil else {
+            print("Failed to enable notifications for char \(statusCharCBUUID.uuidString)")
+            return .some(FtsOpResult.setupError)
+        }
+        
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
             print("Failed to send request to  \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
@@ -112,7 +118,7 @@ class FileTransferService : CharNotificationDelegate {
     func requestFileData(with fileId: FileId) -> Error? {
         var requestData = Data([UInt8(3)])
         requestData.append(fileId.value)
-
+        
         guard bluetoothManager.setNotificationStateFor(characteristic: fileDataCharCBUUID, toEnabled: true) == nil else {
             print("Failed to enable notifications for char \(fileDataCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
@@ -137,7 +143,7 @@ class FileTransferService : CharNotificationDelegate {
             print("Failed to send request to  \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
-
+        
         return nil
     }
     
@@ -170,60 +176,13 @@ class FileTransferService : CharNotificationDelegate {
         let count: Int
     }
     
-    func didCharNotify(with char: CBUUID, and data: Data?, error: Error?) {
-        if char.uuidString == ServiceIds.FTS.fileListCh {
-            let files = parseFilesList(with: data)
-            print("Received files' list: ")
-            for f in files {
-                print("\t\(f.value.map { String(format: "%02x", $0) }.joined() )")
-            }
-            self.fileIds = files
-        }
-        if char.uuidString == ServiceIds.FTS.fileInfoCh {
-            if let fileInfo = parseFileInformation(with: data) {
-                print("Requested file information: size \(fileInfo.s), freq \(fileInfo.f), codec \(fileInfo.c)")
-                currentFile.size = fileInfo.s
-            }
-            else {
-                print("Received file info is invalid")
-            }
-        }
-        
-        if char.uuidString == ServiceIds.FTS.fileDataCh {
-            if let safeData = data {
-                print("receiving file data (\(safeData.count) bytes)")
-                currentFile.data.append(safeData)
-                currentFile.receivedSize += safeData.count
-                if currentFile.receivedSize == currentFile.size {
-                    print("file reception complete")
-                }
-                else {
-                    print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
-                }
-            }
-        }
-        
-        if char.uuidString == ServiceIds.FTS.fsStatusCh {
-            if let safeData = data {
-                print("received file system status, \(safeData.count) bytes")
-                let fsInfo = parseFileSystemInformation(with: safeData)
-                if let safeFsInfo = fsInfo {
-                    print("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
-                }
-                else {
-                    print("Failed to parse received FileSystem info")
-                }
-            }
-        }
-    }
-    
     private func parseFilesList(with data: Data?) -> [FileId] {
         if let safeData = data {
             var filesCount = 0
             for i in 0...(fileIdSize-1) {
                 filesCount += Int(safeData[i]) * (1 << i)
             }
-
+            
             if safeData.count != filesCount * fileIdSize + 8 {
                 print("FTS: received a malformed files' count")
                 return []
@@ -273,6 +232,76 @@ class FileTransferService : CharNotificationDelegate {
         }
         return nil
     }
-    
-    
+}
+
+// MARK: - CharNotificationDelegate
+extension FileTransferService: CharNotificationDelegate {
+    func didCharNotify(with char: CBUUID, and data: Data?, error: Error?) {
+        if char.uuidString == ServiceIds.FTS.fileListCh {
+            let files = parseFilesList(with: data)
+            print("Received files' list: ")
+            for f in files {
+                print("\t\(f.value.map { String(format: "%02x", $0) }.joined() )")
+            }
+            self.fileIds = files
+        }
+        if char.uuidString == ServiceIds.FTS.fileInfoCh {
+            if let fileInfo = parseFileInformation(with: data) {
+                print("Requested file information: size \(fileInfo.s), freq \(fileInfo.f), codec \(fileInfo.c)")
+                currentFile.size = fileInfo.s
+            }
+            else {
+                print("Received file info is invalid")
+            }
+        }
+        
+        if char.uuidString == ServiceIds.FTS.fileDataCh {
+            if let safeData = data {
+                print("receiving file data (\(safeData.count) bytes)")
+                currentFile.data.append(safeData)
+                currentFile.receivedSize += safeData.count
+                if currentFile.receivedSize == currentFile.size {
+                    print("file reception complete")
+                }
+                else {
+                    print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
+                }
+            }
+        }
+        
+        if char.uuidString == ServiceIds.FTS.fsStatusCh {
+            if let safeData = data {
+                print("received file system status, \(safeData.count) bytes")
+                let fsInfo = parseFileSystemInformation(with: safeData)
+                if let safeFsInfo = fsInfo {
+                    print("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
+                }
+                else {
+                    print("Failed to parse received FileSystem info")
+                }
+            }
+        }
+        
+        if char.uuidString == ServiceIds.FTS.statusCh {
+            if let safeData = data {
+                print("received FTS status update:")
+                if safeData.count == 0 {
+                    print("error: 0-length status data received")
+                    return
+                }
+                if safeData[0] == 2 {
+                    print("\tfile not found error")
+                }
+                else if safeData[0] == 3 {
+                    print("\tfile system corruption error")
+                }
+                else if safeData[0] == 4 {
+                    print("\ttransaction aborted error")
+                }
+                else if safeData[0] == 5 {
+                    print("\tgeneric error")
+                }
+            }
+        }
+    }
 }
