@@ -10,10 +10,29 @@ import UIKit
 class MenuViewController: UIViewController {
     var fts: FileTransferService?
 
+    @IBOutlet weak var bleConnectionStatusLabel: UILabel!
+    @IBOutlet weak var ftsStatusLabel: UILabel!
+    @IBOutlet weak var ftsTransactionProgressBar: UIProgressView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         fts = getFileTransferService()
+        bleConnectionStatusLabel.textColor = .black
+        ftsStatusLabel.textColor = .black
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        getBluetoothManager().uiUpdateDelegate = self
+        fts?.uiUpdateDelegate = self
+        ftsTransactionProgressBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        getBluetoothManager().uiUpdateDelegate = nil
+        fts?.uiUpdateDelegate = nil
     }
 
     
@@ -55,4 +74,34 @@ class MenuViewController: UIViewController {
             }
         }
     }
+}
+
+extension MenuViewController: UIBleStatusUpdateDelegate {
+    func didConnectionStatusUpdate(newState state: ConnectionState) {
+        bleConnectionStatusLabel.text = "Connection status: \(state == .on ? "connected" : "disconnected")"
+    }
+}
+
+extension MenuViewController: FtsToUiNotificationDelegate {
+
+    func didReceiveFilesCount(with filesCount: Int) {
+        ftsStatusLabel.text = "FTS: DF contains \(filesCount) files"
+    }
+    
+    func didReceiveNextFileSize(with fileName: String, and fileSize: Int) {
+        ftsStatusLabel.text = "FTS: Next file \(fileName) is \(fileSize) bytes large"
+    }
+    
+    func didReceiveFileDataChunk(with progressPercentage: Double) {
+        if ftsTransactionProgressBar.isHidden {
+            ftsTransactionProgressBar.isHidden = false
+        }
+        ftsTransactionProgressBar.progress = Float(progressPercentage)
+    }
+    
+    func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int) {
+        ftsStatusLabel.text = "FTS: file \(fileName) \nreceived in \(duration) seconds, \n\(throughput)bytes/sec"
+    }
+    
+    
 }

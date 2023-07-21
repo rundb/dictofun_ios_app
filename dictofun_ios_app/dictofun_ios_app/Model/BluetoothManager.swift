@@ -69,7 +69,13 @@ enum BluetoothManagerError: Error {
     var localizedDescription: String {
         "Can not find peripheral"
     }
-    
+}
+
+enum ConnectionState {
+    case on, off
+}
+protocol UIBleStatusUpdateDelegate {
+    func didConnectionStatusUpdate(newState state: ConnectionState)
 }
 
 class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate {
@@ -80,6 +86,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     var scannerDelegate: ScannerDelegate?
     var connectDelegate: ConnectDelegate?
     var pairDelegate: PairDelegate?
+    var uiUpdateDelegate: UIBleStatusUpdateDelegate?
     
     //MARK: - Class Properties
     fileprivate let FTSServiceUUID             : CBUUID
@@ -334,7 +341,6 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         }
     }
     
-    
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         log(withLevel: .debug, andMessage: "[Callback] Central Manager did connect peripheral")
         if let name = peripheral.name {
@@ -347,6 +353,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         bluetoothPeripheral = peripheral
         bluetoothPeripheral!.delegate = self
         delegate?.didConnectPeripheral(deviceName: peripheral.name)
+        DispatchQueue.main.async {
+            self.uiUpdateDelegate?.didConnectionStatusUpdate(newState: .on)
+        }
         connectDelegate?.didConnectToPeripheral(error: nil)
         log(withLevel: .verbose, andMessage: "Discovering services...")
         log(withLevel: .debug, andMessage: "peripheral.discoverServices([\(FTSServiceUUID.uuidString)])")
@@ -363,10 +372,16 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         
         connected = false
         delegate?.didDisconnectPeripheral()
+        DispatchQueue.main.async {
+            self.uiUpdateDelegate?.didConnectionStatusUpdate(newState: .off)
+        }
         bluetoothPeripheral!.delegate = nil
         bluetoothPeripheral = nil
         connectDelegate?.didDisconnectFromPeripheral()
         ftsChars.removeAll(keepingCapacity: false)
+        
+        // Restart scanning to be able to catch up with Dictofun on it's next appearance
+        startScanning()
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {

@@ -5,6 +5,13 @@ protocol CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?)
 }
 
+protocol FtsToUiNotificationDelegate {
+    func didReceiveFilesCount(with filesCount: Int)
+    func didReceiveNextFileSize(with fileName: String, and fileSize: Int)
+    func didReceiveFileDataChunk(with progressPercentage: Double)
+    func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int)
+}
+
 /**
  This class implements all functions needed for file transfer service to operate, according to FTS specification:
  - get files' list from the device
@@ -26,11 +33,15 @@ class FileTransferService {
     
     private var fileIds: [FileId] = []
     
+    var uiUpdateDelegate: FtsToUiNotificationDelegate?
+    
     private struct CurrentFile {
         var fileId: FileId
         var size: Int
         var receivedSize: Int
         var data: Data
+        var startTimestamp: Date?
+        var endTimestamp: Date?
     }
     
     private var currentFile: CurrentFile
@@ -129,6 +140,7 @@ class FileTransferService {
         }
         currentFile.data = Data([])
         currentFile.receivedSize = 0
+        currentFile.startTimestamp = Date()
         return nil
     }
     
@@ -161,6 +173,13 @@ class FileTransferService {
                 tmp.append(b)
             }
             return tmp
+        }
+        
+        var name: String {
+            if let validAsciiString = String(data: value, encoding: .ascii) {
+                return validAsciiString
+            }
+            return "unknown"
         }
     }
     
@@ -214,7 +233,7 @@ class FileTransferService {
                     let fileInfo: FileInformation = try JSONDecoder().decode(FileInformation.self, from: fileInfoRawString.data(using: .ascii)!)
                     return fileInfo
                 }
-                catch let DecodingError.keyNotFound(key, context) {
+                catch let DecodingError.keyNotFound(key, _) {
                     print("error: \(key) key was not found in the json")
                 }
                 catch {
@@ -237,6 +256,7 @@ class FileTransferService {
             let freeSpaceRaw = safeData.subdata(in: 2..<6)
             let occupiedSpaceRaw = safeData.subdata(in: 6..<10)
             let countRaw = safeData.subdata(in: 10..<14)
+            // FIXME: fix these withUnsafeBytes warnings appropriately
             let freeSpace = Int(UInt32(littleEndian: freeSpaceRaw.withUnsafeBytes { $0.pointee }))
             let occupiedSpace = Int(UInt32(littleEndian: occupiedSpaceRaw.withUnsafeBytes { $0.pointee }))
             let count = Int(UInt32(littleEndian: countRaw.withUnsafeBytes { $0.pointee }))
@@ -257,11 +277,14 @@ extension FileTransferService: CharNotificationDelegate {
                 print("\t\(f.value.map { String(format: "%02x", $0) }.joined() )")
             }
             self.fileIds = files
+            uiUpdateDelegate?.didReceiveFilesCount(with: files.count)
         }
         if char.uuidString == ServiceIds.FTS.fileInfoCh {
             if let fileInfo = parseFileInformation(with: data) {
-                print("Requested file information: size \(fileInfo.s), freq \(fileInfo.f), codec \(fileInfo.c)")
+                print("Requested file information: size \(fileInfo.s)")
                 currentFile.size = fileInfo.s
+                
+                uiUpdateDelegate?.didReceiveNextFileSize(with: currentFile.fileId.name, and: currentFile.size)
             }
             else {
                 print("Received file info is invalid")
@@ -275,9 +298,16 @@ extension FileTransferService: CharNotificationDelegate {
                 currentFile.receivedSize += safeData.count
                 if currentFile.receivedSize == currentFile.size {
                     print("file reception complete")
+                    currentFile.endTimestamp = Date()
+                    let transactionTime = currentFile.endTimestamp!.timeIntervalSinceReferenceDate - currentFile.startTimestamp!.timeIntervalSinceReferenceDate
+                    let throughput = Double(currentFile.size) / transactionTime
+                    print(String(format: "Throughput: %0.1fbytes/second", throughput))
+                    uiUpdateDelegate?.didCompleteFileTransaction(name: currentFile.fileId.name, with: Int(transactionTime), and: Int(throughput))
                 }
                 else {
                     print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
+                    let progress = Double(currentFile.receivedSize) / Double(currentFile.size)
+                    uiUpdateDelegate?.didReceiveFileDataChunk(with: progress)
                 }
             }
         }
