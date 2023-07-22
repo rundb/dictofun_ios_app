@@ -21,6 +21,7 @@ protocol FtsToUiNotificationDelegate {
 class FileTransferService {
     
     private var bluetoothManager: BluetoothManager
+    private var recordsManager: RecordsManager
     
     private let cpCharCBUUID = CBUUID(string: ServiceIds.FTS.controlPointCh)
     private let fileListCharCBUUID = CBUUID(string: ServiceIds.FTS.fileListCh)
@@ -46,8 +47,10 @@ class FileTransferService {
     
     private var currentFile: CurrentFile
     
-    init(with bluetoothManager: BluetoothManager) {
+    init(with bluetoothManager: BluetoothManager, andRecordsManager recordsManager: RecordsManager) {
         self.bluetoothManager = bluetoothManager
+        self.recordsManager = recordsManager
+        
         self.currentFile = CurrentFile(fileId: FileId(value: Data([0,0,0,0,0,0,0,0])), size: 0, receivedSize: 0, data: Data([]))
         
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileListCharCBUUID, delegate: self) == nil else {
@@ -74,6 +77,12 @@ class FileTransferService {
             print("failed to register notification delegate for \(fsStatusCharCBUUID.uuidString)")
             assert(false)
             return
+        }
+        
+        let existingRecords = recordsManager.getRecordsList()
+        NSLog("Existing records:")
+        for entry in existingRecords {
+            NSLog("\t\(entry)")
         }
     }
     
@@ -293,7 +302,6 @@ extension FileTransferService: CharNotificationDelegate {
         
         if char.uuidString == ServiceIds.FTS.fileDataCh {
             if let safeData = data {
-                print("receiving file data (\(safeData.count) bytes)")
                 currentFile.data.append(safeData)
                 currentFile.receivedSize += safeData.count
                 if currentFile.receivedSize == currentFile.size {
@@ -303,6 +311,15 @@ extension FileTransferService: CharNotificationDelegate {
                     let throughput = Double(currentFile.size) / transactionTime
                     print(String(format: "Throughput: %0.1fbytes/second", throughput))
                     uiUpdateDelegate?.didCompleteFileTransaction(name: currentFile.fileId.name, with: Int(transactionTime), and: Int(throughput))
+                    
+                    let decodedAdpcm = decodeAdpcm(from: currentFile.data.subdata(in: 0x100..<(currentFile.data.count - 1)))
+                    
+                    NSLog("raw size: \(currentFile.data.count), decoded: \(decodedAdpcm.count)")
+                    
+                    let storeResult = recordsManager.saveRecord(withRawWav: currentFile.data, andFileName: currentFile.fileId.name)
+                    if nil != storeResult {
+                        NSLog("FTS: record \(currentFile.fileId.name) failed to be saved, error: \(storeResult!.localizedDescription)")
+                    }
                 }
                 else {
                     print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")

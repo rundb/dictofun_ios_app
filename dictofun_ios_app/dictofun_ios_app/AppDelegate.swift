@@ -9,7 +9,8 @@ import UIKit
 
 var bluetoothManager = BluetoothManager()
 var printLogger = PrintLogger()
-var fileTransferService = FileTransferService(with: bluetoothManager)
+var recordsManager = RecordsManager()
+var fileTransferService = FileTransferService(with: bluetoothManager, andRecordsManager:  recordsManager)
 
 func getBluetoothManager() -> BluetoothManager {
     return bluetoothManager
@@ -17,6 +18,10 @@ func getBluetoothManager() -> BluetoothManager {
 
 func getFileTransferService() -> FileTransferService {
     return fileTransferService
+}
+
+func getRecordsManager() -> RecordsManager {
+    return recordsManager
 }
 
 @main

@@ -13,6 +13,8 @@ class MenuViewController: UIViewController {
     @IBOutlet weak var bleConnectionStatusLabel: UILabel!
     @IBOutlet weak var ftsStatusLabel: UILabel!
     @IBOutlet weak var ftsTransactionProgressBar: UIProgressView!
+    @IBOutlet weak var playbackRecordNameLabel: UILabel!
+    @IBOutlet weak var playButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +22,7 @@ class MenuViewController: UIViewController {
         fts = getFileTransferService()
         bleConnectionStatusLabel.textColor = .black
         ftsStatusLabel.textColor = .black
+        playbackRecordNameLabel.textColor = .black
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -27,6 +30,8 @@ class MenuViewController: UIViewController {
         getBluetoothManager().uiUpdateDelegate = self
         fts?.uiUpdateDelegate = self
         ftsTransactionProgressBar.isHidden = true
+        playbackRecordNameLabel.isHidden = true
+        playButton.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -34,7 +39,6 @@ class MenuViewController: UIViewController {
         getBluetoothManager().uiUpdateDelegate = nil
         fts?.uiUpdateDelegate = nil
     }
-
     
     @IBAction func menuUnpairButtonPressed(_ sender: UIButton) {
         getBluetoothManager().unpair()
@@ -54,7 +58,7 @@ class MenuViewController: UIViewController {
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
-            let lastId = filesIds![0]
+            let lastId = filesIds![count - 1]
             let error = fts?.requestFileInfo(with: lastId)
             if error != nil {
                 print("FTS file info request has failed")
@@ -67,12 +71,14 @@ class MenuViewController: UIViewController {
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
-            let lastId = filesIds![0]
+            let lastId = filesIds![count - 1]
             let error = fts?.requestFileData(with: lastId)
             if error != nil {
                 print("FTS file data request has failed")
             }
         }
+    }
+    @IBAction func playButtonPressed(_ sender: UIButton) {
     }
 }
 
@@ -101,6 +107,9 @@ extension MenuViewController: FtsToUiNotificationDelegate {
     
     func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int) {
         ftsStatusLabel.text = "FTS: file \(fileName) \nreceived in \(duration) seconds, \n\(throughput)bytes/sec"
+        playButton.isHidden = false
+        playbackRecordNameLabel.isHidden = false
+        playbackRecordNameLabel.text = fileName
     }
     
     
