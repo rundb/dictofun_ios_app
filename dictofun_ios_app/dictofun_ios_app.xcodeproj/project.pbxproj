@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		30267FAE2A6AD27500A072B2 /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAD2A6AD27500A072B2 /* RecordsManager.swift */; };
 		30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAF2A6B196300A072B2 /* Adpcm.swift */; };
+		30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB12A6D457000A072B2 /* RecordCell.swift */; };
+		30267FB42A6D457000A072B2 /* RecordCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30267FB22A6D457000A072B2 /* RecordCell.xib */; };
+		30267FB62A6D4CA900A072B2 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB52A6D4CA900A072B2 /* Record.swift */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
 		30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCC2A607198002157B3 /* SceneDelegate.swift */; };
 		30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCE2A607198002157B3 /* InitialViewController.swift */; };
@@ -34,6 +37,9 @@
 /* Begin PBXFileReference section */
 		30267FAD2A6AD27500A072B2 /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
 		30267FAF2A6B196300A072B2 /* Adpcm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Adpcm.swift; sourceTree = "<group>"; };
+		30267FB12A6D457000A072B2 /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
+		30267FB22A6D457000A072B2 /* RecordCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordCell.xib; sourceTree = "<group>"; };
+		30267FB52A6D4CA900A072B2 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30998CCA2A607198002157B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		30998CCC2A607198002157B3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -113,6 +119,7 @@
 				30998D072A691B6D002157B3 /* FileTransferService.swift */,
 				30267FAD2A6AD27500A072B2 /* RecordsManager.swift */,
 				30267FAF2A6B196300A072B2 /* Adpcm.swift */,
+				30267FB52A6D4CA900A072B2 /* Record.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -122,6 +129,8 @@
 			children = (
 				30998CD02A607198002157B3 /* Main.storyboard */,
 				30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */,
+				30267FB12A6D457000A072B2 /* RecordCell.swift */,
+				30267FB22A6D457000A072B2 /* RecordCell.xib */,
 				30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */,
 			);
 			path = View;
@@ -201,6 +210,7 @@
 				30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */,
 				30998CD42A607199002157B3 /* Assets.xcassets in Resources */,
 				30998CD22A607198002157B3 /* Main.storyboard in Resources */,
+				30267FB42A6D457000A072B2 /* RecordCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +223,7 @@
 			files = (
 				30998CEA2A61483D002157B3 /* ConnectionViewController.swift in Sources */,
 				30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */,
+				30267FB62A6D4CA900A072B2 /* Record.swift in Sources */,
 				30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */,
 				30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */,
 				30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */,
@@ -222,6 +233,7 @@
 				30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */,
 				30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
+				30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */,
 				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,
