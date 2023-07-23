@@ -1,3 +1,7 @@
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 struct K {
     static let pairingViewSegueName = "goToPairing"

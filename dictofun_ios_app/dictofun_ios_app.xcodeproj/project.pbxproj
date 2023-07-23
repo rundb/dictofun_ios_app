@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30267FAE2A6AD27500A072B2 /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAD2A6AD27500A072B2 /* RecordsManager.swift */; };
+		30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAF2A6B196300A072B2 /* Adpcm.swift */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
 		30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCC2A607198002157B3 /* SceneDelegate.swift */; };
 		30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCE2A607198002157B3 /* InitialViewController.swift */; };
@@ -30,6 +32,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		30267FAD2A6AD27500A072B2 /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
+		30267FAF2A6B196300A072B2 /* Adpcm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Adpcm.swift; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30998CCA2A607198002157B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		30998CCC2A607198002157B3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +111,8 @@
 				30998CF72A66D4E7002157B3 /* PrintLogger.swift */,
 				30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */,
 				30998D072A691B6D002157B3 /* FileTransferService.swift */,
+				30267FAD2A6AD27500A072B2 /* RecordsManager.swift */,
+				30267FAF2A6B196300A072B2 /* Adpcm.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -212,7 +218,9 @@
 				30998CF62A66B863002157B3 /* Data+Ext.swift in Sources */,
 				30998D062A67C668002157B3 /* Constants.swift in Sources */,
 				30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */,
+				30267FAE2A6AD27500A072B2 /* RecordsManager.swift in Sources */,
 				30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */,
+				30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,

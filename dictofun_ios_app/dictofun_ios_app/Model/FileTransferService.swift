@@ -1,3 +1,8 @@
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
+
 import Foundation
 import CoreBluetooth
 
@@ -21,6 +26,7 @@ protocol FtsToUiNotificationDelegate {
 class FileTransferService {
     
     private var bluetoothManager: BluetoothManager
+    private var recordsManager: RecordsManager
     
     private let cpCharCBUUID = CBUUID(string: ServiceIds.FTS.controlPointCh)
     private let fileListCharCBUUID = CBUUID(string: ServiceIds.FTS.fileListCh)
@@ -46,34 +52,37 @@ class FileTransferService {
     
     private var currentFile: CurrentFile
     
-    init(with bluetoothManager: BluetoothManager) {
+    init(with bluetoothManager: BluetoothManager, andRecordsManager recordsManager: RecordsManager) {
         self.bluetoothManager = bluetoothManager
+        self.recordsManager = recordsManager
+        
         self.currentFile = CurrentFile(fileId: FileId(value: Data([0,0,0,0,0,0,0,0])), size: 0, receivedSize: 0, data: Data([]))
         
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileListCharCBUUID, delegate: self) == nil else {
-            print("failed to register notification delegate for \(fileListCharCBUUID.uuidString)")
             assert(false)
             return
         }
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileInfoCharCBUUID, delegate: self) == nil else {
-            print("failed to register notification delegate for \(fileInfoCharCBUUID.uuidString)")
             assert(false)
             return
         }
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileDataCharCBUUID, delegate: self) == nil else {
-            print("failed to register notification delegate for \(fileDataCharCBUUID.uuidString)")
             assert(false)
             return
         }
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: statusCharCBUUID, delegate: self) == nil else {
-            print("failed to register notification delegate for \(statusCharCBUUID.uuidString)")
             assert(false)
             return
         }
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fsStatusCharCBUUID, delegate: self) == nil else {
-            print("failed to register notification delegate for \(fsStatusCharCBUUID.uuidString)")
             assert(false)
             return
+        }
+        
+        let existingRecords = recordsManager.getRecordsList()
+        NSLog("Existing records:")
+        for entry in existingRecords {
+            NSLog("\t\(entry)")
         }
     }
     
@@ -87,17 +96,17 @@ class FileTransferService {
         let requestData = Data([UInt8(1)])
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileListCharCBUUID, toEnabled: true) == nil else {
-            print("Failed to enable notifications for char \(fileListCharCBUUID.uuidString)")
+            NSLog("FTS: failed to enable notifications for file list char \(fileListCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         // At this point also enable notifications for status char, as this operation should always be the first in the chain of FTS calls
         guard bluetoothManager.setNotificationStateFor(characteristic: statusCharCBUUID, toEnabled: true) == nil else {
-            print("Failed to enable notifications for char \(statusCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to enable notifications for status char \(statusCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            print("Failed to send request to  \(cpCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to send request to CP \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         
@@ -113,11 +122,11 @@ class FileTransferService {
         requestData.append(fileId.value)
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileInfoCharCBUUID, toEnabled: true) == nil else {
-            print("Failed to enable notifications for char \(fileInfoCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to enable notifications for file info char \(fileInfoCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            print("Failed to send request to  \(cpCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to send request to CP Char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         self.currentFile.fileId = fileId
@@ -131,11 +140,11 @@ class FileTransferService {
         requestData.append(fileId.value)
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileDataCharCBUUID, toEnabled: true) == nil else {
-            print("Failed to enable notifications for char \(fileDataCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to enable notifications for file data char \(fileDataCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            print("Failed to send request to  \(cpCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to send request to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         currentFile.data = Data([])
@@ -148,11 +157,11 @@ class FileTransferService {
         let requestData = Data([UInt8(4)])
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fsStatusCharCBUUID, toEnabled: true) == nil else {
-            print("Failed to enable notifications for char \(fsStatusCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to enable notifications for fs status char \(fsStatusCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            print("Failed to send request to  \(cpCharCBUUID.uuidString)")
+            NSLog("FTS: Failed to send request to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         
@@ -203,11 +212,11 @@ class FileTransferService {
             }
             
             if safeData.count != filesCount * fileIdSize + 8 {
-                print("FTS: received a malformed files' count")
+                NSLog("FTS: received a malformed files' count")
                 return []
             }
             var fileIds: [FileId] = []
-            print("FTS: \(filesCount) files are present on the Dictofun")
+            NSLog("FTS: \(filesCount) files are present on the Dictofun")
             if filesCount == 0 {
                 return []
             }
@@ -225,7 +234,7 @@ class FileTransferService {
         if let safeData = data {
             let expectedDataSize = Int(safeData[0]) + (Int(safeData[1]) << 8)
             if safeData.count != expectedDataSize + 2 {
-                print("Failed to parse file info: mismatch in size (\(safeData.count) != \(expectedDataSize + 2))")
+                NSLog("Failed to parse file info: mismatch in size (\(safeData.count) != \(expectedDataSize + 2))")
                 return nil
             }
             if let fileInfoRawString = String(bytes: safeData.subdata(in: 2..<(expectedDataSize + 2)), encoding: .ascii) {
@@ -234,10 +243,10 @@ class FileTransferService {
                     return fileInfo
                 }
                 catch let DecodingError.keyNotFound(key, _) {
-                    print("error: \(key) key was not found in the json")
+                    NSLog("FTS error: \(key) key was not found in the json")
                 }
                 catch {
-                    print("error: general decoding error in JSONDecoder")
+                    NSLog("FTS error: general decoding error in JSONDecoder")
                 }
                 return nil
             }
@@ -250,7 +259,7 @@ class FileTransferService {
         if let safeData = data {
             let expectedDataSize = Int(safeData[0]) + (Int(safeData[1]) << 8)
             if safeData.count != expectedDataSize  {
-                print("Failed to parse file system stats: mismatch in size (\(safeData.count) != \(expectedDataSize))")
+                NSLog("FTS: Failed to parse file system stats: mismatch in size (\(safeData.count) != \(expectedDataSize))")
                 return nil
             }
             let freeSpaceRaw = safeData.subdata(in: 2..<6)
@@ -272,40 +281,45 @@ extension FileTransferService: CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?) {
         if char.uuidString == ServiceIds.FTS.fileListCh {
             let files = parseFilesList(with: data)
-            print("Received files' list: ")
+            NSLog("FTS: Received files' list: ")
             for f in files {
-                print("\t\(f.value.map { String(format: "%02x", $0) }.joined() )")
+                NSLog("\t\(f.value.map { String(format: "%02x", $0) }.joined() )")
             }
             self.fileIds = files
             uiUpdateDelegate?.didReceiveFilesCount(with: files.count)
         }
         if char.uuidString == ServiceIds.FTS.fileInfoCh {
             if let fileInfo = parseFileInformation(with: data) {
-                print("Requested file information: size \(fileInfo.s)")
+                NSLog("FTS: Requested file information: size \(fileInfo.s)")
                 currentFile.size = fileInfo.s
                 
                 uiUpdateDelegate?.didReceiveNextFileSize(with: currentFile.fileId.name, and: currentFile.size)
             }
             else {
-                print("Received file info is invalid")
+                NSLog("FTS: Received file info is invalid")
             }
         }
         
         if char.uuidString == ServiceIds.FTS.fileDataCh {
             if let safeData = data {
-                print("receiving file data (\(safeData.count) bytes)")
                 currentFile.data.append(safeData)
                 currentFile.receivedSize += safeData.count
                 if currentFile.receivedSize == currentFile.size {
-                    print("file reception complete")
                     currentFile.endTimestamp = Date()
                     let transactionTime = currentFile.endTimestamp!.timeIntervalSinceReferenceDate - currentFile.startTimestamp!.timeIntervalSinceReferenceDate
                     let throughput = Double(currentFile.size) / transactionTime
-                    print(String(format: "Throughput: %0.1fbytes/second", throughput))
+                    NSLog(String(format: "Throughput: %0.1fbytes/second", throughput))
                     uiUpdateDelegate?.didCompleteFileTransaction(name: currentFile.fileId.name, with: Int(transactionTime), and: Int(throughput))
+                    
+                    let decodedAdpcm = decodeAdpcm(from: currentFile.data.subdata(in: 0x100..<(currentFile.data.count - 1)))
+                    
+                    let storeResult = recordsManager.saveRecord(withRawWav: decodedAdpcm, andFileName: currentFile.fileId.name)
+                    if nil != storeResult {
+                        NSLog("FTS: record \(currentFile.fileId.name) failed to be saved, error: \(storeResult!.localizedDescription)")
+                    }
+                    NSLog("FTS: successfully stored record")
                 }
                 else {
-                    print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
                     let progress = Double(currentFile.receivedSize) / Double(currentFile.size)
                     uiUpdateDelegate?.didReceiveFileDataChunk(with: progress)
                 }
@@ -314,35 +328,33 @@ extension FileTransferService: CharNotificationDelegate {
         
         if char.uuidString == ServiceIds.FTS.fsStatusCh {
             if let safeData = data {
-                print("received file system status, \(safeData.count) bytes")
                 let fsInfo = parseFileSystemInformation(with: safeData)
                 if let safeFsInfo = fsInfo {
-                    print("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
+                    NSLog("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
                 }
                 else {
-                    print("Failed to parse received FileSystem info")
+                    NSLog("FTS: Failed to parse received FileSystem info")
                 }
             }
         }
         
         if char.uuidString == ServiceIds.FTS.statusCh {
             if let safeData = data {
-                print("received FTS status update:")
                 if safeData.count == 0 {
-                    print("error: 0-length status data received")
+                    NSLog("FTS: error: 0-length status data received")
                     return
                 }
                 if safeData[0] == 2 {
-                    print("\tfile not found error")
+                    NSLog("\tFTS: file not found error")
                 }
                 else if safeData[0] == 3 {
-                    print("\tfile system corruption error")
+                    NSLog("\tFTS: file system corruption error")
                 }
                 else if safeData[0] == 4 {
-                    print("\ttransaction aborted error")
+                    NSLog("\tFTS: transaction aborted error")
                 }
                 else if safeData[0] == 5 {
-                    print("\tgeneric error")
+                    NSLog("\tFTS: generic error")
                 }
             }
         }

@@ -1,9 +1,7 @@
-//
-//  DiscoveredPeripheral.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 18.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import CoreBluetooth
 

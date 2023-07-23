@@ -1,9 +1,7 @@
-//
-//  PairingViewController.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 19.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import UIKit
 import CoreBluetooth
@@ -50,7 +48,7 @@ class PairingViewController: UIViewController {
             deviceRSSILabel.textColor = .black
         }
         else {
-            print("targetPeripheral has been nil")
+            NSLog("targetPeripheral has been nil")
             assert(false)
         }
         
@@ -69,7 +67,7 @@ class PairingViewController: UIViewController {
             }
         }
         else {
-            print("Error: bluetoothManager is not initialized")
+            NSLog("PairingView Error: bluetoothManager is not initialized")
             assert(false)
         }
     }
@@ -79,7 +77,7 @@ class PairingViewController: UIViewController {
         if let p = targetPeripheral {
             let pairImmediateResult = bluetoothManager?.pairWithPeripheral(p)
             if pairImmediateResult != nil {
-                print("pairing has failed. Nothing is going to happen")
+                NSLog("PairingView: pairing has failed. Nothing is going to happen")
             }
         }
     }
@@ -89,7 +87,7 @@ class PairingViewController: UIViewController {
 extension PairingViewController : ConnectDelegate {
     func didConnectToPeripheral(error: Error?) {
         if let e = error {
-            print("Peripheral has failed to connect, error: \(e.localizedDescription)")
+            NSLog("PairingView: Peripheral has failed to connect, error: \(e.localizedDescription)")
             return
         }
         deviceConnectDisconnectButton.titleLabel?.text = K.Pairing.disconnectButtonText
@@ -106,11 +104,11 @@ extension PairingViewController : ConnectDelegate {
 extension PairingViewController : PairDelegate {
     func didPairWithPeripheral(error: Error?) {
         guard error == nil else {
-            print("pairing view: pairing error detected, \(error!.localizedDescription)")
+            NSLog("Pairing view: pairing error detected, \(error!.localizedDescription)")
             return
         }
         // At this point we are done and can close all views back to initial one
-        print("Pairing view: did pair with peripheral. Rolling back to initial view")
+        NSLog("Pairing view: did pair with peripheral. Rolling back to initial view")
         self.navigationController?.popToRootViewController(animated: true)
     }
 }

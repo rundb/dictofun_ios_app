@@ -1,11 +1,10 @@
-//
-//  MenuViewController.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 14.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import UIKit
+import AVFoundation
 
 class MenuViewController: UIViewController {
     var fts: FileTransferService?
@@ -13,6 +12,8 @@ class MenuViewController: UIViewController {
     @IBOutlet weak var bleConnectionStatusLabel: UILabel!
     @IBOutlet weak var ftsStatusLabel: UILabel!
     @IBOutlet weak var ftsTransactionProgressBar: UIProgressView!
+    @IBOutlet weak var playbackRecordNameLabel: UILabel!
+    @IBOutlet weak var playButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +21,7 @@ class MenuViewController: UIViewController {
         fts = getFileTransferService()
         bleConnectionStatusLabel.textColor = .black
         ftsStatusLabel.textColor = .black
+        playbackRecordNameLabel.textColor = .black
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -27,6 +29,8 @@ class MenuViewController: UIViewController {
         getBluetoothManager().uiUpdateDelegate = self
         fts?.uiUpdateDelegate = self
         ftsTransactionProgressBar.isHidden = true
+        playbackRecordNameLabel.isHidden = true
+        playButton.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -34,7 +38,6 @@ class MenuViewController: UIViewController {
         getBluetoothManager().uiUpdateDelegate = nil
         fts?.uiUpdateDelegate = nil
     }
-
     
     @IBAction func menuUnpairButtonPressed(_ sender: UIButton) {
         getBluetoothManager().unpair()
@@ -42,37 +45,67 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func testFts1ButtonPressed(_ sender: UIButton) {
-        print("Fts 1 button pressed: get files' list")
+        NSLog("Fts 1 button pressed: get files' list")
         let filesListResult = fts?.requestFilesList()
         guard filesListResult == nil else {
-            print("Files List request has failed")
+            NSLog("Files List request has failed")
             return
         }
     }
     @IBAction func testFts2ButtonPressed(_ sender: UIButton) {
-        print("Fts 2 button pressed: test file info request")
+        NSLog("Fts 2 button pressed: test file info request")
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
-            let lastId = filesIds![0]
+            let lastId = filesIds![count - 1]
             let error = fts?.requestFileInfo(with: lastId)
             if error != nil {
-                print("FTS file info request has failed")
+                NSLog("FTS file info request has failed")
             }
         }
     }
     
     @IBAction func testFts3ButtonPressed(_ sender: UIButton) {
-        print("Fts 3 button pressed: test file data request")
+        NSLog("Fts 3 button pressed: test file data request")
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
-            let lastId = filesIds![0]
+            let lastId = filesIds![count - 1]
             let error = fts?.requestFileData(with: lastId)
             if error != nil {
-                print("FTS file data request has failed")
+                NSLog("FTS file data request has failed")
             }
         }
+    }
+    @IBAction func playButtonPressed(_ sender: UIButton) {
+        NSLog("play button pressed")
+        if playbackRecordNameLabel.isHidden {
+            NSLog("MenuViewController: record's label is hidden. Are there any records stored?")
+            return
+        }
+        guard let recordUrl = recordsManager.getRecordURL(withFileName: playbackRecordNameLabel.text!) else {
+            NSLog("MenuViewController: failed to get record's URL")
+            return
+        }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            NSLog(recordUrl.relativePath)
+            recordsManager.player = try AVAudioPlayer(contentsOf: recordUrl, fileTypeHint: AVFileType.wav.rawValue)
+            guard let player = recordsManager.player else {
+                NSLog("MenuViewController: failed to get player object")
+                return
+            }
+            let playResult = player.play()
+            if !playResult {
+                NSLog("Failed to play back the record")
+            }
+        }
+        catch let error {
+            NSLog("MenuViewController: playback error \(error.localizedDescription)")
+        }
+        
     }
 }
 
@@ -101,6 +134,9 @@ extension MenuViewController: FtsToUiNotificationDelegate {
     
     func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int) {
         ftsStatusLabel.text = "FTS: file \(fileName) \nreceived in \(duration) seconds, \n\(throughput)bytes/sec"
+        playButton.isHidden = false
+        playbackRecordNameLabel.isHidden = false
+        playbackRecordNameLabel.text = fileName
     }
     
     

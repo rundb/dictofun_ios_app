@@ -1,9 +1,7 @@
-//
-//  ViewController.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 13.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import UIKit
 
@@ -15,11 +13,11 @@ class InitialViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if getBluetoothManager().paired {
-            print("dictofun is paired, continue to menu view")
+            NSLog("InitialView: dictofun is paired, continue to menu view")
             self.performSegue(withIdentifier: K.initialToMenuSegueName, sender: self)
         }
         else {
-            print("dictofun is not yet paired, stay at intro menu view")
+            NSLog("InitialView: dictofun is not yet paired, stay at intro menu view")
         }
     }
 

@@ -1,15 +1,14 @@
-//
-//  AppDelegate.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 13.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import UIKit
 
 var bluetoothManager = BluetoothManager()
 var printLogger = PrintLogger()
-var fileTransferService = FileTransferService(with: bluetoothManager)
+var recordsManager = RecordsManager()
+var fileTransferService = FileTransferService(with: bluetoothManager, andRecordsManager:  recordsManager)
 
 func getBluetoothManager() -> BluetoothManager {
     return bluetoothManager
@@ -17,6 +16,10 @@ func getBluetoothManager() -> BluetoothManager {
 
 func getFileTransferService() -> FileTransferService {
     return fileTransferService
+}
+
+func getRecordsManager() -> RecordsManager {
+    return recordsManager
 }
 
 @main
