@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class MenuViewController: UIViewController {
     var fts: FileTransferService?
@@ -79,6 +80,34 @@ class MenuViewController: UIViewController {
         }
     }
     @IBAction func playButtonPressed(_ sender: UIButton) {
+        NSLog("play button pressed")
+        if playbackRecordNameLabel.isHidden {
+            NSLog("MenuViewController: record's label is hidden. Are there any records stored?")
+            return
+        }
+        guard let recordUrl = recordsManager.getRecordURL(withFileName: playbackRecordNameLabel.text!) else {
+            NSLog("MenuViewController: failed to get record's URL")
+            return
+        }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
+            NSLog(recordUrl.relativePath)
+            recordsManager.player = try AVAudioPlayer(contentsOf: recordUrl, fileTypeHint: AVFileType.wav.rawValue)
+            guard let player = recordsManager.player else {
+                NSLog("MenuViewController: failed to get player object")
+                return
+            }
+            let playResult = player.play()
+            if !playResult {
+                NSLog("Failed to play back the record")
+            }
+        }
+        catch let error {
+            NSLog("MenuViewController: playback error \(error.localizedDescription)")
+        }
+        
     }
 }
 

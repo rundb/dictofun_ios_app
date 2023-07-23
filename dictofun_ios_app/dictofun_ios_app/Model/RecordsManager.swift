@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import AVFoundation
 
 /// This class implements the storage functionality for files received from the Dictofun
 class RecordsManager {
     private let fileManager: FileManager = .default
     private let recordsFolderPath: String = "records"
+    var player: AVAudioPlayer? = nil
     
     enum FileSystemError: Error {
         case urlCreationError(String)
@@ -26,15 +28,24 @@ class RecordsManager {
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
         
         var isDir: ObjCBool = true
-        if !fileManager.fileExists(atPath: recordsFolderUrl.absoluteString, isDirectory: &isDir) {
+        if !fileManager.fileExists(atPath: recordsFolderUrl.relativePath, isDirectory: &isDir) {
             NSLog("RecordsManager: records' folder doesn't exist: creating one")
             do {
-                try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: true)
+                try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: false)
+                NSLog("RecordsManager: created records'folder")
             }
-            catch {
-                NSLog("RecordsManager: failed to create records' directory")
+            catch let error {
+                NSLog("RecordsManager: failed to create records' directory, error: \(error.localizedDescription)")
             }
         }
+    }
+    
+    private func getRecordsFolderUrl() -> URL? {
+        guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else
+        {
+            return nil
+        }
+        return url
     }
     
     private func makeRecordURL(forFileNamed name: String) -> URL? {
@@ -43,6 +54,7 @@ class RecordsManager {
             return nil
         }
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
+        
         return recordsFolderUrl.appending(path: name)
     }
     
@@ -50,15 +62,25 @@ class RecordsManager {
     /// This function stores the record received from the Dictofun. It doesn't perform any manipulations with the data, so it implies
     /// that all decoding has been performed before entering this class. Wav header should also be applied before the call.
     func saveRecord(withRawWav data: Data, andFileName name: String) -> Error? {
-        guard let url = makeRecordURL(forFileNamed: name) else {
+        guard let url = makeRecordURL(forFileNamed: name+".wav") else {
             return .some(FileSystemError.urlCreationError("URL could not be generated"))
         }
         
-        let wavFile = createWaveHeader(data: data)
+        let wavFileHeader = createWaveHeader(data: data)
+        let wavFile = wavFileHeader + data
         
-        NSLog("Records Manager: creating path \(url.absoluteString)")
+        print(wavFile.count)
+        print(data.count)
+        for i in stride(from: 0, through: 0x1000, by: 16) {
+            print(String(format: "(%x) %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
+                         i, wavFile[i + 0], wavFile[i + 1], wavFile[i + 2], wavFile[i + 3], wavFile[i + 4], wavFile[i + 5], wavFile[i + 6], wavFile[i + 7],
+                            wavFile[i + 8], wavFile[i + 9], wavFile[i + 10], wavFile[i + 11], wavFile[i + 12], wavFile[i + 13], wavFile[i + 14], wavFile[i + 15]))
+        }
+        
+        NSLog("Records Manager: creating path \(url.relativePath)")
         do {
             try wavFile.write(to: url)
+            NSLog("Records Manager: saved a wav file to \(url.relativePath)")
         }
         catch {
             NSLog("RecordsManager: failed to write record's data")
@@ -66,6 +88,31 @@ class RecordsManager {
         }
         
         return nil
+    }
+    
+    func exists(url: URL?) -> Bool {
+        guard let safeUrl = url else {
+            return false
+        }
+        return fileManager.fileExists(atPath: safeUrl.relativePath)
+    }
+    
+    func getRecordURL(withFileName fileName: String) -> URL? {
+        let recordsUrl = makeRecordURL(forFileNamed: "")
+        do {
+            let items = try fileManager.contentsOfDirectory(at: recordsUrl!, includingPropertiesForKeys: nil)
+            for item in items {
+                if item.relativePath.contains(fileName) {
+                    return item
+                }
+            }
+        }
+        catch {
+        }
+        guard let url = makeRecordURL(forFileNamed: fileName+".wav") else {
+            return nil
+        }
+        return url
     }
     
     private func intToByteArray(_ i: Int32) -> [UInt8] {
@@ -87,7 +134,6 @@ class RecordsManager {
      }
     
     private func createWaveHeader(data: Data) -> Data {
-
          let sampleRate:Int32 = 16000
          let chunkSize:Int32 = 36 + Int32(data.count)
          let subChunkSize:Int32 = 16
@@ -129,15 +175,15 @@ class RecordsManager {
             return []
         }
         do {
-            let items = try fileManager.contentsOfDirectory(atPath: recordsPath.absoluteString)
+            let items = try fileManager.contentsOfDirectory(atPath: recordsPath.relativePath)
             var result: [String] = []
             for item in items {
                 result.append(item)
             }
             return result
         }
-        catch {
-            NSLog("RecordsManager::getRecordsList - failed to retrieve files from the folder")
+        catch let error {
+            NSLog("RecordsManager::getRecordsList - failed to retrieve files from the folder, error: \(error.localizedDescription)")
         }
         return []
     }

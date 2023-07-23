@@ -316,13 +316,14 @@ extension FileTransferService: CharNotificationDelegate {
                     
                     NSLog("raw size: \(currentFile.data.count), decoded: \(decodedAdpcm.count)")
                     
-                    let storeResult = recordsManager.saveRecord(withRawWav: currentFile.data, andFileName: currentFile.fileId.name)
+                    let storeResult = recordsManager.saveRecord(withRawWav: decodedAdpcm, andFileName: currentFile.fileId.name)
                     if nil != storeResult {
                         NSLog("FTS: record \(currentFile.fileId.name) failed to be saved, error: \(storeResult!.localizedDescription)")
                     }
+                    NSLog("FTS: successfully stored record")
                 }
                 else {
-                    print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
+//                    print("receiving: \(currentFile.receivedSize)/\(currentFile.size)")
                     let progress = Double(currentFile.receivedSize) / Double(currentFile.size)
                     uiUpdateDelegate?.didReceiveFileDataChunk(with: progress)
                 }
