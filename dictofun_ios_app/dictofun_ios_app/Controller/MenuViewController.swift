@@ -1,9 +1,7 @@
-//
-//  MenuViewController.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 14.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import UIKit
 import AVFoundation
@@ -47,35 +45,35 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func testFts1ButtonPressed(_ sender: UIButton) {
-        print("Fts 1 button pressed: get files' list")
+        NSLog("Fts 1 button pressed: get files' list")
         let filesListResult = fts?.requestFilesList()
         guard filesListResult == nil else {
-            print("Files List request has failed")
+            NSLog("Files List request has failed")
             return
         }
     }
     @IBAction func testFts2ButtonPressed(_ sender: UIButton) {
-        print("Fts 2 button pressed: test file info request")
+        NSLog("Fts 2 button pressed: test file info request")
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
             let lastId = filesIds![count - 1]
             let error = fts?.requestFileInfo(with: lastId)
             if error != nil {
-                print("FTS file info request has failed")
+                NSLog("FTS file info request has failed")
             }
         }
     }
     
     @IBAction func testFts3ButtonPressed(_ sender: UIButton) {
-        print("Fts 3 button pressed: test file data request")
+        NSLog("Fts 3 button pressed: test file data request")
         let filesIds = fts?.getFileIds()
         if (filesIds?.count ?? 0) > 0 {
             let count = filesIds!.count
             let lastId = filesIds![count - 1]
             let error = fts?.requestFileData(with: lastId)
             if error != nil {
-                print("FTS file data request has failed")
+                NSLog("FTS file data request has failed")
             }
         }
     }

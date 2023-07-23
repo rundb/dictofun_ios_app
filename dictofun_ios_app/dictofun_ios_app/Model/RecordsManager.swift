@@ -1,9 +1,7 @@
-//
-//  RecordsManager.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 21.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import Foundation
 import AVFoundation
@@ -68,14 +66,6 @@ class RecordsManager {
         
         let wavFileHeader = createWaveHeader(data: data)
         let wavFile = wavFileHeader + data
-        
-        print(wavFile.count)
-        print(data.count)
-        for i in stride(from: 0, through: 0x1000, by: 16) {
-            print(String(format: "(%x) %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
-                         i, wavFile[i + 0], wavFile[i + 1], wavFile[i + 2], wavFile[i + 3], wavFile[i + 4], wavFile[i + 5], wavFile[i + 6], wavFile[i + 7],
-                            wavFile[i + 8], wavFile[i + 9], wavFile[i + 10], wavFile[i + 11], wavFile[i + 12], wavFile[i + 13], wavFile[i + 14], wavFile[i + 15]))
-        }
         
         NSLog("Records Manager: creating path \(url.relativePath)")
         do {

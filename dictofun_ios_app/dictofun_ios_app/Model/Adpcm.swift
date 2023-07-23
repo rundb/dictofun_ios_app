@@ -1,9 +1,7 @@
-//
-//  Adpcm.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 21.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import Foundation
 import AVFoundation
@@ -106,13 +104,4 @@ func decodeAdpcm(from data: Data) -> Data {
     }
     
     return output
-}
-
-func pcmToWav(with data: Data, andFrequency frequency: Int) -> AVAudioFile? {
-    var output = Data([])
-    
-    let format = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16000.0, channels: 1, interleaved: false)
-    
-    
-    return nil
 }
