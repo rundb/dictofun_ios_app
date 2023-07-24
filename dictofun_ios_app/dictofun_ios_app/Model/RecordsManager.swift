@@ -7,7 +7,7 @@ import Foundation
 import AVFoundation
 
 /// This class implements the storage functionality for files received from the Dictofun
-class RecordsManager {
+class RecordsManager: NSObject {
     private let fileManager: FileManager = .default
     private let recordsFolderPath: String = "records"
     var player: AVAudioPlayer? = nil
@@ -17,7 +17,12 @@ class RecordsManager {
         case fileWriteError(String)
     }
     
-    init() {
+    enum PlaybackError: Error {
+        case failedToPlay
+    }
+    
+    override init() {
+        super.init()
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             assert(false)
             NSLog("RecordsManager: failed to initialize the records' folder URL")
@@ -159,16 +164,24 @@ class RecordsManager {
          return header
     }
     
-    func getRecordsList() -> [String] {
+    // TODO: replace sync call to duration with async one
+    func getRecordsList() -> [Record] {
         guard let recordsPath = makeRecordURL(forFileNamed: "") else {
             NSLog("RecordsManager::getRecordsList - failed to get folder's URL")
             return []
         }
         do {
             let items = try fileManager.contentsOfDirectory(atPath: recordsPath.relativePath)
-            var result: [String] = []
+            var result: [Record] = []
             for item in items {
-                result.append(item)
+                let url = recordsPath.appendingPathComponent(item)
+                let name = url.lastPathComponent
+                let audioAsset = AVURLAsset.init(url: url)
+                let duration = audioAsset.duration
+                let durationInSeconds = Int(CMTimeGetSeconds(duration))
+//                let durationInSeconds = 2
+                let record = Record(url: url, name: name, durationSeconds: durationInSeconds, progress: 0)
+                result.append(record)
             }
             return result
         }
@@ -176,5 +189,55 @@ class RecordsManager {
             NSLog("RecordsManager::getRecordsList - failed to retrieve files from the folder, error: \(error.localizedDescription)")
         }
         return []
+    }
+    
+    func playRecord(_ url: URL) -> Error? {
+        NSLog("RecordsManager: playing \(url.relativePath)")
+        if player == nil {
+            do {
+                try AVAudioSession.sharedInstance().setCategory(.playback)
+                try AVAudioSession.sharedInstance().setActive(true)
+                player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.wav.rawValue)
+                guard let safePlayer = player else {
+                    NSLog("RecordsManager: failed to play record \(url.relativePath). Failed to create a player")
+                    return .some(PlaybackError.failedToPlay)
+                }
+                let playResult = safePlayer.play()
+                if !playResult {
+                    NSLog("RecordsManager: failed to play record \(url.relativePath). Playback error")
+                    return .some(PlaybackError.failedToPlay)
+                }
+            }
+            catch let error {
+                NSLog("RecordsManager: exception during the playback. Error: \(error.localizedDescription)")
+                return .some(PlaybackError.failedToPlay)
+            }
+            player?.delegate = self
+        }
+        else {
+            return .some(PlaybackError.failedToPlay)
+        }
+        return nil
+    }
+    
+    func removeRecord(_ url: URL) {
+        do {
+            try fileManager.removeItem(at: url)
+        }
+        catch let error {
+            NSLog("RecordsManager: failed to remove record \(url.relativePath). Error: \(error.localizedDescription)")
+        }
+    }
+}
+
+extension RecordsManager: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        self.player = nil
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        }
+        catch let error {
+            NSLog("RecordsManager: failed to deactivate av audio session. Error: \(error.localizedDescription)")
+        }
     }
 }

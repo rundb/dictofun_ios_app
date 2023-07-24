@@ -87,6 +87,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     var connectDelegate: ConnectDelegate?
     var pairDelegate: PairDelegate?
     var uiUpdateDelegate: UIBleStatusUpdateDelegate?
+    var serviceDiscoveryDelegate: BleServicesDiscoveryDelegate?
     
     //MARK: - Class Properties
     fileprivate let FTSServiceUUID             : CBUUID
@@ -447,6 +448,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 }
             }
         }
+        serviceDiscoveryDelegate?.didDiscoverServices()
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {

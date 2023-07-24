@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RecordReusableCell" rowHeight="53" id="KGk-i7-Jjw" customClass="RecordCell" customModule="dictofun_ios_app" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="363" height="53"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="363" height="53"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" spacing="28" translatesAutoresizingMaskIntoConstraints="NO" id="34q-Mq-fhO">
+                        <rect key="frame" x="0.0" y="0.0" width="363" height="53"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9fS-24-6jQ" userLabel="playPauseButton">
+                                <rect key="frame" x="0.0" y="18.666666666666668" width="30" height="34.333333333333329"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="Pdf-ds-FKx"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="arrowtriangle.right.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="playButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="JHR-TU-dC6"/>
+                                </connections>
+                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mcj-4E-kED">
+                                <rect key="frame" x="58" y="11" width="229" height="42"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" semanticContentAttribute="spatial" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="YlK-bU-IJF">
+                                        <rect key="frame" x="0.0" y="0.0" width="229" height="17"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23.07.23 13:33:20" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3Z-VG-z4s" userLabel="recordNameLabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="110.66666666666667" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:05" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oSu-Sx-p2E" userLabel="recordTimeLabel">
+                                                <rect key="frame" x="118.66666666666666" y="0.0" width="110.33333333333334" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                    </stackView>
+                                    <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" semanticContentAttribute="spatial" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="xRl-SN-26a" userLabel="recordPlaybackProgressBar">
+                                        <rect key="frame" x="39.666666666666671" y="25" width="150" height="17"/>
+                                        <color key="progressTintColor" systemColor="tintColor"/>
+                                        <color key="trackTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </progressView>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JYD-Rp-hq2" userLabel="enterRecordDetailsButton">
+                                <rect key="frame" x="315" y="18.666666666666668" width="48" height="34.333333333333329"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="trash" catalog="system"/>
+                                <connections>
+                                    <action selector="removeButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="DQO-iK-Ejd"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <color key="backgroundColor" red="0.4512738287008633" green="0.85103178299540794" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                <color key="tintColor" systemColor="tintColor"/>
+                <constraints>
+                    <constraint firstItem="34q-Mq-fhO" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="ATp-C4-FKN"/>
+                    <constraint firstAttribute="bottom" secondItem="34q-Mq-fhO" secondAttribute="bottom" id="Emh-nu-jI1"/>
+                    <constraint firstAttribute="trailing" secondItem="34q-Mq-fhO" secondAttribute="trailing" id="It3-O7-w1g"/>
+                    <constraint firstItem="34q-Mq-fhO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Udp-Oj-UsI"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="recordDurationLabel" destination="oSu-Sx-p2E" id="RpJ-EO-OzH"/>
+                <outlet property="recordNameLabel" destination="h3Z-VG-z4s" id="3Ba-aH-ZXb"/>
+                <outlet property="recordProgressBar" destination="xRl-SN-26a" id="nZ1-0r-saw"/>
+            </connections>
+            <point key="canvasLocation" x="258.77862595419845" y="-35.563380281690144"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="arrowtriangle.right.fill" catalog="system" width="128" height="113"/>
+        <image name="trash" catalog="system" width="117" height="128"/>
+        <systemColor name="tintColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
