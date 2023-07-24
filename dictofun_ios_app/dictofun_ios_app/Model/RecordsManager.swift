@@ -177,9 +177,9 @@ class RecordsManager: NSObject {
                 let url = recordsPath.appendingPathComponent(item)
                 let name = url.lastPathComponent
                 let audioAsset = AVURLAsset.init(url: url)
-//                let duration = audioAsset.duration
-//                let durationInSeconds = Int(CMTimeGetSeconds(duration))
-                let durationInSeconds = 2
+                let duration = audioAsset.duration
+                let durationInSeconds = Int(CMTimeGetSeconds(duration))
+//                let durationInSeconds = 2
                 let record = Record(url: url, name: name, durationSeconds: durationInSeconds, progress: 0)
                 result.append(record)
             }

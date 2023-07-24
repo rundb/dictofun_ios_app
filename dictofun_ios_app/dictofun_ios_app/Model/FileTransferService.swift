@@ -380,6 +380,10 @@ extension FileTransferService: CharNotificationDelegate {
                     }
                     NSLog("FTS: successfully stored record")
                     uiUpdateDelegate?.didCompleteFileTransaction(name: currentFile.fileId.name, with: Int(transactionTime), and: Int(throughput))
+                    let reqResult = requestFilesList()
+                    if reqResult != nil {
+                        NSLog("FTS: failed to re-request files listy")
+                    }
                 }
                 else {
                     let progress = Double(currentFile.receivedSize) / Double(currentFile.size)

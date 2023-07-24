@@ -29,6 +29,9 @@ class RecordsViewController: UIViewController {
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
         }
+        else {
+            statusDataLabel.text = "Status: disconnected"
+        }
         recordsTitleLabel.textColor = .black
     }
     
