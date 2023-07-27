@@ -15,6 +15,7 @@ struct ServiceIds {
         static let fileDataCh = "1005"
         static let fsStatusCh = "1006"
         static let statusCh =  "1007"
+        static let fileListNextCh = "1008"
     }
     static let pairingWriteCh = "10FE"
 

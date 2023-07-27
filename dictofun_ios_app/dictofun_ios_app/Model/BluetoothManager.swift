@@ -105,6 +105,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         ServiceIds.FTS.fileDataCh,
         ServiceIds.FTS.fileInfoCh,
         ServiceIds.FTS.fileListCh,
+        ServiceIds.FTS.fileListNextCh,
         ServiceIds.pairingWriteCh
     ]
     var ftsChars: [String:CBCharacteristic?] = [:]

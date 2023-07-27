@@ -65,7 +65,7 @@ class RecordsManager: NSObject {
     /// This function stores the record received from the Dictofun. It doesn't perform any manipulations with the data, so it implies
     /// that all decoding has been performed before entering this class. Wav header should also be applied before the call.
     func saveRecord(withRawWav data: Data, andFileName name: String) -> Error? {
-        guard let url = makeRecordURL(forFileNamed: name+".wav") else {
+        guard let url = makeRecordURL(forFileNamed: name) else {
             return .some(FileSystemError.urlCreationError("URL could not be generated"))
         }
         
@@ -104,7 +104,7 @@ class RecordsManager: NSObject {
         }
         catch {
         }
-        guard let url = makeRecordURL(forFileNamed: fileName+".wav") else {
+        guard let url = makeRecordURL(forFileNamed: fileName) else {
             return nil
         }
         return url
