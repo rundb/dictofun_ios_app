@@ -64,10 +64,9 @@ extension RecordsViewController: UITableViewDataSource {
         cell.recordURL = r.url
         cell.recordProgressBar.isHidden = true
         cell.recordProgressBar.trackTintColor = .gray
+        cell.tableReloadDelegate = self
         return cell
     }
-    
-    
 }
 
 // MARK: - UIBleStatusUpdateDelegate
@@ -93,6 +92,13 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
     
     func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int) {
         ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec,\n throughput: \(throughput) bytes/sec"
+        recordsTable.reloadData()
+    }
+}
+
+// MARK: - TableReloadDelegate
+extension RecordsViewController: TableReloadDelegate {
+    func reloadTable() {
         recordsTable.reloadData()
     }
     
