@@ -49,7 +49,7 @@ class RecordsViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
+        records = recordsManager!.getRecordsList()
         return records.count
     }
     
@@ -59,7 +59,8 @@ extension RecordsViewController: UITableViewDataSource {
         cell.recordNameLabel.textColor = .black
         let r = records[indexPath.row]
         cell.recordDurationLabel.text = String(format: "%02d:%02d", r.durationSeconds / 60, r.durationSeconds % 60)
-        cell.recordNameLabel.text = "\(r.name)"
+        
+        cell.recordNameLabel.text = "\( RecordsManager.getReadableFileName(with: r.name) )"
         cell.recordURL = r.url
         cell.recordProgressBar.isHidden = true
         cell.recordProgressBar.trackTintColor = .gray
