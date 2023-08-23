@@ -164,6 +164,15 @@ class RecordsManager: NSObject {
          return header
     }
     
+    func getReadableFileName(with raw: String) -> String {
+        let day = String(raw[raw.index(raw.startIndex, offsetBy: 0)...raw.index(raw.startIndex, offsetBy: 1)])
+        let hour = String(raw[raw.index(raw.startIndex, offsetBy: 2)...raw.index(raw.startIndex, offsetBy: 3)])
+        let minute = String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)])
+        let second = String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)])
+        
+        return day + ", " + hour + ":" + minute + ":" + second
+    }
+    
     // TODO: replace sync call to duration with async one
     func getRecordsList() -> [Record] {
         guard let recordsPath = makeRecordURL(forFileNamed: "") else {
@@ -175,7 +184,7 @@ class RecordsManager: NSObject {
             var result: [Record] = []
             for item in items {
                 let url = recordsPath.appendingPathComponent(item)
-                let name = url.lastPathComponent
+                let name = getReadableFileName(with: url.lastPathComponent)
                 let audioAsset = AVURLAsset.init(url: url)
                 let duration = audioAsset.duration
                 let durationInSeconds = Int(CMTimeGetSeconds(duration))
