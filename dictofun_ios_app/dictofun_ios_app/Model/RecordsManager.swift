@@ -164,7 +164,7 @@ class RecordsManager: NSObject {
          return header
     }
     
-    func getReadableFileName(with raw: String) -> String {
+    static func getReadableFileName(with raw: String) -> String {
         let day = String(raw[raw.index(raw.startIndex, offsetBy: 0)...raw.index(raw.startIndex, offsetBy: 1)])
         let hour = String(raw[raw.index(raw.startIndex, offsetBy: 2)...raw.index(raw.startIndex, offsetBy: 3)])
         let minute = String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)])
@@ -184,7 +184,8 @@ class RecordsManager: NSObject {
             var result: [Record] = []
             for item in items {
                 let url = recordsPath.appendingPathComponent(item)
-                let name = getReadableFileName(with: url.lastPathComponent)
+//                let name = RecordsManager.getReadableFileName(with: url.lastPathComponent)
+                let name = url.lastPathComponent
                 let audioAsset = AVURLAsset.init(url: url)
                 let duration = audioAsset.duration
                 let durationInSeconds = Int(CMTimeGetSeconds(duration))
