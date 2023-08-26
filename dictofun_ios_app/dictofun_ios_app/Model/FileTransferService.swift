@@ -57,6 +57,8 @@ class FileTransferService {
     
     private var currentFile: CurrentFile
     
+    static let minimalFileSize = 0x200
+    
     init(with bluetoothManager: BluetoothManager, andRecordsManager recordsManager: RecordsManager) {
         self.bluetoothManager = bluetoothManager
         self.recordsManager = recordsManager
@@ -493,7 +495,11 @@ extension FileTransferService: CharNotificationDelegate {
                     let throughput = Double(currentFile.size) / transactionTime
                     NSLog(String(format: "Throughput: %0.1fbytes/second", throughput))
                     
-                    let decodedAdpcm = decodeAdpcm(from: currentFile.data.subdata(in: 0x100..<(currentFile.data.count - 1)))
+                    var decodedAdpcm: Data = Data([])
+                    
+                    if currentFile.data.count >= FileTransferService.minimalFileSize {
+                        decodedAdpcm = decodeAdpcm(from: currentFile.data.subdata(in: 0x100..<(currentFile.data.count - 1)))
+                    }
                     
                     let storeResult = recordsManager.saveRecord(withRawWav: decodedAdpcm, andFileName: currentFile.fileId.name)
                     if nil != storeResult {
@@ -503,7 +509,7 @@ extension FileTransferService: CharNotificationDelegate {
                     uiUpdateDelegate?.didCompleteFileTransaction(name: currentFile.fileId.name, with: Int(transactionTime), and: Int(throughput))
                     let reqResult = requestFilesList()
                     if reqResult != nil {
-                        NSLog("FTS: failed to re-request files listy")
+                        NSLog("FTS: failed to re-request files list")
                     }
                 }
                 else {

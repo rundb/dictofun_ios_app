@@ -174,7 +174,7 @@ class RecordsManager: NSObject {
     }
     
     // TODO: replace sync call to duration with async one
-    func getRecordsList() -> [Record] {
+    func getRecordsList(excludeEmpty: Bool = false) -> [Record] {
         guard let recordsPath = makeRecordURL(forFileNamed: "") else {
             NSLog("RecordsManager::getRecordsList - failed to get folder's URL")
             return []
@@ -189,9 +189,29 @@ class RecordsManager: NSObject {
                 let audioAsset = AVURLAsset.init(url: url)
                 let duration = audioAsset.duration
                 let durationInSeconds = Int(CMTimeGetSeconds(duration))
-//                let durationInSeconds = 2
+                
+                var fileSize = 0
+                if excludeEmpty {
+                    do {
+                        let fileAttr = try fileManager.attributesOfItem(atPath: url.relativePath)
+                        fileSize = fileAttr[FileAttributeKey.size] as! Int
+                        if fileSize < FileTransferService.minimalFileSize {
+                            NSLog("RecordsManager, discovered file smaller than minimal: \(fileSize)")
+                        }
+                    }
+                    catch let error {
+                        NSLog("RecordsManager: exception while attempting to extract file size (\(error.localizedDescription))")
+                    }
+                }
+                
                 let record = Record(url: url, name: name, durationSeconds: durationInSeconds, progress: 0)
-                result.append(record)
+                if !excludeEmpty {
+                    result.append(record)
+                }
+                else if fileSize >= FileTransferService.minimalFileSize
+                {
+                    result.append(record)
+                }
             }
             return result
         }

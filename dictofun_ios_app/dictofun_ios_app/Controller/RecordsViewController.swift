@@ -25,7 +25,7 @@ class RecordsViewController: UIViewController {
         recordsManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
-        records = recordsManager!.getRecordsList()
+        records = recordsManager!.getRecordsList(excludeEmpty: true)
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
         }
@@ -49,7 +49,7 @@ class RecordsViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        records = recordsManager!.getRecordsList()
+        records = recordsManager!.getRecordsList(excludeEmpty: true)
         return records.count
     }
     
