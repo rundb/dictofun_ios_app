@@ -165,12 +165,15 @@ class RecordsManager: NSObject {
     }
     
     static func getReadableFileName(with raw: String) -> String {
-        let day = String(raw[raw.index(raw.startIndex, offsetBy: 0)...raw.index(raw.startIndex, offsetBy: 1)])
-        let hour = String(raw[raw.index(raw.startIndex, offsetBy: 2)...raw.index(raw.startIndex, offsetBy: 3)])
-        let minute = String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)])
-        let second = String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)])
+        print(raw.count)
+        let year = String(raw[raw.index(raw.startIndex, offsetBy: 2)...raw.index(raw.startIndex, offsetBy: 3)])
+        let month = String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)])
+        let day = String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)])
+        let hour = String(raw[raw.index(raw.startIndex, offsetBy: 8)...raw.index(raw.startIndex, offsetBy: 9)])
+        let minute = String(raw[raw.index(raw.startIndex, offsetBy: 10)...raw.index(raw.startIndex, offsetBy: 11)])
+        let second = String(raw[raw.index(raw.startIndex, offsetBy: 12)...raw.index(raw.startIndex, offsetBy: 13)])
         
-        return day + ", " + hour + ":" + minute + ":" + second
+        return year + "." + month + "." + day + ", " + hour + ":" + minute + ":" + second
     }
     
     // TODO: replace sync call to duration with async one
@@ -256,6 +259,29 @@ class RecordsManager: NSObject {
         }
         catch let error {
             NSLog("RecordsManager: failed to remove record \(url.relativePath). Error: \(error.localizedDescription)")
+        }
+    }
+    
+    func removeAllRecords() {
+        guard let recordsPath = makeRecordURL(forFileNamed: "") else {
+            NSLog("RecordsManager::removeAllRecords - failed to get folder's URL")
+            return
+        }
+        do {
+            let items = try fileManager.contentsOfDirectory(atPath: recordsPath.relativePath)
+
+            for item in items {
+                let url = recordsPath.appendingPathComponent(item)
+                do {
+                    try fileManager.removeItem(at: url)
+                }
+                catch let error {
+                    NSLog("remove records: failed to remove error \(item), error: \(error.localizedDescription)")
+                }
+            }
+        }
+        catch let error {
+            NSLog("removeAllRecords(): error \(error.localizedDescription)")
         }
     }
 }

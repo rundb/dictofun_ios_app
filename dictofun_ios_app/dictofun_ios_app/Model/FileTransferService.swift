@@ -15,6 +15,7 @@ protocol FtsToUiNotificationDelegate {
     func didReceiveNextFileSize(with fileName: String, and fileSize: Int)
     func didReceiveFileDataChunk(with progressPercentage: Double)
     func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int)
+    func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int)
 }
 
 protocol BleServicesDiscoveryDelegate {
@@ -40,7 +41,8 @@ class FileTransferService {
     private let statusCharCBUUID = CBUUID(string: ServiceIds.FTS.statusCh)
     private let fsStatusCharCBUUID = CBUUID(string: ServiceIds.FTS.fsStatusCh)
     
-    private let fileIdSize = 8
+    private let fileIdSize = 16
+    private let fileCountFieldSize = 8
     
     private var fileIds: [FileId] = []
     
@@ -63,7 +65,7 @@ class FileTransferService {
         self.bluetoothManager = bluetoothManager
         self.recordsManager = recordsManager
         
-        self.currentFile = CurrentFile(fileId: FileId(value: Data([0,0,0,0,0,0,0,0])), size: 0, receivedSize: 0, data: Data([]))
+        self.currentFile = CurrentFile(fileId: FileId(value: Data([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])), size: 0, receivedSize: 0, data: Data([]))
         self.filesListCtx = FilesListContext()
         
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileListCharCBUUID, delegate: self) == nil else {
@@ -167,6 +169,21 @@ class FileTransferService {
     func requestFileSystemStatus() -> Error? {
         let requestData = Data([UInt8(4)])
         
+        NSLog("FTS: requesting file system status")
+        
+        guard bluetoothManager.setNotificationStateFor(characteristic: fileDataCharCBUUID, toEnabled: false) == nil else {
+            return .some(FtsOpResult.setupError)
+        }
+        guard bluetoothManager.setNotificationStateFor(characteristic: fileListCharCBUUID, toEnabled: false) == nil else {
+            return .some(FtsOpResult.setupError)
+        }
+        guard bluetoothManager.setNotificationStateFor(characteristic: fileListNextCharCBUUID, toEnabled: false) == nil else {
+            return .some(FtsOpResult.setupError)
+        }
+        guard bluetoothManager.setNotificationStateFor(characteristic: fileInfoCharCBUUID, toEnabled: false) == nil else {
+            return .some(FtsOpResult.setupError)
+        }
+        
         guard bluetoothManager.setNotificationStateFor(characteristic: fsStatusCharCBUUID, toEnabled: true) == nil else {
             NSLog("FTS: Failed to enable notifications for fs status char \(fsStatusCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
@@ -184,7 +201,7 @@ class FileTransferService {
         let value: Data
         init(value: Data) {
             self.value = value
-            assert(value.count == 8)
+            assert(value.count == 16)
         }
         
         var reversedValue: Data {
@@ -226,12 +243,11 @@ class FileTransferService {
     private func parseFilesList(with data: Data?) -> [FileId] {
         if let safeData = data {
             var filesCount = 0
-            for i in 0...(fileIdSize-1) {
+            for i in 0...(fileCountFieldSize - 1) {
                 filesCount += Int(safeData[i]) * (1 << i)
             }
             
-            
-            if safeData.count != filesCount * fileIdSize + 8 {
+            if safeData.count != filesCount * fileIdSize + fileCountFieldSize {
                 if filesCount > FilesListContext.maxFilesCount {
                     NSLog("FTS: received a malformed files list (\(filesCount) > max files \(FilesListContext.maxFilesCount)")
                     return []
@@ -239,7 +255,7 @@ class FileTransferService {
                 NSLog("FTS: count is bigger than actual size, so there are more files in fileListNext char")
                 filesListCtx.totalFilesCount = filesCount
                 filesListCtx.isNextFilesListCharNeeded = true
-                filesCount = (safeData.count - 8) / 8
+                filesCount = (safeData.count - fileCountFieldSize) / fileIdSize
                 filesListCtx.totalFilesCount -= filesCount
             }
 
@@ -252,7 +268,8 @@ class FileTransferService {
                 return []
             }
             for i in 0...(filesCount-1) {
-                let fileIdBytes = safeData.subdata(in: (fileIdSize * (i+1))..<(fileIdSize * (i + 2)) )
+                let fileIdBytes = safeData.subdata(
+                    in: (fileCountFieldSize + fileIdSize * i)..<(fileCountFieldSize + fileIdSize * (i + 1)) )
                 let fileId = FileId(value: fileIdBytes)
                 fileIds.append(fileId)
             }
@@ -333,9 +350,11 @@ extension FileTransferService: CharNotificationDelegate {
         var rhsSet: Set<String> = []
         for name in rhs {
             rhsSet.insert(name)
+            NSLog("rhs: name = \(name), len=\(name.count)")
         }
         var result: [String] = []
         for name in lhs {
+            NSLog("lhs: name = \(name), len=\(name.count)")
             if !rhsSet.contains(name) {
                 result.append(name)
             }
@@ -409,6 +428,15 @@ extension FileTransferService: CharNotificationDelegate {
             if requestResult != nil {
                 NSLog("FTS::didReceiveFilesList: failed to request file information. Error: \(requestResult!.localizedDescription)")
             }
+        }
+        else {
+            // Additionally by the end request the FS status data
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
+                let result = self.requestFileSystemStatus()
+                if result != nil {
+                    NSLog("Failed to request file system status")
+                }
+            })
         }
     }
     
@@ -520,10 +548,12 @@ extension FileTransferService: CharNotificationDelegate {
         }
         
         else if char.uuidString == ServiceIds.FTS.fsStatusCh {
+            NSLog("Received file system status")
             if let safeData = data {
                 let fsInfo = parseFileSystemInformation(with: safeData)
                 if let safeFsInfo = fsInfo {
                     NSLog("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
+                    uiUpdateDelegate?.didReceiveFileSystemState(count: safeFsInfo.count, occupied: safeFsInfo.occupied, free: safeFsInfo.free)
                 }
                 else {
                     NSLog("FTS: Failed to parse received FileSystem info")

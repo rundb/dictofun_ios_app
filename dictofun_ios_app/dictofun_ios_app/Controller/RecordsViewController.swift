@@ -13,6 +13,7 @@ class RecordsViewController: UIViewController {
     @IBOutlet weak var statusDataLabel: UILabel!
     @IBOutlet weak var ftsStatusLabel: UILabel!
     @IBOutlet weak var recordsTitleLabel: UILabel!
+    @IBOutlet weak var ftsFsStatusLabel: UILabel!
     
     var records: [Record] = []
     
@@ -20,6 +21,7 @@ class RecordsViewController: UIViewController {
         super.viewDidLoad()
         statusDataLabel.textColor = .black
         ftsStatusLabel.textColor = .black
+        ftsFsStatusLabel.textColor = .black
         getBluetoothManager().uiUpdateDelegate = self
         getFileTransferService().uiUpdateDelegate = self
         recordsManager = getRecordsManager()
@@ -78,8 +80,12 @@ extension RecordsViewController: UIBleStatusUpdateDelegate {
 
 // MARK: - FtsToUiNotificationDelegate
 extension RecordsViewController: FtsToUiNotificationDelegate {
+    func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int) {
+        ftsFsStatusLabel.text = "FS Stat: count=\(filesCount), occupied=\(occupiedMemory/1024)Kb, free=\(freeMemory/1024)"
+    }
+    
     func didReceiveFilesCount(with filesCount: Int) {
-        
+        ftsFsStatusLabel.text = "Files count = \(filesCount)"
     }
     
     func didReceiveNextFileSize(with fileName: String, and fileSize: Int) {

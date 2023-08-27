@@ -147,6 +147,12 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DPM-46-X9q" userLabel="ftsFsStatusLabel">
+                                        <rect key="frame" x="0.0" y="822" width="383" height="0.0"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" red="0.73705298256437168" green="0.93725219962270112" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </stackView>
@@ -157,14 +163,11 @@
                             <constraint firstItem="h8A-DW-o2u" firstAttribute="leading" secondItem="hQ2-jK-lAZ" secondAttribute="leading" constant="5" id="BH7-EC-RxS"/>
                             <constraint firstItem="hQ2-jK-lAZ" firstAttribute="bottom" secondItem="h8A-DW-o2u" secondAttribute="bottom" constant="10" id="Qy7-Rs-3Ko"/>
                             <constraint firstItem="h8A-DW-o2u" firstAttribute="top" secondItem="hQ2-jK-lAZ" secondAttribute="top" constant="10" id="RHd-No-Ox4"/>
-                            <constraint firstItem="h8A-DW-o2u" firstAttribute="leading" secondItem="hQ2-jK-lAZ" secondAttribute="leading" id="Ty3-TK-uP7"/>
-                            <constraint firstItem="hQ2-jK-lAZ" firstAttribute="trailing" secondItem="h8A-DW-o2u" secondAttribute="trailing" id="YF7-WM-XoZ"/>
                             <constraint firstItem="hQ2-jK-lAZ" firstAttribute="trailing" secondItem="h8A-DW-o2u" secondAttribute="trailing" constant="5" id="Yuz-He-fYb"/>
-                            <constraint firstItem="hQ2-jK-lAZ" firstAttribute="bottom" secondItem="h8A-DW-o2u" secondAttribute="bottom" id="iBE-Xp-ocJ"/>
-                            <constraint firstItem="h8A-DW-o2u" firstAttribute="top" secondItem="hQ2-jK-lAZ" secondAttribute="top" id="wf6-VI-ldg"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="ftsFsStatusLabel" destination="DPM-46-X9q" id="wEu-ST-Hym"/>
                         <outlet property="ftsStatusLabel" destination="uxI-bd-zHG" id="rFf-rK-fth"/>
                         <outlet property="recordsTable" destination="PE7-a4-KYM" id="WsC-2F-i8H"/>
                         <outlet property="recordsTitleLabel" destination="iWV-CQ-ElS" id="CI9-uX-LPL"/>
@@ -256,18 +259,21 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UT0-nZ-8sZ" userLabel="menuSetCurrentTimeButton">
-                                        <rect key="frame" x="0.0" y="185" width="373" height="40"/>
-                                        <color key="backgroundColor" systemColor="systemBlueColor"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ezm-co-6ev" userLabel="menuDeleteAllRecords">
+                                        <rect key="frame" x="0.0" y="185" width="373" height="50"/>
+                                        <color key="backgroundColor" red="0.0" green="0.48003494740000002" blue="0.99965018029999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="RbW-SU-d8S"/>
+                                            <constraint firstAttribute="height" constant="50" id="zQw-vE-nnh"/>
                                         </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Set current time"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Delete all records"/>
+                                        <connections>
+                                            <action selector="deleteAllRecordsButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="VKn-Du-bzz"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KA9-US-4xb" userLabel="menuSpacer4Label">
-                                        <rect key="frame" x="0.0" y="225" width="373" height="20"/>
+                                        <rect key="frame" x="0.0" y="235" width="373" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="nNu-5p-M5y"/>
                                         </constraints>
@@ -275,73 +281,8 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9Ba-C3-7Lx">
-                                        <rect key="frame" x="0.0" y="245" width="373" height="150"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dAW-II-5cr" userLabel="testFTS1Button">
-                                                <rect key="frame" x="0.0" y="0.0" width="100" height="150"/>
-                                                <color key="backgroundColor" systemColor="systemBlueColor"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="100" id="mgz-QW-iRR"/>
-                                                </constraints>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Test FTS 1"/>
-                                                <connections>
-                                                    <action selector="testFts1ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="nkl-PU-SCS"/>
-                                                </connections>
-                                            </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qqw-M5-Lch">
-                                                <rect key="frame" x="100" y="0.0" width="10" height="150"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="10" id="e2t-jx-vyH"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pyf-kr-9Ls" userLabel="testFTS2Button">
-                                                <rect key="frame" x="110" y="0.0" width="100" height="150"/>
-                                                <color key="backgroundColor" systemColor="systemBlueColor"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="100" id="Buj-yW-X3Z"/>
-                                                </constraints>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Test FTS 2"/>
-                                                <connections>
-                                                    <action selector="testFts2ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="ygd-4x-83Z"/>
-                                                </connections>
-                                            </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u0A-rG-X0Z">
-                                                <rect key="frame" x="210" y="0.0" width="10" height="150"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="10" id="aGk-aa-AkP"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HfB-F8-Y5O" userLabel="testFTS3Button">
-                                                <rect key="frame" x="220" y="0.0" width="153" height="150"/>
-                                                <color key="backgroundColor" systemColor="systemBlueColor"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="ONQ-RR-Rws"/>
-                                                </constraints>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Test FTS 3"/>
-                                                <connections>
-                                                    <action selector="testFts3ButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="xaN-Kw-Tog"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="150" id="fOh-eq-LJS"/>
-                                        </constraints>
-                                    </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connection status: disconnected" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CqX-vk-vuv" userLabel="menuViewConnectionStatusLabel">
-                                        <rect key="frame" x="0.0" y="395" width="373" height="25"/>
+                                        <rect key="frame" x="0.0" y="255" width="373" height="25"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="25" id="435-ZO-3aY"/>
                                         </constraints>
@@ -350,36 +291,11 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xjT-Vn-oOQ" userLabel="menuViewFtsStatus">
-                                        <rect key="frame" x="0.0" y="420" width="373" height="363.66666666666674"/>
+                                        <rect key="frame" x="0.0" y="280" width="373" height="542"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="2qQ-hK-wAx" userLabel="menuViewFtsProgressBar">
-                                        <rect key="frame" x="0.0" y="783.66666666666663" width="373" height="4"/>
-                                    </progressView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uT0-ue-hdM">
-                                        <rect key="frame" x="0.0" y="787.66666666666663" width="373" height="34.333333333333371"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kSN-f4-PIV" userLabel="menuViewPlayButton">
-                                                <rect key="frame" x="0.0" y="0.0" width="50" height="34.333333333333336"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="50" id="iqf-9j-xeF"/>
-                                                </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" image="arrowtriangle.right.fill" catalog="system"/>
-                                                <connections>
-                                                    <action selector="playButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="2qa-Fl-aT0"/>
-                                                </connections>
-                                            </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5fr-3J-DRY">
-                                                <rect key="frame" x="50" y="0.0" width="323" height="34.333333333333336"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                    </stackView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.73705298259999996" green="0.93725219959999995" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </stackView>
@@ -404,9 +320,6 @@
                     <connections>
                         <outlet property="bleConnectionStatusLabel" destination="CqX-vk-vuv" id="AKs-we-ec8"/>
                         <outlet property="ftsStatusLabel" destination="xjT-Vn-oOQ" id="ncw-Ki-vv8"/>
-                        <outlet property="ftsTransactionProgressBar" destination="2qQ-hK-wAx" id="kLs-vJ-NKk"/>
-                        <outlet property="playButton" destination="kSN-f4-PIV" id="hnb-FP-4KP"/>
-                        <outlet property="playbackRecordNameLabel" destination="5fr-3J-DRY" id="ldJ-dv-Tu5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hqp-i1-gi7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -601,7 +514,6 @@
         <segue reference="uBa-ot-Hsr"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="arrowtriangle.right.fill" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
