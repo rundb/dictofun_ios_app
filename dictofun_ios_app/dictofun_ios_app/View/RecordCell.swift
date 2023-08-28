@@ -13,9 +13,12 @@ protocol TableReloadDelegate {
 
 class RecordCell: UITableViewCell {
 
-    @IBOutlet weak var recordNameLabel: UILabel!
-    @IBOutlet weak var recordDurationLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var timeOfRecordLabel: UILabel!
     @IBOutlet weak var recordProgressBar: UIProgressView!
+    @IBOutlet weak var playbackTimeLabel: UILabel!
+    @IBOutlet weak var durationLabel: UILabel!
+    @IBOutlet weak var transcriptLabel: UILabel!
     
     var recordURL: URL?
     

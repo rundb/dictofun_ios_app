@@ -19,49 +19,99 @@
                 <rect key="frame" x="0.0" y="0.0" width="363" height="53"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" spacing="28" translatesAutoresizingMaskIntoConstraints="NO" id="34q-Mq-fhO">
+                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="34q-Mq-fhO">
                         <rect key="frame" x="0.0" y="0.0" width="363" height="53"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9fS-24-6jQ" userLabel="playPauseButton">
-                                <rect key="frame" x="0.0" y="18.666666666666668" width="30" height="34.333333333333329"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="30" id="Pdf-ds-FKx"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="arrowtriangle.right.fill" catalog="system"/>
-                                <connections>
-                                    <action selector="playButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="JHR-TU-dC6"/>
-                                </connections>
-                            </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mcj-4E-kED">
-                                <rect key="frame" x="58" y="11" width="229" height="42"/>
+                                <rect key="frame" x="0.0" y="0.0" width="328" height="53"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" semanticContentAttribute="spatial" distribution="fillEqually" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="YlK-bU-IJF">
-                                        <rect key="frame" x="0.0" y="0.0" width="229" height="17"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" semanticContentAttribute="spatial" distribution="fillProportionally" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="YlK-bU-IJF" userLabel="Record Info Stack View">
+                                        <rect key="frame" x="10" y="0.0" width="308" height="22.666666666666668"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23.07.23 13:33:20" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3Z-VG-z4s" userLabel="recordNameLabel">
-                                                <rect key="frame" x="0.0" y="0.0" width="110.66666666666667" height="17"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23.07.23" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3Z-VG-z4s" userLabel="recordDateLabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="46.333333333333336" height="22.666666666666668"/>
+                                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
+                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13:15:10" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L9C-N1-FT6" userLabel="recordTimeLabel">
+                                                <rect key="frame" x="54.333333333333329" y="0.0" width="59.333333333333329" height="22.666666666666668"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:05" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oSu-Sx-p2E" userLabel="recordTimeLabel">
-                                                <rect key="frame" x="118.66666666666666" y="0.0" width="110.33333333333334" height="17"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VAG-7K-q4M" userLabel="emptySpacerLabel1">
+                                                <rect key="frame" x="121.66666666666664" y="0.0" width="152.33333333333337" height="22.666666666666668"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="34x-CL-7ZW" userLabel="emptySpacerLabel2">
+                                                <rect key="frame" x="282" y="0.0" width="26" height="22.666666666666668"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" semanticContentAttribute="spatial" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="xRl-SN-26a" userLabel="recordPlaybackProgressBar">
-                                        <rect key="frame" x="39.666666666666671" y="25" width="150" height="17"/>
-                                        <color key="progressTintColor" systemColor="tintColor"/>
-                                        <color key="trackTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </progressView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="aPC-If-MHW" userLabel="Playback Stack View">
+                                        <rect key="frame" x="10" y="30.666666666666671" width="308" height="22.333333333333329"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9fS-24-6jQ" userLabel="playPauseButton">
+                                                <rect key="frame" x="0.0" y="0.0" width="30" height="22.333333333333332"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="30" id="Pdf-ds-FKx"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="arrowtriangle.right.fill" catalog="system"/>
+                                                <connections>
+                                                    <action selector="playButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="JHR-TU-dC6"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5bU-xa-baP" userLabel="playbackTimeLabel">
+                                                <rect key="frame" x="40" y="0.0" width="29" height="22.333333333333332"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" semanticContentAttribute="playback" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="xRl-SN-26a" userLabel="recordPlaybackProgressBar">
+                                                <rect key="frame" x="79.000000000000014" y="0.0" width="190.33333333333337" height="22.333333333333332"/>
+                                                <color key="progressTintColor" systemColor="tintColor"/>
+                                                <color key="trackTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </progressView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:05" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oSu-Sx-p2E" userLabel="recordDurationLabel">
+                                                <rect key="frame" x="279.33333333333331" y="0.0" width="28.666666666666686" height="22.333333333333332"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                                <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="oSu-Sx-p2E" firstAttribute="leading" secondItem="xRl-SN-26a" secondAttribute="trailing" constant="10" id="5wg-U9-XEH"/>
+                                            <constraint firstItem="xRl-SN-26a" firstAttribute="leading" secondItem="5bU-xa-baP" secondAttribute="trailing" constant="10" id="AVx-6T-GwA"/>
+                                            <constraint firstItem="5bU-xa-baP" firstAttribute="leading" secondItem="9fS-24-6jQ" secondAttribute="trailing" constant="10" id="Ocr-vY-Pxc"/>
+                                        </constraints>
+                                    </stackView>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CEw-0B-qzw" userLabel="transcriptLabel">
+                                        <rect key="frame" x="5" y="57" width="318" height="0.0"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="YlK-bU-IJF" secondAttribute="trailing" constant="10" id="Thm-IA-jrO"/>
+                                    <constraint firstAttribute="trailing" secondItem="aPC-If-MHW" secondAttribute="trailing" constant="10" id="kGe-MJ-oZG"/>
+                                    <constraint firstItem="YlK-bU-IJF" firstAttribute="leading" secondItem="mcj-4E-kED" secondAttribute="leading" constant="10" id="m4g-Bv-q9A"/>
+                                    <constraint firstItem="aPC-If-MHW" firstAttribute="leading" secondItem="mcj-4E-kED" secondAttribute="leading" constant="10" id="oXI-CP-3aI"/>
+                                    <constraint firstItem="CEw-0B-qzw" firstAttribute="leading" secondItem="mcj-4E-kED" secondAttribute="leading" constant="5" id="t83-0e-ToS"/>
+                                </constraints>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JYD-Rp-hq2" userLabel="enterRecordDetailsButton">
-                                <rect key="frame" x="315" y="18.666666666666668" width="48" height="34.333333333333329"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JYD-Rp-hq2" userLabel="deleteRecordButton">
+                                <rect key="frame" x="328" y="9.3333333333333321" width="35" height="34.333333333333343"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="35" id="oTZ-nD-g1y"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="trash" catalog="system"/>
                                 <connections>
@@ -69,6 +119,11 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="mcj-4E-kED" firstAttribute="top" secondItem="34q-Mq-fhO" secondAttribute="top" id="0yL-Zo-rMY"/>
+                            <constraint firstAttribute="bottom" secondItem="mcj-4E-kED" secondAttribute="bottom" id="8zg-yY-dHZ"/>
+                            <constraint firstItem="mcj-4E-kED" firstAttribute="leading" secondItem="34q-Mq-fhO" secondAttribute="leading" id="JRN-oU-vAG"/>
+                        </constraints>
                     </stackView>
                 </subviews>
                 <color key="backgroundColor" red="0.4512738287008633" green="0.85103178299540794" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -82,9 +137,12 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
-                <outlet property="recordDurationLabel" destination="oSu-Sx-p2E" id="RpJ-EO-OzH"/>
-                <outlet property="recordNameLabel" destination="h3Z-VG-z4s" id="3Ba-aH-ZXb"/>
+                <outlet property="dateLabel" destination="h3Z-VG-z4s" id="Hxt-hS-yPb"/>
+                <outlet property="durationLabel" destination="oSu-Sx-p2E" id="flk-kp-qyc"/>
+                <outlet property="playbackTimeLabel" destination="5bU-xa-baP" id="SsZ-po-Yok"/>
                 <outlet property="recordProgressBar" destination="xRl-SN-26a" id="nZ1-0r-saw"/>
+                <outlet property="timeOfRecordLabel" destination="L9C-N1-FT6" id="Z8a-Yb-4Bb"/>
+                <outlet property="transcriptLabel" destination="CEw-0B-qzw" id="KLU-H5-KnJ"/>
             </connections>
             <point key="canvasLocation" x="258.77862595419845" y="-35.563380281690144"/>
         </tableViewCell>

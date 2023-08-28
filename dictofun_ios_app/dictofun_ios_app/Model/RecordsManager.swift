@@ -164,15 +164,30 @@ class RecordsManager: NSObject {
          return header
     }
     
+    static private func splitDateToComponents(with raw: String) -> [String] {
+        var result: [String] = []
+        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)]))
+        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)]))
+        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 8)...raw.index(raw.startIndex, offsetBy: 9)]))
+        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 10)...raw.index(raw.startIndex, offsetBy: 11)]))
+        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 12)...raw.index(raw.startIndex, offsetBy: 13)]))
+        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 14)...raw.index(raw.startIndex, offsetBy: 15)]))
+        return result
+    }
+    
     static func getReadableFileName(with raw: String) -> String {
-        let year = String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)])
-        let month = String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)])
-        let day = String(raw[raw.index(raw.startIndex, offsetBy: 8)...raw.index(raw.startIndex, offsetBy: 9)])
-        let hour = String(raw[raw.index(raw.startIndex, offsetBy: 10)...raw.index(raw.startIndex, offsetBy: 11)])
-        let minute = String(raw[raw.index(raw.startIndex, offsetBy: 12)...raw.index(raw.startIndex, offsetBy: 13)])
-        let second = String(raw[raw.index(raw.startIndex, offsetBy: 14)...raw.index(raw.startIndex, offsetBy: 15)])
-        
-        return year + "." + month + "." + day + ", " + hour + ":" + minute + ":" + second
+        let tokens = splitDateToComponents(with: raw)
+        return tokens[0] + "." + tokens[1] + "." + tokens[2] + ", " + tokens[3] + ":" + tokens[4] + ":" + tokens[5]
+    }
+    
+    static func getReadableRecordDate(with raw: String) -> String {
+        let tokens = splitDateToComponents(with: raw)
+        return tokens[0] + "." + tokens[1] + "." + tokens[2]
+    }
+                      
+    static func getReadableRecordTime(with raw: String) -> String {
+        let tokens = splitDateToComponents(with: raw)
+        return tokens[3] + ":" + tokens[4] + ":" + tokens[5]
     }
     
     // TODO: replace sync call to duration with async one
@@ -189,8 +204,20 @@ class RecordsManager: NSObject {
 //                let name = RecordsManager.getReadableFileName(with: url.lastPathComponent)
                 let name = url.lastPathComponent
                 let audioAsset = AVURLAsset.init(url: url)
-                let duration = audioAsset.duration
-                let durationInSeconds = Int(CMTimeGetSeconds(duration))
+                
+                // TODO: replace this with appropriate duration calculation. Currently just an assumption that 1 second of record takes 16 kbytes
+//                let duration = audioAsset.duration
+//                var durationInSeconds = Int(CMTimeGetSeconds(duration))
+                var durationInSeconds = 0
+                
+                do {
+                    let recordFileAttr = try fileManager.attributesOfItem(atPath: url.relativePath)
+                    let fileSize = recordFileAttr[FileAttributeKey.size] as! Int
+                    durationInSeconds = fileSize / (16384)
+                }
+                catch let error {
+                    NSLog("failed to fetch record size: \(error.localizedDescription)")
+                }
                 
                 var fileSize = 0
                 if excludeEmpty {
@@ -215,6 +242,10 @@ class RecordsManager: NSObject {
                     result.append(record)
                 }
             }
+            result.sort(by: {
+                $0.name > $1.name
+            })
+            
             return result
         }
         catch let error {

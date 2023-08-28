@@ -57,12 +57,17 @@ extension RecordsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: K.Record.reusableCellName, for: indexPath) as! RecordCell
-        cell.recordDurationLabel.textColor = .black
-        cell.recordNameLabel.textColor = .black
+        cell.dateLabel.textColor = .darkGray
+        cell.timeOfRecordLabel.textColor = .black
+        cell.playbackTimeLabel.textColor = .darkGray
+        cell.durationLabel.textColor = .darkGray
         let r = records[indexPath.row]
-        cell.recordDurationLabel.text = String(format: "%02d:%02d", r.durationSeconds / 60, r.durationSeconds % 60)
         
-        cell.recordNameLabel.text = "\( RecordsManager.getReadableFileName(with: r.name) )"
+        cell.durationLabel.text = String(format: "%02d:%02d", r.durationSeconds / 60, r.durationSeconds % 60)
+        
+        cell.dateLabel.text = "\( RecordsManager.getReadableRecordDate(with: r.name) )"
+        cell.timeOfRecordLabel.text = "\( RecordsManager.getReadableRecordTime(with: r.name) )"
+        
         cell.recordURL = r.url
         cell.recordProgressBar.isHidden = true
         cell.recordProgressBar.trackTintColor = .gray
