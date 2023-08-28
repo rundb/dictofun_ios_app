@@ -350,11 +350,9 @@ extension FileTransferService: CharNotificationDelegate {
         var rhsSet: Set<String> = []
         for name in rhs {
             rhsSet.insert(name)
-            NSLog("rhs: name = \(name), len=\(name.count)")
         }
         var result: [String] = []
         for name in lhs {
-            NSLog("lhs: name = \(name), len=\(name.count)")
             if !rhsSet.contains(name) {
                 result.append(name)
             }
