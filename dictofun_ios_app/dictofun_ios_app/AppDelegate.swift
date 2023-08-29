@@ -9,6 +9,7 @@ var bluetoothManager = BluetoothManager()
 var printLogger = PrintLogger()
 var recordsManager = RecordsManager()
 var fileTransferService = FileTransferService(with: bluetoothManager, andRecordsManager:  recordsManager)
+var speechRecognizer = SpeechRecognizer()
 
 func getBluetoothManager() -> BluetoothManager {
     return bluetoothManager

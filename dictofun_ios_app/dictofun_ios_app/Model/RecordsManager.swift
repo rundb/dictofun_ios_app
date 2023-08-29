@@ -5,11 +5,13 @@
 
 import Foundation
 import AVFoundation
+import Speech
 
 /// This class implements the storage functionality for files received from the Dictofun
 class RecordsManager: NSObject {
     private let fileManager: FileManager = .default
     private let recordsFolderPath: String = "records"
+    private let recordsForTranscriptionsFolderPath: String = "records_for_recognition"
     var player: AVAudioPlayer? = nil
     
     enum FileSystemError: Error {
@@ -29,6 +31,7 @@ class RecordsManager: NSObject {
             return
         }
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
+        let recordsForTranscriptionFolderUrl = url.appendingPathComponent(recordsForTranscriptionsFolderPath)
         
         var isDir: ObjCBool = true
         if !fileManager.fileExists(atPath: recordsFolderUrl.relativePath, isDirectory: &isDir) {
@@ -36,6 +39,17 @@ class RecordsManager: NSObject {
             do {
                 try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: false)
                 NSLog("RecordsManager: created records'folder")
+            }
+            catch let error {
+                NSLog("RecordsManager: failed to create records' directory, error: \(error.localizedDescription)")
+            }
+        }
+        
+        if !fileManager.fileExists(atPath: recordsForTranscriptionFolderUrl.relativePath, isDirectory: &isDir) {
+            NSLog("RecordsManager: records for transcription folder doesn't exist: creating one")
+            do {
+                try fileManager.createDirectory(at: recordsForTranscriptionFolderUrl, withIntermediateDirectories: false)
+                NSLog("RecordsManager: created records for transcription folder")
             }
             catch let error {
                 NSLog("RecordsManager: failed to create records' directory, error: \(error.localizedDescription)")
@@ -61,6 +75,24 @@ class RecordsManager: NSObject {
         return recordsFolderUrl.appending(path: name)
     }
     
+    private func makeRecordURLWithWavExt(forFileNamed name: String) -> URL? {
+        guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else
+        {
+            return nil
+        }
+        let recordsForTranscriptionFolderUrl = url.appendingPathComponent(recordsForTranscriptionsFolderPath)
+        
+        return recordsForTranscriptionFolderUrl.appending(path: name + ".wav")
+    }
+    
+    
+    func recordTranscriptionCallback(speechRecognitionResult: SFSpeechRecognitionResult?, error: Error?) {
+        guard error == nil else {
+            NSLog("transcription error: \(error!.localizedDescription)")
+            return
+        }
+        NSLog("last transcription result: \(speechRecognitionResult?.bestTranscription.formattedString)")
+    }
     
     /// This function stores the record received from the Dictofun. It doesn't perform any manipulations with the data, so it implies
     /// that all decoding has been performed before entering this class. Wav header should also be applied before the call.
@@ -69,17 +101,33 @@ class RecordsManager: NSObject {
             return .some(FileSystemError.urlCreationError("URL could not be generated"))
         }
         
+        guard let urlForTranscribe = makeRecordURLWithWavExt(forFileNamed: name) else {
+            return .some(FileSystemError.urlCreationError("URL could not be generated"))
+        }
+        
         let wavFileHeader = createWaveHeader(data: data)
         let wavFile = wavFileHeader + data
         
-        NSLog("Records Manager: creating path \(url.relativePath)")
+        NSLog("Records Manager: creating path \(url.relativePath). Size: \(wavFile.count)")
         do {
             try wavFile.write(to: url)
-            NSLog("Records Manager: saved a wav file to \(url.relativePath)")
+            NSLog("Records Manager: saved a wav file to \(url.relativePath) ")
         }
-        catch {
-            NSLog("RecordsManager: failed to write record's data")
-            return .some(FileSystemError.fileWriteError("RecordsManager:Data couldn't be written"))
+        catch let error {
+            NSLog("RecordsManager: failed to write record's data: \(error.localizedDescription)")
+            return .some(FileSystemError.fileWriteError("RecordsManager:Data couldn't be written. Error: \(error)"))
+        }
+        
+        NSLog("Records Manager: creating path \(urlForTranscribe.relativePath). Size: \(wavFile.count)")
+        do {
+            try wavFile.write(to: urlForTranscribe)
+            NSLog("Records Manager: saved a wav file to \(urlForTranscribe.relativePath) ")
+            
+            SpeechRecognizer.shared.transcribe(recordUrl: urlForTranscribe, handler: self.recordTranscriptionCallback)
+        }
+        catch let error {
+            NSLog("RecordsManager: failed to write record's data: \(error.localizedDescription)")
+            return .some(FileSystemError.fileWriteError("RecordsManager:Data couldn't be written. Error: \(error)"))
         }
         
         return nil
@@ -203,7 +251,7 @@ class RecordsManager: NSObject {
                 let url = recordsPath.appendingPathComponent(item)
 //                let name = RecordsManager.getReadableFileName(with: url.lastPathComponent)
                 let name = url.lastPathComponent
-                let audioAsset = AVURLAsset.init(url: url)
+//                let audioAsset = AVURLAsset.init(url: url)
                 
                 // TODO: replace this with appropriate duration calculation. Currently just an assumption that 1 second of record takes 16 kbytes
 //                let duration = audioAsset.duration

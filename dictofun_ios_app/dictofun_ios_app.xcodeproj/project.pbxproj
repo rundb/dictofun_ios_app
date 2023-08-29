@@ -12,6 +12,7 @@
 		30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB12A6D457000A072B2 /* RecordCell.swift */; };
 		30267FB42A6D457000A072B2 /* RecordCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30267FB22A6D457000A072B2 /* RecordCell.xib */; };
 		30267FB62A6D4CA900A072B2 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB52A6D4CA900A072B2 /* Record.swift */; };
+		30809FB92A9DD198003DFC98 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30809FB82A9DD198003DFC98 /* SpeechRecognizer.swift */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
 		30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCC2A607198002157B3 /* SceneDelegate.swift */; };
 		30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCE2A607198002157B3 /* InitialViewController.swift */; };
@@ -40,6 +41,7 @@
 		30267FB12A6D457000A072B2 /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
 		30267FB22A6D457000A072B2 /* RecordCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordCell.xib; sourceTree = "<group>"; };
 		30267FB52A6D4CA900A072B2 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
+		30809FB82A9DD198003DFC98 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30998CCA2A607198002157B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		30998CCC2A607198002157B3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				30267FAD2A6AD27500A072B2 /* RecordsManager.swift */,
 				30267FAF2A6B196300A072B2 /* Adpcm.swift */,
 				30267FB52A6D4CA900A072B2 /* Record.swift */,
+				30809FB82A9DD198003DFC98 /* SpeechRecognizer.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */,
 				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
+				30809FB92A9DD198003DFC98 /* SpeechRecognizer.swift in Sources */,
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,
 				30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */,
