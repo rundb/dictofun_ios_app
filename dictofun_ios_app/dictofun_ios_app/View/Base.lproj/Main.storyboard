@@ -240,7 +240,7 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3ND-iQ-Paf" userLabel="menuCheckFWUpdateButton">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3ND-iQ-Paf" userLabel="testDBAccess">
                                         <rect key="frame" x="0.0" y="135" width="373" height="40"/>
                                         <color key="backgroundColor" systemColor="systemBlueColor"/>
                                         <constraints>
@@ -248,7 +248,10 @@
                                         </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Check FW Updates"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Test DB access"/>
+                                        <connections>
+                                            <action selector="testDatabaseAccess:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="6x1-so-zpZ"/>
+                                        </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jQd-Uu-rDs" userLabel="menuSpacer4Label">
                                         <rect key="frame" x="0.0" y="175" width="373" height="10"/>

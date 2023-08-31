@@ -6,6 +6,38 @@
 import Foundation
 import CoreBluetooth
 
+// File is an 16-byte long ID
+struct FileId {
+    let value: Data
+    init(value: Data) {
+        self.value = value
+        assert(value.count == 16)
+    }
+    
+    var reversedValue: Data {
+        var tmp = Data([])
+        for b in value.reversed() {
+            tmp.append(b)
+        }
+        return tmp
+    }
+    
+    var name: String {
+        if let validAsciiString = String(data: value, encoding: .ascii) {
+            return validAsciiString
+        }
+        return "unknownunknown"
+    }
+    
+    static func getIdByName(with name: String) -> FileId {
+        guard let data = name.data(using: .ascii) else {
+            NSLog("FileId: failed to convert ascii string to bytes")
+            return FileId(value: Data([]))
+        }
+        return FileId(value: data)
+    }
+}
+
 protocol CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?)
 }
@@ -20,6 +52,11 @@ protocol FtsToUiNotificationDelegate {
 
 protocol BleServicesDiscoveryDelegate {
     func didDiscoverServices()
+}
+
+// Given the list of files on the device, detect those files that are not yet known to the application
+protocol NewFilesDetectionDelegate {
+    func detectNewFiles(with fileIds: [FileId]) -> [FileId]
 }
 
 /**
@@ -47,6 +84,7 @@ class FileTransferService {
     private var fileIds: [FileId] = []
     
     var uiUpdateDelegate: FtsToUiNotificationDelegate?
+    var newFilesDetectionDelegate: NewFilesDetectionDelegate?
     
     private struct CurrentFile {
         var fileId: FileId
@@ -196,30 +234,6 @@ class FileTransferService {
         return nil
     }
     
-    // File (atm) is an 8-byte long ID
-    struct FileId {
-        let value: Data
-        init(value: Data) {
-            self.value = value
-            assert(value.count == 16)
-        }
-        
-        var reversedValue: Data {
-            var tmp = Data([])
-            for b in value.reversed() {
-                tmp.append(b)
-            }
-            return tmp
-        }
-        
-        var name: String {
-            if let validAsciiString = String(data: value, encoding: .ascii) {
-                return validAsciiString
-            }
-            return "unknown"
-        }
-    }
-    
     struct FileInformation: Decodable {
         let s: Int
         let f: Int?
@@ -346,49 +360,6 @@ class FileTransferService {
 // MARK: - CharNotificationDelegate
 extension FileTransferService: CharNotificationDelegate {
     
-    private func findNewFiles(new lhs: [String], existing rhs: [String]) -> [String] {
-        var rhsSet: Set<String> = []
-        for name in rhs {
-            rhsSet.insert(name)
-        }
-        var result: [String] = []
-        for name in lhs {
-            if !rhsSet.contains(name) {
-                result.append(name)
-            }
-        }
-        return result
-    }
-    
-    private func getFileIdByName(with name: String) -> FileId? {
-        for f in fileIds {
-            if f.name == name {
-                return f
-            }
-        }
-        return nil
-    }
-    
-    private func detectNewRecords(with files: [FileId]) -> [FileId] {
-        let existingRecords = recordsManager.getRecordsList()
-        var existingFileNames: [String] = []
-        for r in existingRecords {
-            existingFileNames.append(r.name)
-        }
-        
-        var fileNames: [String] = []
-        for f in files {
-            fileNames.append(f.name)
-        }
-        
-        let newFileNames = findNewFiles(new: fileNames, existing: existingFileNames)
-        var newFileIds: [FileId] = []
-        for name in newFileNames {
-            newFileIds.append(getFileIdByName(with: name)!)
-        }
-        return newFileIds
-    }
-    
     private func didReceiveFilesList(with data: Data) {
         let files = parseFilesList(with: data)
         NSLog("FTS: Received files' list: ")
@@ -406,9 +377,15 @@ extension FileTransferService: CharNotificationDelegate {
         uiUpdateDelegate?.didReceiveFilesCount(with: files.count)
         
         // Fetch the list of existing records too. If new files discovered - request the first new file in the list
-        let newFiles = detectNewRecords(with: files)
+        guard let newFiles = newFilesDetectionDelegate?.detectNewFiles(with: files) else {
+            NSLog("Error: newFilesDetectionDelegate has not been specified, aborting the execution.")
+            assert(false)
+            return
+        }
+        
         // TODO: replace with .map
         var newFileNames: [String] = []
+        
         for f in newFiles {
             newFileNames.append(f.name)
         }
@@ -416,10 +393,7 @@ extension FileTransferService: CharNotificationDelegate {
         if !newFileNames.isEmpty {
             NSLog("FTS.didReceiveFilesList: discovered \(newFileNames.count) new files on the device")
             let nextFileName = newFileNames.first
-            guard let nextFileId = getFileIdByName(with: nextFileName!) else {
-                NSLog("FTS: didReceiveFilesList error- failed to match name \(nextFileName!) to an existing file ID")
-                return
-            }
+            let nextFileId = FileId.getIdByName(with: nextFileName!)
 
             NSLog("FTS::didReceiveFilesList - fetching newly found file \(nextFileId.name)")
             let requestResult = requestFileInfo(with: nextFileId)
@@ -446,7 +420,11 @@ extension FileTransferService: CharNotificationDelegate {
             uiUpdateDelegate?.didReceiveFilesCount(with: fileIds.count)
             
             // Fetch the list of existing records too. If new files discovered - request the first new file in the list
-            let newFiles = detectNewRecords(with: fileIds)
+            guard let newFiles = newFilesDetectionDelegate?.detectNewFiles(with: fileIds) else {
+                NSLog("newFilesDetectionDelegate has not been specified, aborting")
+                assert(false)
+                return
+            }
             var newFileNames: [String] = []
             for f in newFiles {
                 newFileNames.append(f.name)
@@ -454,11 +432,7 @@ extension FileTransferService: CharNotificationDelegate {
             
             if !newFileNames.isEmpty {
                 NSLog("FTS.didReceiveFilesListNext: discovered \(newFileNames.count) new files on the device")
-                let nextFileName = newFileNames.first
-                guard let nextFileId = getFileIdByName(with: nextFileName!) else {
-                    NSLog("FTS: didReceiveFilesListNext error- failed to match name \(nextFileName!) to an existing file ID")
-                    return
-                }
+                let nextFileId = FileId.getIdByName(with: newFileNames.first!)
 
                 NSLog("FTS::didReceiveFilesList - fetching newly found file \(nextFileId.name)")
                 let requestResult = requestFileInfo(with: nextFileId)

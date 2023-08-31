@@ -10,6 +10,7 @@ var bluetoothManager = BluetoothManager()
 var printLogger = PrintLogger()
 var recordsManager = RecordsManager()
 var fileTransferService = FileTransferService(with: bluetoothManager, andRecordsManager:  recordsManager)
+var ftsManager = FTSManager(ftsService: fileTransferService, recordsManager: recordsManager)
 
 func getBluetoothManager() -> BluetoothManager {
     return bluetoothManager
@@ -28,6 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         bluetoothManager.logger = printLogger
+        fileTransferService.newFilesDetectionDelegate = ftsManager
+        
         // Override point for customization after application launch.
         return true
     }
@@ -43,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Core Data stack
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "CoreDataTest")
+        let container = NSPersistentContainer(name: "DataModel")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
