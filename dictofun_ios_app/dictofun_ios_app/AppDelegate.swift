@@ -11,6 +11,7 @@ var printLogger = PrintLogger()
 var recordsManager = RecordsManager()
 var fileTransferService = FileTransferService(with: bluetoothManager)
 var ftsManager = FTSManager(ftsService: fileTransferService, recordsManager: recordsManager)
+var audioPlayer = AudioPlayer()
 
 func getBluetoothManager() -> BluetoothManager {
     return bluetoothManager
@@ -26,6 +27,10 @@ func getFtsManager() -> FTSManager {
 
 func getRecordsManager() -> RecordsManager {
     return recordsManager
+}
+
+func getAudioPlayer() -> AudioPlayer {
+    return audioPlayer
 }
 
 @main

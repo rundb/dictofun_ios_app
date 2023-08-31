@@ -13,6 +13,8 @@
 		30267FB42A6D457000A072B2 /* RecordCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30267FB22A6D457000A072B2 /* RecordCell.xib */; };
 		30267FB62A6D4CA900A072B2 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB52A6D4CA900A072B2 /* Record.swift */; };
 		3034B8A12AA08E7A00873CE7 /* FTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A02AA08E7A00873CE7 /* FTSManager.swift */; };
+		3034B8A32AA0C71400873CE7 /* Wav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A22AA0C71400873CE7 /* Wav.swift */; };
+		3034B8A52AA0C8D900873CE7 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */; };
 		30445C3F2A9F733D004EB1B6 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
 		30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCC2A607198002157B3 /* SceneDelegate.swift */; };
@@ -42,6 +44,8 @@
 		30267FB22A6D457000A072B2 /* RecordCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordCell.xib; sourceTree = "<group>"; };
 		30267FB52A6D4CA900A072B2 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		3034B8A02AA08E7A00873CE7 /* FTSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTSManager.swift; sourceTree = "<group>"; };
+		3034B8A22AA0C71400873CE7 /* Wav.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wav.swift; sourceTree = "<group>"; };
+		3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		30445C3E2A9F733D004EB1B6 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30998CCA2A607198002157B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -131,6 +135,8 @@
 				30267FAF2A6B196300A072B2 /* Adpcm.swift */,
 				30267FB52A6D4CA900A072B2 /* Record.swift */,
 				3034B8A02AA08E7A00873CE7 /* FTSManager.swift */,
+				3034B8A22AA0C71400873CE7 /* Wav.swift */,
+				3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -234,9 +240,11 @@
 			files = (
 				30998CEA2A61483D002157B3 /* ConnectionViewController.swift in Sources */,
 				30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */,
+				3034B8A32AA0C71400873CE7 /* Wav.swift in Sources */,
 				30267FB62A6D4CA900A072B2 /* Record.swift in Sources */,
 				30445C3F2A9F733D004EB1B6 /* DataModel.xcdatamodeld in Sources */,
 				30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */,
+				3034B8A52AA0C8D900873CE7 /* AudioPlayer.swift in Sources */,
 				30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */,
 				30998D062A67C668002157B3 /* Constants.swift in Sources */,
 				30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */,

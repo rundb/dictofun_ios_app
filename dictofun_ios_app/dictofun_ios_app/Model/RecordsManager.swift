@@ -4,25 +4,18 @@
  */
 
 import Foundation
-import AVFoundation
 
 /// This class implements the storage functionality for files received from the Dictofun
-class RecordsManager: NSObject {
+class RecordsManager {
     private let fileManager: FileManager = .default
     private let recordsFolderPath: String = "records"
-    var player: AVAudioPlayer? = nil
     
     enum FileSystemError: Error {
         case urlCreationError(String)
         case fileWriteError(String)
     }
     
-    enum PlaybackError: Error {
-        case failedToPlay
-    }
-    
-    override init() {
-        super.init()
+    init() {
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             assert(false)
             NSLog("RecordsManager: failed to initialize the records' folder URL")
@@ -69,8 +62,7 @@ class RecordsManager: NSObject {
             return .some(FileSystemError.urlCreationError("URL could not be generated"))
         }
         
-        let wavFileHeader = createWaveHeader(data: data)
-        let wavFile = wavFileHeader + data
+        let wavFile = createWaveFile(data: data)
         
         NSLog("Records Manager: creating path \(url.relativePath)")
         do {
@@ -110,59 +102,6 @@ class RecordsManager: NSObject {
         return url
     }
     
-    private func intToByteArray(_ i: Int32) -> [UInt8] {
-          return [
-            //little endian
-            UInt8(truncatingIfNeeded: (i      ) & 0xff),
-            UInt8(truncatingIfNeeded: (i >>  8) & 0xff),
-            UInt8(truncatingIfNeeded: (i >> 16) & 0xff),
-            UInt8(truncatingIfNeeded: (i >> 24) & 0xff)
-           ]
-     }
-    
-    private func shortToByteArray(_ i: Int16) -> [UInt8] {
-           return [
-               //little endian
-               UInt8(truncatingIfNeeded: (i      ) & 0xff),
-               UInt8(truncatingIfNeeded: (i >>  8) & 0xff)
-           ]
-     }
-    
-    private func createWaveHeader(data: Data) -> Data {
-         let sampleRate:Int32 = 16000
-         let chunkSize:Int32 = 36 + Int32(data.count)
-         let subChunkSize:Int32 = 16
-         let format:Int16 = 1
-         let channels:Int16 = 1
-         let bitsPerSample:Int16 = 16
-         let byteRate:Int32 = sampleRate * Int32(channels * bitsPerSample / 8)
-         let blockAlign: Int16 = channels * bitsPerSample / 8
-         let dataSize:Int32 = Int32(data.count)
-
-         var header = Data([])
-
-         header.append([UInt8]("RIFF".utf8), count: 4)
-         header.append(intToByteArray(chunkSize), count: 4)
-
-         //WAVE
-         header.append([UInt8]("WAVE".utf8), count: 4)
-
-         //FMT
-         header.append([UInt8]("fmt ".utf8), count: 4)
-
-         header.append(intToByteArray(subChunkSize), count: 4)
-         header.append(shortToByteArray(format), count: 2)
-         header.append(shortToByteArray(channels), count: 2)
-         header.append(intToByteArray(sampleRate), count: 4)
-         header.append(intToByteArray(byteRate), count: 4)
-         header.append(shortToByteArray(blockAlign), count: 2)
-         header.append(shortToByteArray(bitsPerSample), count: 2)
-
-         header.append([UInt8]("data".utf8), count: 4)
-         header.append(intToByteArray(dataSize), count: 4)
-
-         return header
-    }
     
     static private func splitDateToComponents(with raw: String) -> [String] {
         var result: [String] = []
@@ -201,13 +140,9 @@ class RecordsManager: NSObject {
             var result: [Record] = []
             for item in items {
                 let url = recordsPath.appendingPathComponent(item)
-//                let name = RecordsManager.getReadableFileName(with: url.lastPathComponent)
                 let name = url.lastPathComponent
-                let audioAsset = AVURLAsset.init(url: url)
                 
                 // TODO: replace this with appropriate duration calculation. Currently just an assumption that 1 second of record takes 16 kbytes
-//                let duration = audioAsset.duration
-//                var durationInSeconds = Int(CMTimeGetSeconds(duration))
                 var durationInSeconds = 0
                 
                 do {
@@ -254,35 +189,6 @@ class RecordsManager: NSObject {
         return []
     }
     
-    func playRecord(_ url: URL) -> Error? {
-        NSLog("RecordsManager: playing \(url.relativePath)")
-        if player == nil {
-            do {
-                try AVAudioSession.sharedInstance().setCategory(.playback)
-                try AVAudioSession.sharedInstance().setActive(true)
-                player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.wav.rawValue)
-                guard let safePlayer = player else {
-                    NSLog("RecordsManager: failed to play record \(url.relativePath). Failed to create a player")
-                    return .some(PlaybackError.failedToPlay)
-                }
-                let playResult = safePlayer.play()
-                if !playResult {
-                    NSLog("RecordsManager: failed to play record \(url.relativePath). Playback error")
-                    return .some(PlaybackError.failedToPlay)
-                }
-            }
-            catch let error {
-                NSLog("RecordsManager: exception during the playback. Error: \(error.localizedDescription)")
-                return .some(PlaybackError.failedToPlay)
-            }
-            player?.delegate = self
-        }
-        else {
-            return .some(PlaybackError.failedToPlay)
-        }
-        return nil
-    }
-    
     func removeRecord(_ url: URL) {
         do {
             try fileManager.removeItem(at: url)
@@ -312,18 +218,6 @@ class RecordsManager: NSObject {
         }
         catch let error {
             NSLog("removeAllRecords(): error \(error.localizedDescription)")
-        }
-    }
-}
-
-extension RecordsManager: AVAudioPlayerDelegate {
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        self.player = nil
-        do {
-            try AVAudioSession.sharedInstance().setActive(false)
-        }
-        catch let error {
-            NSLog("RecordsManager: failed to deactivate av audio session. Error: \(error.localizedDescription)")
         }
     }
 }

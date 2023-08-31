@@ -21,6 +21,8 @@ class RecordCell: UITableViewCell {
     @IBOutlet weak var transcriptLabel: UILabel!
     
     var recordURL: URL?
+    let audioPlayer: AudioPlayer = getAudioPlayer()
+    
     
     var tableReloadDelegate: TableReloadDelegate?
     
@@ -38,7 +40,7 @@ class RecordCell: UITableViewCell {
         guard let url = recordURL else {
             return
         }
-        let result = getRecordsManager().playRecord(url)
+        let result = audioPlayer.playRecord(url)
         if result != nil {
             recordProgressBar.isHidden = false
         }
