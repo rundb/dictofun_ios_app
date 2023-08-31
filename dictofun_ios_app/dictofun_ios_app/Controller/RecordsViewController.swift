@@ -23,7 +23,7 @@ class RecordsViewController: UIViewController {
         ftsStatusLabel.textColor = .black
         ftsFsStatusLabel.textColor = .black
         getBluetoothManager().uiUpdateDelegate = self
-        getFileTransferService().uiUpdateDelegate = self
+        getFtsManager().uiNotificationDelegate = self
         recordsManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
@@ -40,7 +40,7 @@ class RecordsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         getBluetoothManager().uiUpdateDelegate = nil
-        getFileTransferService().uiUpdateDelegate = nil
+        getFtsManager().uiNotificationDelegate = nil
     }
     
     @IBAction func menuButtonPressed(_ sender: UIButton) {

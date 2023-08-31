@@ -7,23 +7,41 @@
 
 import Foundation
 
-/*
+protocol FtsToUiNotificationDelegate {
+    func didReceiveFilesCount(with filesCount: Int)
+    func didReceiveNextFileSize(with fileName: String, and fileSize: Int)
+    func didReceiveFileDataChunk(with progressPercentage: Double)
+    func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int)
+    func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int)
+}
+
+/**
  This module connects FileTransferService to the application
  */
-
 class FTSManager {
-    
     let fts: FileTransferService
     let rm: RecordsManager
+    
+    var uiNotificationDelegate: FtsToUiNotificationDelegate?
     
     init(ftsService fts: FileTransferService, recordsManager rm: RecordsManager) {
         self.fts = fts
         self.rm = rm
+        
+        getBluetoothManager().serviceDiscoveryDelegate = self
     }
 }
 
+// MARK: - NewFilesDetectionDelegate
 // TODO: move the detection logic itself to the records' manager, leaving only a connection at this point
 extension FTSManager: NewFilesDetectionDelegate {
+    func storeNewFile(with fileId: FileId, type fileType: FileType, and data: Data) -> Error? {
+        if fileType == .wavData {
+            return rm.saveRecord(withRawWav: data, andFileName: fileId.name)
+        }
+        return nil
+    }
+    
     func detectNewFiles(with fileIds: [FileId]) -> [FileId] {
         NSLog("warning: detectNewFiles should be moved to another abstraction level")
         let existingRecords = rm.getRecordsList()
@@ -40,7 +58,7 @@ extension FTSManager: NewFilesDetectionDelegate {
         let newFileNames = findNewFiles(new: fileNames, existing: existingFileNames)
         var newFileIds: [FileId] = []
         for name in newFileNames {
-            newFileIds.append(getFileIdByName(with: name, and: fileIds)!)
+            newFileIds.append( FileId.getIdByName(with: name))
         }
         return newFileIds
     }
@@ -59,36 +77,38 @@ extension FTSManager: NewFilesDetectionDelegate {
         }
         return result
     }
-    
-    private func getFileIdByName(with name: String, and fileIds: [FileId]) -> FileId? {
-        NSLog("warning: getFileIdByName should be moved to another abstraction level")
-        for f in fileIds {
-            if f.name == name {
-                return f
-            }
-        }
-        return nil
-    }
-
 }
 
+// MARK: - FtsEventNotificationDelegate
+// TODO: add notifications to the records manager too, if needed 
+extension FTSManager: FtsEventNotificationDelegate {
+    func didReceiveFilesCount(with filesCount: Int) {
+        uiNotificationDelegate?.didReceiveFilesCount(with: filesCount)
+    }
+    
+    func didReceiveNextFileSize(with fileId: FileId, and fileSize: Int) {
+        uiNotificationDelegate?.didReceiveNextFileSize(with: fileId.name, and: fileSize)
+    }
+    
+    func didReceiveFileDataChunk(with progressPercentage: Double) {
+        uiNotificationDelegate?.didReceiveFileDataChunk(with: progressPercentage)
+    }
+    
+    func didCompleteFileTransaction(name fileId: FileId, with duration: Int, and throughput: Int) {
+        uiNotificationDelegate?.didCompleteFileTransaction(name: fileId.name, with: duration, and: throughput)
+    }
+    
+    func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int) {
+        uiNotificationDelegate?.didReceiveFileSystemState(count: filesCount, occupied: occupiedMemory, free: freeMemory)
+    }
+}
 
-//private func detectNewRecords(with files: [FileId]) -> [FileId] {
-//    let existingRecords = recordsManager.getRecordsList()
-//    var existingFileNames: [String] = []
-//    for r in existingRecords {
-//        existingFileNames.append(r.name)
-//    }
-//
-//    var fileNames: [String] = []
-//    for f in files {
-//        fileNames.append(f.name)
-//    }
-//
-//    let newFileNames = findNewFiles(new: fileNames, existing: existingFileNames)
-//    var newFileIds: [FileId] = []
-//    for name in newFileNames {
-//        newFileIds.append(getFileIdByName(with: name)!)
-//    }
-//    return newFileIds
-//}
+// MARK: - BleServicesDiscoveryDelegate
+extension FTSManager: BleServicesDiscoveryDelegate {
+    func didDiscoverServices() {
+        let result = fts.requestFilesList()
+        if result != nil {
+            NSLog("FTS: service discovery callback - files' request has failed")
+        }
+    }
+}

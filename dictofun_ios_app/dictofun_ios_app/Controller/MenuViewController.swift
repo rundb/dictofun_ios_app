@@ -7,15 +7,12 @@ import UIKit
 import AVFoundation
 
 class MenuViewController: UIViewController {
-    var fts: FileTransferService?
-
     @IBOutlet weak var bleConnectionStatusLabel: UILabel!
     @IBOutlet weak var ftsStatusLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        fts = getFileTransferService()
         bleConnectionStatusLabel.textColor = .black
         ftsStatusLabel.textColor = .black
     }
@@ -28,7 +25,6 @@ class MenuViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         getBluetoothManager().uiUpdateDelegate = nil
-        fts?.uiUpdateDelegate = nil
     }
     
     @IBAction func menuUnpairButtonPressed(_ sender: UIButton) {
