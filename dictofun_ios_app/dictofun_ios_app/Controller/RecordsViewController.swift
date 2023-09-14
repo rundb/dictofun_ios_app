@@ -7,7 +7,7 @@ import UIKit
 
 class RecordsViewController: UIViewController {
     
-    var recordsManager: RecordsManager?
+    var audioFilesManager: AudioFilesManager?
     
     @IBOutlet weak var recordsTable: UITableView!
     @IBOutlet weak var statusDataLabel: UILabel!
@@ -24,10 +24,10 @@ class RecordsViewController: UIViewController {
         ftsFsStatusLabel.textColor = .black
         getBluetoothManager().uiUpdateDelegate = self
         getFtsManager().uiNotificationDelegate = self
-        recordsManager = getRecordsManager()
+        audioFilesManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
-        records = recordsManager!.getRecordsList(excludeEmpty: true)
+        records = audioFilesManager!.getRecordsList(excludeEmpty: true)
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
         }
@@ -51,7 +51,7 @@ class RecordsViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        records = recordsManager!.getRecordsList(excludeEmpty: true)
+        records = audioFilesManager!.getRecordsList(excludeEmpty: true)
         return records.count
     }
     
@@ -65,8 +65,8 @@ extension RecordsViewController: UITableViewDataSource {
         
         cell.durationLabel.text = String(format: "%02d:%02d", r.durationSeconds / 60, r.durationSeconds % 60)
         
-        cell.dateLabel.text = "\( RecordsManager.getReadableRecordDate(with: r.name) )"
-        cell.timeOfRecordLabel.text = "\( RecordsManager.getReadableRecordTime(with: r.name) )"
+        cell.dateLabel.text = "\( AudioFilesManager.getReadableRecordDate(with: r.name) )"
+        cell.timeOfRecordLabel.text = "\( AudioFilesManager.getReadableRecordTime(with: r.name) )"
         
         cell.recordURL = r.url
         cell.recordProgressBar.isHidden = true

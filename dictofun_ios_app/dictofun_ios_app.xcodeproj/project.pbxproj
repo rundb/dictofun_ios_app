@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		30267FAE2A6AD27500A072B2 /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAD2A6AD27500A072B2 /* RecordsManager.swift */; };
+		30267FAE2A6AD27500A072B2 /* AudioFilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAD2A6AD27500A072B2 /* AudioFilesManager.swift */; };
 		30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAF2A6B196300A072B2 /* Adpcm.swift */; };
 		30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB12A6D457000A072B2 /* RecordCell.swift */; };
 		30267FB42A6D457000A072B2 /* RecordCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30267FB22A6D457000A072B2 /* RecordCell.xib */; };
@@ -15,6 +15,7 @@
 		3034B8A12AA08E7A00873CE7 /* FTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A02AA08E7A00873CE7 /* FTSManager.swift */; };
 		3034B8A32AA0C71400873CE7 /* Wav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A22AA0C71400873CE7 /* Wav.swift */; };
 		3034B8A52AA0C8D900873CE7 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */; };
+		3034B8A82AA12FDB00873CE7 /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A72AA12FDB00873CE7 /* RecordsManager.swift */; };
 		30445C3F2A9F733D004EB1B6 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
 		30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCC2A607198002157B3 /* SceneDelegate.swift */; };
@@ -38,7 +39,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		30267FAD2A6AD27500A072B2 /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
+		30267FAD2A6AD27500A072B2 /* AudioFilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFilesManager.swift; sourceTree = "<group>"; };
 		30267FAF2A6B196300A072B2 /* Adpcm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Adpcm.swift; sourceTree = "<group>"; };
 		30267FB12A6D457000A072B2 /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
 		30267FB22A6D457000A072B2 /* RecordCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordCell.xib; sourceTree = "<group>"; };
@@ -46,6 +47,7 @@
 		3034B8A02AA08E7A00873CE7 /* FTSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FTSManager.swift; sourceTree = "<group>"; };
 		3034B8A22AA0C71400873CE7 /* Wav.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wav.swift; sourceTree = "<group>"; };
 		3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		3034B8A72AA12FDB00873CE7 /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
 		30445C3E2A9F733D004EB1B6 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30998CCA2A607198002157B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +94,18 @@
 			path = Bluetooth;
 			sourceTree = "<group>";
 		};
+		3034B8A62AA12DD300873CE7 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				30267FAF2A6B196300A072B2 /* Adpcm.swift */,
+				3034B8A22AA0C71400873CE7 /* Wav.swift */,
+				3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */,
+				30267FAD2A6AD27500A072B2 /* AudioFilesManager.swift */,
+				3034B8A72AA12FDB00873CE7 /* RecordsManager.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		30998CBE2A607198002157B3 = {
 			isa = PBXGroup;
 			children = (
@@ -127,16 +141,13 @@
 		30998CDE2A6071DC002157B3 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				3034B8A62AA12DD300873CE7 /* Audio */,
 				3034B89F2AA086E000873CE7 /* Bluetooth */,
 				30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */,
 				30998CF32A66B718002157B3 /* Logger.swift */,
 				30998CF72A66D4E7002157B3 /* PrintLogger.swift */,
-				30267FAD2A6AD27500A072B2 /* RecordsManager.swift */,
-				30267FAF2A6B196300A072B2 /* Adpcm.swift */,
 				30267FB52A6D4CA900A072B2 /* Record.swift */,
 				3034B8A02AA08E7A00873CE7 /* FTSManager.swift */,
-				3034B8A22AA0C71400873CE7 /* Wav.swift */,
-				3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -248,7 +259,7 @@
 				30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */,
 				30998D062A67C668002157B3 /* Constants.swift in Sources */,
 				30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */,
-				30267FAE2A6AD27500A072B2 /* RecordsManager.swift in Sources */,
+				30267FAE2A6AD27500A072B2 /* AudioFilesManager.swift in Sources */,
 				30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */,
 				30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
@@ -258,6 +269,7 @@
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,
 				30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */,
+				3034B8A82AA12FDB00873CE7 /* RecordsManager.swift in Sources */,
 				30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */,
 				30998CEC2A614855002157B3 /* RecordsViewController.swift in Sources */,
 				30998D042A67C2C2002157B3 /* PairingViewController.swift in Sources */,

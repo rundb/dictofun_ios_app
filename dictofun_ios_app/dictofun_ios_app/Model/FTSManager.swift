@@ -20,12 +20,14 @@ protocol FtsToUiNotificationDelegate {
  */
 class FTSManager {
     let fts: FileTransferService
+    let afm: AudioFilesManager
     let rm: RecordsManager
     
     var uiNotificationDelegate: FtsToUiNotificationDelegate?
     
-    init(ftsService fts: FileTransferService, recordsManager rm: RecordsManager) {
+    init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager) {
         self.fts = fts
+        self.afm = afm
         self.rm = rm
         
         getBluetoothManager().serviceDiscoveryDelegate = self
@@ -37,14 +39,15 @@ class FTSManager {
 extension FTSManager: NewFilesDetectionDelegate {
     func storeNewFile(with fileId: FileId, type fileType: FileType, and data: Data) -> Error? {
         if fileType == .wavData {
-            return rm.saveRecord(withRawWav: data, andFileName: fileId.name)
+            return afm.saveRecord(withRawWav: data, andFileName: fileId.name)
         }
         return nil
     }
     
     func detectNewFiles(with fileIds: [FileId]) -> [FileId] {
         NSLog("warning: detectNewFiles should be moved to another abstraction level")
-        let existingRecords = rm.getRecordsList()
+        
+        let existingRecords = afm.getRecordsList()
         var existingFileNames: [String] = []
         for r in existingRecords {
             existingFileNames.append(r.name)
@@ -59,6 +62,13 @@ extension FTSManager: NewFilesDetectionDelegate {
         var newFileIds: [FileId] = []
         for name in newFileNames {
             newFileIds.append( FileId.getIdByName(with: name))
+        }
+        if newFileIds.count > 0 {
+            rm.registerRecord(newFileIds[0])
+            let recs = rm.getRecords()
+            for r in recs {
+                NSLog("ROTU record uuid: \(r.uuidString)")
+            }
         }
         return newFileIds
     }
