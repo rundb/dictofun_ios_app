@@ -36,20 +36,7 @@ class MenuViewController: UIViewController {
         getRecordsManager().removeAllRecords()
     }
     @IBAction func testDatabaseAccess(_ sender: UIButton) {
-        let context  = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let newId = UUID()
-        let recordId = RecordId(context: context)
-        let recordMetaData = MetaData(context: context)
-        recordId.id = newId
-        
-        recordMetaData.id = newId
-        recordMetaData.name = "0011223344556677"
-        
-        
-        NSLog("record id: \(recordId)")
-        NSLog("record metadata: \(recordMetaData)")
-        
-        
+        NSLog("REMOVE ME")
     }
     
 }

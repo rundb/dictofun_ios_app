@@ -45,32 +45,33 @@ extension FTSManager: NewFilesDetectionDelegate {
     }
     
     func detectNewFiles(with fileIds: [FileId]) -> [FileId] {
-        NSLog("warning: detectNewFiles should be moved to another abstraction level")
-        
-        let existingRecords = afm.getRecordsList()
-        var existingFileNames: [String] = []
-        for r in existingRecords {
-            existingFileNames.append(r.name)
-        }
-        
-        var fileNames: [String] = []
-        for f in fileIds {
-            fileNames.append(f.name)
-        }
-        
-        let newFileNames = findNewFiles(new: fileNames, existing: existingFileNames)
-        var newFileIds: [FileId] = []
-        for name in newFileNames {
-            newFileIds.append( FileId.getIdByName(with: name))
-        }
-        if newFileIds.count > 0 {
-            rm.registerRecord(newFileIds[0])
-            let recs = rm.getRecords()
-            for r in recs {
-                NSLog("ROTU record uuid: \(r.uuidString)")
-            }
-        }
-        return newFileIds
+        return []
+//        NSLog("warning: detectNewFiles should be moved to another abstraction level")
+//
+//        let existingRecords = afm.getRecordsList()
+//        var existingFileNames: [String] = []
+//        for r in existingRecords {
+//            existingFileNames.append(r.name)
+//        }
+//
+//        var fileNames: [String] = []
+//        for f in fileIds {
+//            fileNames.append(f.name)
+//        }
+//
+//        let newFileNames = findNewFiles(new: fileNames, existing: existingFileNames)
+//        var newFileIds: [FileId] = []
+//        for name in newFileNames {
+//            newFileIds.append( FileId.getIdByName(with: name))
+//        }
+//        if newFileIds.count > 0 {
+//            rm.registerRecord(newFileIds[0])
+//            let recs = rm.getRecords()
+//            for r in recs {
+//                NSLog("ROTU record uuid: \(r.uuidString)")
+//            }
+//        }
+//        return newFileIds
     }
     
     private func findNewFiles(new lhs: [String], existing rhs: [String]) -> [String] {
@@ -90,13 +91,19 @@ extension FTSManager: NewFilesDetectionDelegate {
 }
 
 // MARK: - FtsEventNotificationDelegate
-// TODO: add notifications to the records manager too, if needed 
 extension FTSManager: FtsEventNotificationDelegate {
-    func didReceiveFilesCount(with filesCount: Int) {
-        uiNotificationDelegate?.didReceiveFilesCount(with: filesCount)
+    func didReceiveFilesList(with files: [FileId]) {
+        uiNotificationDelegate?.didReceiveFilesCount(with: files.count)
+        // pass the list of files to the records manager and get the list of IDs that needs to be fetched
+        let newRecords = rm.detectNewRecords(with: files)
+        if !newRecords.isEmpty {
+            for r in newRecords {
+                NSLog("newly discovered record: \(r.fileId.name)")
+            }
+        }
     }
     
-    func didReceiveNextFileSize(with fileId: FileId, and fileSize: Int) {
+    func didReceiveFileSize(with fileId: FileId, and fileSize: Int) {
         uiNotificationDelegate?.didReceiveNextFileSize(with: fileId.name, and: fileSize)
     }
     
