@@ -101,8 +101,8 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
         ftsStatusLabel.text = "FTS: fetching file, \(String(format: "%0.0f", progressPercentage * 100))%"
     }
     
-    func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int) {
-        ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec,\n throughput: \(throughput) bytes/sec"
+    func didCompleteFileTransaction(name fileName: String, with duration: Int) {
+        ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec"
         recordsTable.reloadData()
     }
 }

@@ -57,11 +57,10 @@ class AudioFilesManager {
     
     /// This function stores the record received from the Dictofun. It doesn't perform any manipulations with the data, so it implies
     /// that all decoding has been performed before entering this class. Wav header should also be applied before the call.
-    func saveRecord(withRawWav data: Data, andFileName name: String) -> Error? {
-        //
-        
+    func saveRecord(withRawWav data: Data, andFileName name: String) -> URL? {
         guard let url = makeRecordURL(forFileNamed: name) else {
-            return .some(FileSystemError.urlCreationError("URL could not be generated"))
+            NSLog("failed to create record url")
+            return nil
         }
         
         let wavFile = createWaveFile(data: data)
@@ -73,10 +72,10 @@ class AudioFilesManager {
         }
         catch {
             NSLog("RecordsManager: failed to write record's data")
-            return .some(FileSystemError.fileWriteError("RecordsManager:Data couldn't be written"))
+            return nil
         }
         
-        return nil
+        return url
     }
     
     func exists(url: URL?) -> Bool {

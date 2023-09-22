@@ -35,6 +35,61 @@ class RecordsManager {
         }
     }
     
+    private func getMetaData(_ predicate: NSPredicate?) -> [MetaData] {
+        let request = MetaData.fetchRequest()
+        if predicate != nil {
+            request.predicate = predicate
+        }
+        var result: [MetaData] = []
+        do {
+            result = try context.fetch(request)
+        }
+        catch {
+            NSLog("getMetaData(): CoreData fetch failed. Error: \(error)")
+            return []
+        }
+        return result
+    }
+    
+    private func getDownloadMetaData(_ predicate: NSPredicate?) -> [DownloadMetaData] {
+        let request = DownloadMetaData.fetchRequest()
+        if predicate != nil {
+            request.predicate = predicate
+        }
+        var result: [DownloadMetaData] = []
+        do {
+            result = try context.fetch(request)
+        }
+        catch {
+            NSLog("getDownloadMetaData(): CoreData fetch failed. Error: \(error)")
+            return []
+        }
+        return result
+    }
+    
+    private func getDownloadMetaDataByFileId(_ fileId: FileId) -> DownloadMetaData? {
+        let uuidRequestResult = getMetaData(NSPredicate(format: "name == %@", fileId.name))
+        if uuidRequestResult.isEmpty {
+            NSLog("Record with name \(fileId.name) is not found.")
+            return nil
+        }
+
+        guard let uuid = uuidRequestResult[0].id else {
+            NSLog("Failed to fetch correct UUID for record \(fileId.name)")
+            return nil
+        }
+        
+        // get meta data object corresponding to the file ID
+        let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", uuid.uuidString))
+        if downloadMetaData.isEmpty {
+            // TODO: it may be a valid case, consider creating a new entry
+            NSLog("DownloadMetaData fetch result is empty. ATM we do not continue from this point. Name: \(fileId.name)")
+            return nil
+        }
+        
+        return downloadMetaData[0]
+    }
+    
     
     // Methods of initial record's lifecycle
     // Initiate entries in all tables and fill in all non-optional fields with initial values
@@ -56,79 +111,16 @@ class RecordsManager {
     
     
     func getRecords() -> [MetaData] {
-//        deleteAllRecords()
-        let request = MetaData.fetchRequest()
-        do {
-            let recordsEntries = try context.fetch(request)
-            return recordsEntries
-        }
-        catch {
-            NSLog("Failed to fetch db context: \(error)")
-            return []
-        }
+        
+        return getMetaData(nil)
     }
     
-    func getDownloadMetaData(with uuid: UUID) -> DownloadMetaData? {
-        let uuidPredicate = NSPredicate(format: "id == %@", uuid.uuidString)
-
-        let request = DownloadMetaData.fetchRequest()
-        request.predicate = uuidPredicate
-        var result: [DownloadMetaData] = []
-        do {
-            result = try context.fetch(request)
-        }
-        catch {
-            NSLog("Failed to fetch download metadata for \(uuid), error: \(error)")
-        }
-        if !result.isEmpty {
-            return result[0]
-        }
-        return nil
-    }
-    
-    func setRecordSize(id fileId: FileId, _ size: Int) {
+    func setRecordRawSize(id fileId: FileId, _ size: Int) {
         // create a fetch request based on the file ID
-        let fileNamePredicate = NSPredicate(format: "name == %@", fileId.name)
-        let uuidRequest = MetaData.fetchRequest()
-        uuidRequest.predicate = fileNamePredicate
-        var uuidResult: [MetaData] = []
-        do {
-            uuidResult = try context.fetch(uuidRequest)
-        }
-        catch {
-            NSLog("failed to fetch uuid from core data , fileName: \(fileId.name), error: \(error.localizedDescription)")
-            return
-        }
-        if uuidResult.isEmpty {
-            NSLog("Record with name \(fileId.name) is not found. Size data won't be stored")
-            return
-        }
 
-        guard let uuid = uuidResult[0].id else {
-            NSLog("Failed to fetch correct UUID for record \(fileId.name)")
+        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
             return
         }
-        
-        // get meta data object corresponding to the file ID
-        let uuidPredicate = NSPredicate(format: "id == %@", uuid.uuidString)
-        let downloadMetadataRequest = DownloadMetaData.fetchRequest()
-        downloadMetadataRequest.predicate = uuidPredicate
-        var downloadMetaData: [DownloadMetaData] = []
-        do {
-            downloadMetaData = try context.fetch(downloadMetadataRequest)
-        }
-        catch {
-            NSLog("failed to fetch download metadata from core data, filename \(fileId.name), error: \(error.localizedDescription)")
-            return
-        }
-        if downloadMetaData.isEmpty {
-            // TODO: it may be a valid case, consider creating a new entry
-            NSLog("DownloadMetaData fetch result is empty. ATM we do not continue from this point. Name: \(fileId.name)")
-            return
-        }
-        
-        // set the meta data field size
-        let downloadMetaDataEntry = downloadMetaData[0]
         
         downloadMetaDataEntry.rawFileSize = Int32(size)
         downloadMetaDataEntry.status = downloadStatusNotStarted
@@ -137,20 +129,66 @@ class RecordsManager {
         saveContext()
     }
     
-    func setRecordUrl(id fileId: FileId, url recordUrl: URL) {
+    func setRecordRawUrl(id fileId: FileId, url recordUrl: URL) {
         // fetch the metadata object, based on the file ID
+        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
+            return
+        }
         
-        // set the metadata URL
+        // set the raw file stored URL
+        downloadMetaDataEntry.rawFileUrl = recordUrl
+        downloadMetaDataEntry.status = downloadStatusCompleted
+        downloadMetaDataEntry.progress = 100.0
         
         // save the context
+        saveContext()
     }
     
-    func getRecordUrl(id fileId: FileId) -> URL? { return nil }
-    func setRecordTime(id fileId: FileId, timestamp time: UInt32) {}
+    func getRecordRawUrl(id fileId: FileId) -> URL? {
+        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
+            return nil
+        }
+        return downloadMetaDataEntry.rawFileUrl
+    }
+    func getRecordUrl(id fileId: FileId) -> URL? {
+        let records = getMetaData(NSPredicate(format: "name == %@", fileId.name))
+        if records.isEmpty {
+            return nil
+        }
+        return records[0].filesystemUrl
+        
+    }
+    func setRecordTime(id fileId: FileId, timestamp datetime: Date) {
+        let records = getMetaData(NSPredicate(format: "name == %@", fileId.name))
+        if records.isEmpty {
+            return
+        }
+        
+        records[0].creationTime = datetime
+        saveContext()
+        
+    }
     
     // Metadata of download progress
-    func setDownloadProgress(id fileId: FileId, _ progress: Float) {}
-    func setDownloadDuration(id fileId: FileId, _ duration: Float) {}
+    func setDownloadProgress(id fileId: FileId, _ progress: Float) {
+        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
+            return
+        }
+        
+        downloadMetaDataEntry.progress = progress
+        downloadMetaDataEntry.status = downloadStatusRunning
+        
+        saveContext()
+    }
+    
+    func setDownloadDuration(id fileId: FileId, _ duration: Float) {
+        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
+            return
+        }
+        
+        downloadMetaDataEntry.duration = duration
+        saveContext()
+    }
     
     // Analyze the list of the file IDs received from the device.
     // Define what needs to be done for each of the detected records
@@ -190,22 +228,23 @@ class RecordsManager {
                 NSLog("Found an entry of an existing record. Checking the download metadata")
                 for r in recordsMetadataList {
                     if r.name == f.name {
-                        NSLog("requesting download metadata for \(r.name)")
-                        let downloadMetaData = getDownloadMetaData(with: r.id!)
-                        if let safeDownloadMetadata = downloadMetaData {
-                            if safeDownloadMetadata.status == downloadStatusMetadataUnknown {
+                        let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", r.id!.uuidString))
+                        if downloadMetaData.isEmpty {
+                            NSLog("WARNING: DownloadMetaData entry doesn't exist for record \(f.name)")
+                            isMetadataFetchNeeded = true
+                            isDataFetchNeeded = true
+                        }
+                        else {
+                            let downloadMetaDataEntry = downloadMetaData[0]
+                            if downloadMetaDataEntry.status == downloadStatusMetadataUnknown {
                                 isMetadataFetchNeeded = true
                                 isDataFetchNeeded = true
                             }
-                            else if safeDownloadMetadata.status != downloadStatusCompleted {
+                            else if downloadMetaDataEntry.status != downloadStatusCompleted {
+                                isMetadataFetchNeeded = false
                                 isDataFetchNeeded = true
-                                recordSize = Int(safeDownloadMetadata.rawFileSize)
+                                recordSize = Int(downloadMetaDataEntry.rawFileSize)
                             }
-                        }
-                        else {
-                            NSLog("warning: entry in DownloadMetaData doesn't exist for \(r.name)")
-                            isMetadataFetchNeeded = true
-                            isDataFetchNeeded = true
                         }
                     }
                 }
@@ -218,7 +257,29 @@ class RecordsManager {
     // In case if this method is called without arguments, it has to fetch the records
     // in the database that either are missing the metadata or the data
     func defineFtsJobs() -> [FtsJob] {
-        return []
+        let downloadMetaData = getDownloadMetaData(nil)
+        var jobs: [FtsJob] = []
+        for entry in downloadMetaData {
+            if !(entry.status == downloadStatusMetadataUnknown || entry.status != downloadStatusCompleted) {
+                continue
+            }
+            guard let recordUUID = entry.id else {
+                return []
+            }
+            let metadata = getMetaData(NSPredicate(format: "id == %@", recordUUID.uuidString))
+            guard !metadata.isEmpty else {
+                return []
+            }
+            let fileId = FileId.getIdByName(with: metadata[0].name!)
+            
+            if entry.status == downloadStatusMetadataUnknown {
+                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: true, fileSize: 0))
+            }
+            else if entry.status != downloadStatusCompleted {
+                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(metadata[0].size)))
+            }
+        }
+        return jobs
     }
     
     // Transcription-related methods
