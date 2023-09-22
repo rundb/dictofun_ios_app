@@ -92,19 +92,56 @@ extension FTSManager: NewFilesDetectionDelegate {
 
 // MARK: - FtsEventNotificationDelegate
 extension FTSManager: FtsEventNotificationDelegate {
+    private func launchNextFtsJob(with jobs: [FtsJob]) {
+        if jobs.isEmpty {
+            NSLog("No more jobs to execute")
+            return
+        }
+        for job in jobs {
+            if job.shouldFetchMetadata {
+                let reqResult = fts.requestFileInfo(with: job.fileId)
+                if reqResult != nil {
+                    NSLog("Failed to request file info for \(job.fileId.name), error \(reqResult!.localizedDescription)")
+                }
+                else {
+                    NSLog("Requested file meta data for \(job.fileId.name)")
+                }
+                return
+            }
+        }
+        for job in jobs {
+            if job.shouldFetchData {
+                let reqResult = fts.requestFileData(with: job.fileId, and: job.fileSize)
+                if reqResult != nil {
+                    NSLog("Failed to request file data for \(job.fileId.name), error \(reqResult!.localizedDescription)")
+                }
+                else {
+                    NSLog("Requested file data for \(job.fileId.name)")
+                }
+                return
+            }
+        }
+        NSLog("FTSManager: no FTS jobs left to launch")
+    }
+    
     func didReceiveFilesList(with files: [FileId]) {
         uiNotificationDelegate?.didReceiveFilesCount(with: files.count)
         // pass the list of files to the records manager and get the list of IDs that needs to be fetched
-        let newRecords = rm.detectNewRecords(with: files)
-        if !newRecords.isEmpty {
-            for r in newRecords {
-                NSLog("newly discovered record: \(r.fileId.name)")
+        let ftsJobs = rm.defineFtsJobs(with: files)
+        if !ftsJobs.isEmpty {
+            for job in ftsJobs {
+                NSLog("newly discovered record: \(job.fileId.name) : \(job.shouldFetchMetadata) : \(job.shouldFetchMetadata) : \(job.fileSize)")
             }
+            launchNextFtsJob(with: ftsJobs)
+            return
         }
     }
     
     func didReceiveFileSize(with fileId: FileId, and fileSize: Int) {
         uiNotificationDelegate?.didReceiveNextFileSize(with: fileId.name, and: fileSize)
+        rm.setRecordSize(id: fileId, fileSize)
+        let ftsJobs = rm.defineFtsJobs()
+        launchNextFtsJob(with: ftsJobs)
     }
     
     func didReceiveFileDataChunk(with progressPercentage: Double) {

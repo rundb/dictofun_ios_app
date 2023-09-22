@@ -12,4 +12,5 @@ struct FtsJob {
     var fileId: FileId
     var shouldFetchMetadata: Bool
     var shouldFetchData: Bool
+    var fileSize: Int
 }
