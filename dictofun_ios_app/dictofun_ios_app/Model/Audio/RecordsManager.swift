@@ -327,4 +327,38 @@ class RecordsManager {
         }
     }
     
+    func getRecordsList() -> [RecordViewData] {
+        var metadatas = getMetaData(nil)
+        
+        metadatas.sort(by: {
+            if $0.creationTime != nil && $1.creationTime != nil {
+                return $0.creationTime! < $1.creationTime!
+            }
+            return true
+        })
+        var records: [RecordViewData] = []
+        for m in metadatas {
+            if m.size < 200 {
+                // Glitch of the current dictofun state - short recs have to be removed for the visual representation
+                continue
+            }
+            let uuid = m.id!
+            let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", uuid.uuidString))[0]
+            let status = downloadMetaData.status
+            
+            if status == downloadStatusMetadataUnknown {
+                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: false, name: m.name!, progress: 0)
+                records.append(recordViewData)
+            }
+            else if status == downloadStatusCompleted {
+                let recordViewData = RecordViewData(url: m.filesystemUrl, creationDate: m.creationTime, durationSeconds: Int(m.duration), isDownloaded: true, isSizeKnown: true, name: m.name!, progress: 100)
+                records.append(recordViewData)
+            }
+            else {
+                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: 0)
+                records.append(recordViewData)
+            }
+        }
+        return records
+    }
 }

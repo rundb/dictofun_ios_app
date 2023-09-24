@@ -130,66 +130,6 @@ class AudioFilesManager {
         return tokens[3] + ":" + tokens[4] + ":" + tokens[5]
     }
     
-    // TODO: replace sync call to duration with async one
-    func getRecordsList(excludeEmpty: Bool = false) -> [Record] {
-        guard let recordsPath = makeRecordURL(forFileNamed: "") else {
-            NSLog("RecordsManager::getRecordsList - failed to get folder's URL")
-            return []
-        }
-        do {
-            let items = try fileManager.contentsOfDirectory(atPath: recordsPath.relativePath)
-            var result: [Record] = []
-            for item in items {
-                let url = recordsPath.appendingPathComponent(item)
-                let name = url.lastPathComponent
-                
-                // TODO: replace this with appropriate duration calculation. Currently just an assumption that 1 second of record takes 16 kbytes
-                var durationInSeconds = 0
-                
-                do {
-                    let recordFileAttr = try fileManager.attributesOfItem(atPath: url.relativePath)
-                    let fileSize = recordFileAttr[FileAttributeKey.size] as! Int
-                    durationInSeconds = fileSize / (16384)
-                }
-                catch let error {
-                    NSLog("failed to fetch record size: \(error.localizedDescription)")
-                }
-                
-                var fileSize = 0
-                if excludeEmpty {
-                    do {
-                        let fileAttr = try fileManager.attributesOfItem(atPath: url.relativePath)
-                        fileSize = fileAttr[FileAttributeKey.size] as! Int
-                        if fileSize < FileTransferService.minimalFileSize {
-                            NSLog("RecordsManager, discovered file smaller than minimal: \(fileSize)")
-                        }
-                    }
-                    catch let error {
-                        NSLog("RecordsManager: exception while attempting to extract file size (\(error.localizedDescription))")
-                    }
-                }
-                
-                let record = Record(url: url, name: name, durationSeconds: durationInSeconds, progress: 0)
-                if !excludeEmpty {
-                    result.append(record)
-                }
-                else if fileSize >= FileTransferService.minimalFileSize
-                {
-                    result.append(record)
-                }
-            }
-            result.sort(by: {
-                $0.name > $1.name
-            })
-            
-            return result
-        }
-        catch let error {
-            NSLog("RecordsManager::getRecordsList - failed to retrieve files from the folder, error: \(error.localizedDescription)")
-        }
-        return []
-    }
-    
     func removeRecord(_ url: URL) {
         do {
             try fileManager.removeItem(at: url)

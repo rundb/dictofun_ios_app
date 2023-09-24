@@ -23,7 +23,6 @@ class RecordCell: UITableViewCell {
     var recordURL: URL?
     let audioPlayer: AudioPlayer = getAudioPlayer()
     
-    
     var tableReloadDelegate: TableReloadDelegate?
     
     override func awakeFromNib() {

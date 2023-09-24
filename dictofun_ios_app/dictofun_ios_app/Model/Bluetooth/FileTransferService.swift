@@ -382,7 +382,10 @@ extension FileTransferService: CharNotificationDelegate {
             if let safeData = data {
                 currentFile.data.append(safeData)
                 currentFile.receivedSize += safeData.count
-                if currentFile.receivedSize == currentFile.size {
+                if currentFile.receivedSize == currentFile.size || (safeData.count == 0 && (currentFile.size - currentFile.receivedSize) < 200) {
+                    if safeData.count == 0 {
+                        NSLog("WARNING: 0-sized chunk detected in fileDataCh, FIXME")
+                    }
                     currentFile.endTimestamp = Date()
                     let transactionTime = currentFile.endTimestamp!.timeIntervalSinceReferenceDate - currentFile.startTimestamp!.timeIntervalSinceReferenceDate
                     let throughput = Double(currentFile.size) / transactionTime
