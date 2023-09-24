@@ -26,7 +26,11 @@ func getFtsManager() -> FTSManager {
     return ftsManager
 }
 
-func getRecordsManager() -> AudioFilesManager {
+func getRecordsManager() -> RecordsManager {
+    return recordsManager
+}
+
+func getAudioFilesManager() -> AudioFilesManager {
     return audioFilesManager
 }
 

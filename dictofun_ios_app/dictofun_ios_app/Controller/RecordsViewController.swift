@@ -24,7 +24,7 @@ class RecordsViewController: UIViewController {
         ftsFsStatusLabel.textColor = .black
         getBluetoothManager().uiUpdateDelegate = self
         getFtsManager().uiNotificationDelegate = self
-        audioFilesManager = getRecordsManager()
+        audioFilesManager = getAudioFilesManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
         records = audioFilesManager!.getRecordsList(excludeEmpty: true)

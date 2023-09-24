@@ -125,7 +125,19 @@ class RecordsManager {
         downloadMetaDataEntry.rawFileSize = Int32(size)
         downloadMetaDataEntry.status = downloadStatusNotStarted
         
+        NSLog("Storing record size: \(fileId.name) - \(size)")
+        
         // save the DB context
+        saveContext()
+    }
+    
+    func setRecordSize(id fileId: FileId, _ size: Int) {
+        let records = getMetaData(NSPredicate(format: "name == %@", fileId.name))
+        if records.isEmpty {
+            NSLog("Error: attempt to set size \(size) to non-existent record \(fileId.name)")
+            return
+        }
+        records[0].size = Int32(size)
         saveContext()
     }
     
@@ -225,7 +237,6 @@ class RecordsManager {
                 isDataFetchNeeded = true
             }
             else {
-                NSLog("Found an entry of an existing record. Checking the download metadata")
                 for r in recordsMetadataList {
                     if r.name == f.name {
                         let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", r.id!.uuidString))
@@ -238,7 +249,7 @@ class RecordsManager {
                             let downloadMetaDataEntry = downloadMetaData[0]
                             if downloadMetaDataEntry.status == downloadStatusMetadataUnknown {
                                 isMetadataFetchNeeded = true
-                                isDataFetchNeeded = true
+                                isDataFetchNeeded = false
                             }
                             else if downloadMetaDataEntry.status != downloadStatusCompleted {
                                 isMetadataFetchNeeded = false
@@ -263,6 +274,7 @@ class RecordsManager {
             if !(entry.status == downloadStatusMetadataUnknown || entry.status != downloadStatusCompleted) {
                 continue
             }
+            
             guard let recordUUID = entry.id else {
                 return []
             }
@@ -272,11 +284,14 @@ class RecordsManager {
             }
             let fileId = FileId.getIdByName(with: metadata[0].name!)
             
+            NSLog("download MD: \(entry.id?.uuidString) : \(entry.status) : \(entry.rawFileSize) : \(fileId.name)")
+            
             if entry.status == downloadStatusMetadataUnknown {
-                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: true, fileSize: 0))
+                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: false, fileSize: 0))
             }
             else if entry.status != downloadStatusCompleted {
-                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(metadata[0].size)))
+                NSLog("defineFtsJobs without args: \(fileId.name) : \(entry.id?.uuidString) : \(entry.rawFileSize)")
+                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(entry.rawFileSize)))
             }
         }
         return jobs

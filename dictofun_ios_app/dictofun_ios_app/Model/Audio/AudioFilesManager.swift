@@ -216,6 +216,7 @@ class AudioFilesManager {
                     NSLog("remove records: failed to remove error \(item), error: \(error.localizedDescription)")
                 }
             }
+            
         }
         catch let error {
             NSLog("removeAllRecords(): error \(error.localizedDescription)")

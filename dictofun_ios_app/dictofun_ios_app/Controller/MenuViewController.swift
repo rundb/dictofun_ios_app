@@ -33,7 +33,8 @@ class MenuViewController: UIViewController {
     }
     
     @IBAction func deleteAllRecordsButtonPressed(_ sender: UIButton) {
-        getRecordsManager().removeAllRecords()
+        getAudioFilesManager().removeAllRecords()
+        getRecordsManager().deleteAllRecords()
     }
     @IBAction func testDatabaseAccess(_ sender: UIButton) {
         NSLog("REMOVE ME")

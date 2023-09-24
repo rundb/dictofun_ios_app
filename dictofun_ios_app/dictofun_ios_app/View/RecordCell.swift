@@ -46,7 +46,7 @@ class RecordCell: UITableViewCell {
         }
     }
     @IBAction func removeButtonPressed(_ sender: UIButton) {
-        getRecordsManager().removeRecord(recordURL!)
+        getAudioFilesManager().removeRecord(recordURL!)
         // TODO: remove the table cell too after this operation completion
         guard let delegate = tableReloadDelegate else {
             return

@@ -159,6 +159,7 @@ class FileTransferService {
         currentFile.size = size
         currentFile.receivedSize = 0
         currentFile.startTimestamp = Date()
+        NSLog("Requesting file data for file \(fileId.name) with size \(size)")
         return nil
     }
     
@@ -320,11 +321,7 @@ extension FileTransferService: CharNotificationDelegate {
     
     private func didReceiveFilesList(with data: Data) {
         let files = parseFilesList(with: data)
-        NSLog("FTS: Received files' list: ")
-        var fileNames: [String] = []
-        for f in files {
-            fileNames.append(f.name)
-        }
+
         self.fileIds = files
         if filesListCtx.isNextFilesListCharNeeded
         {
@@ -375,10 +372,6 @@ extension FileTransferService: CharNotificationDelegate {
                 currentFile.size = fileInfo.s
                 
                 ftsEventNotificationDelegate?.didReceiveFileSize(with: currentFile.fileId, and: currentFile.size)
-//                let requestResult = requestFileData(with: currentFile.fileId)
-//                if requestResult != nil {
-//                    NSLog("FTS didCharNotify: failed to request file data. Error: \(requestResult!.localizedDescription)")
-//                }
             }
             else {
                 NSLog("FTS: Received file info is invalid")
@@ -407,7 +400,6 @@ extension FileTransferService: CharNotificationDelegate {
                 }
             }
         }
-        
         else if char.uuidString == ServiceIds.FTS.fsStatusCh {
             NSLog("Received file system status")
             if let safeData = data {
@@ -421,7 +413,6 @@ extension FileTransferService: CharNotificationDelegate {
                 }
             }
         }
-        
         else if char.uuidString == ServiceIds.FTS.statusCh {
             if let safeData = data {
                 if safeData.count == 0 {

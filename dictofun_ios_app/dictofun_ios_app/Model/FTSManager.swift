@@ -1,9 +1,7 @@
-//
-//  FTSManager.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 31.08.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import Foundation
 
@@ -76,7 +74,7 @@ extension FTSManager: FtsEventNotificationDelegate {
         let ftsJobs = rm.defineFtsJobs(with: files)
         if !ftsJobs.isEmpty {
             for job in ftsJobs {
-                NSLog("newly discovered record: \(job.fileId.name) : \(job.shouldFetchMetadata) : \(job.shouldFetchData) : \(job.fileSize)")
+                NSLog("record from device: \(job.fileId.name) : \(job.shouldFetchMetadata) : \(job.shouldFetchData) : \(job.fileSize)")
             }
             launchNextFtsJob(with: ftsJobs)
             return
@@ -99,12 +97,37 @@ extension FTSManager: FtsEventNotificationDelegate {
         return fileId.name + ".wav"
     }
     
+    private func convertFtsStringToDate(with raw: String) -> Date {
+        
+        let year = String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)])
+        let month = String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)])
+        let day = String(raw[raw.index(raw.startIndex, offsetBy: 8)...raw.index(raw.startIndex, offsetBy: 9)])
+        let hour = String(raw[raw.index(raw.startIndex, offsetBy: 10)...raw.index(raw.startIndex, offsetBy: 11)])
+        let minute = String(raw[raw.index(raw.startIndex, offsetBy: 12)...raw.index(raw.startIndex, offsetBy: 13)])
+        let second = String(raw[raw.index(raw.startIndex, offsetBy: 14)...raw.index(raw.startIndex, offsetBy: 15)])
+        
+        let formattedDate = "\(year)-\(month)-\(day) \(hour):\(minute):\(second)"
+        let format = "yy-MM-dd HH:mm:ss"
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        let result = formatter.date(from: formattedDate)
+        guard result != nil else {
+            NSLog("Failed to convert the received file ID to a valid date. Returning current time")
+            return Date.now
+        }
+        
+        return result!
+    }
+    
     func didCompleteFileTransaction(name fileId: FileId, with duration: Int, fileType type: FileType, _ data: Data) {
         uiNotificationDelegate?.didCompleteFileTransaction(name: fileId.name, with: duration)
+
         // 0. decode adpcm, if needed
         var record: Data = Data([])
         if type == .adpcmData {
             record = decodeAdpcm(from: data)
+            rm.setRecordSize(id: fileId, record.count)
         }
         else {
             record.append(data)
@@ -116,9 +139,13 @@ extension FTSManager: FtsEventNotificationDelegate {
             return
         }
         
+        let recordDate = convertFtsStringToDate(with: fileId.name)
+        NSLog("Record's creation date/time: \(recordDate)")
+        
         // 2. store the raw URL in the database
         rm.setRecordRawUrl(id: fileId, url: savedRecordUrl!)
         rm.setDownloadDuration(id: fileId, Float(duration))
+        rm.setRecordTime(id: fileId, timestamp: recordDate)
         
         // 3. get list of the next jobs that need to be executed
         let ftsJobs = rm.defineFtsJobs()
