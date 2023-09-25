@@ -88,13 +88,13 @@ extension RecordsViewController: UITableViewDataSource {
         cell.recordProgressBar.trackTintColor = .gray
         // TODO: define project-specific set of colors
         if r.isDownloaded {
-            cell.contentView.backgroundColor = UIColor(rgb: 0xbdc0f7)
+            cell.contentView.backgroundColor = UIColor(rgb: 0x83eb86)
         }
         else if r.isSizeKnown {
-            cell.contentView.backgroundColor = UIColor(rgb: 0xeae597)
+            cell.contentView.backgroundColor = UIColor(rgb: 0xBBDEFB)
         }
         else {
-            cell.contentView.backgroundColor = UIColor(rgb: 0xf0bcd3)
+            cell.contentView.backgroundColor = UIColor(rgb: 0xE3F2FD)
         }
         cell.tableReloadDelegate = self
         return cell
@@ -139,7 +139,7 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
         records = recordsManager!.getRecordsList()
-        NSLog("Table reload: \(records.count) entries")
+
         recordsTable.reloadData()
     }
     

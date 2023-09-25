@@ -269,6 +269,7 @@ class RecordsManager {
     
     // In case if this method is called without arguments, it has to fetch the records
     // in the database that either are missing the metadata or the data
+    // TODO: add correct handling, when metadata about a record exists on the phone, but not anymore on the device
     func defineFtsJobs() -> [FtsJob] {
         let downloadMetaData = getDownloadMetaData(nil)
         var jobs: [FtsJob] = []
@@ -285,14 +286,11 @@ class RecordsManager {
                 return []
             }
             let fileId = FileId.getIdByName(with: metadata[0].name!)
-            
-//            NSLog("download MD: \(entry.id?.uuidString) : \(entry.status) : \(entry.rawFileSize) : \(fileId.name)")
-            
+                        
             if entry.status == downloadStatusMetadataUnknown {
                 jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: false, fileSize: 0))
             }
             else if entry.status != downloadStatusCompleted {
-//                NSLog("defineFtsJobs without args: \(fileId.name) : \(entry.id?.uuidString) : \(entry.rawFileSize)")
                 jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(entry.rawFileSize)))
             }
         }
@@ -339,7 +337,7 @@ class RecordsManager {
             return true
         })
         var records: [RecordViewData] = []
-        NSLog("Metadata count: \(metadatas.count)")
+
         for m in metadatas {
             if m.size < 200 && m.size != 0 {
                 // Glitch of the current dictofun state - short recs have to be removed for the visual representation
