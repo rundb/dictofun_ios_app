@@ -103,33 +103,6 @@ class AudioFilesManager {
         return url
     }
     
-    
-    static private func splitDateToComponents(with raw: String) -> [String] {
-        var result: [String] = []
-        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 4)...raw.index(raw.startIndex, offsetBy: 5)]))
-        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 6)...raw.index(raw.startIndex, offsetBy: 7)]))
-        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 8)...raw.index(raw.startIndex, offsetBy: 9)]))
-        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 10)...raw.index(raw.startIndex, offsetBy: 11)]))
-        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 12)...raw.index(raw.startIndex, offsetBy: 13)]))
-        result.append(String(raw[raw.index(raw.startIndex, offsetBy: 14)...raw.index(raw.startIndex, offsetBy: 15)]))
-        return result
-    }
-    
-    static func getReadableFileName(with raw: String) -> String {
-        let tokens = splitDateToComponents(with: raw)
-        return tokens[0] + "." + tokens[1] + "." + tokens[2] + ", " + tokens[3] + ":" + tokens[4] + ":" + tokens[5]
-    }
-    
-    static func getReadableRecordDate(with raw: String) -> String {
-        let tokens = splitDateToComponents(with: raw)
-        return tokens[0] + "." + tokens[1] + "." + tokens[2]
-    }
-                      
-    static func getReadableRecordTime(with raw: String) -> String {
-        let tokens = splitDateToComponents(with: raw)
-        return tokens[3] + ":" + tokens[4] + ":" + tokens[5]
-    }
-    
     func removeRecord(_ url: URL) {
         do {
             try fileManager.removeItem(at: url)
