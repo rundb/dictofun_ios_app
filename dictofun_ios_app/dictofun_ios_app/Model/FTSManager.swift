@@ -143,7 +143,7 @@ extension FTSManager: FtsEventNotificationDelegate {
         NSLog("Record's creation date/time: \(recordDate)")
         
         // 2. store the raw URL in the database
-        rm.setRecordRawUrl(id: fileId, url: savedRecordUrl!)
+        rm.completeFileReception(id: fileId, url: savedRecordUrl!)
         rm.setDownloadDuration(id: fileId, Float(duration))
         rm.setRecordTime(id: fileId, timestamp: recordDate)
         

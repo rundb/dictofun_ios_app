@@ -139,7 +139,7 @@ class RecordsManager {
         saveContext()
     }
     
-    func setRecordRawUrl(id fileId: FileId, url recordUrl: URL) {
+    func completeFileReception(id fileId: FileId, url recordUrl: URL) {
         // fetch the metadata object, based on the file ID
         let recordEntry = getMetaData(NSPredicate(format: "name == %@", fileId.name))
         let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId)
