@@ -52,8 +52,6 @@ class RecordsViewController: UIViewController {
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         records = recordsManager!.getRecordsList()
-        NSLog("records table contains \(records.count) entries")
-        
         return records.count
     }
     
@@ -72,20 +70,34 @@ extension RecordsViewController: UITableViewDataSource {
         let date = r.creationDate
         if date != nil {
             let formatter = DateFormatter()
-            formatter.dateFormat = "yy/MM/dd"
+            formatter.dateFormat = "dd/MMM/yyyy"
             cell.dateLabel.text = "\(formatter.string(from: date!))"
             formatter.dateFormat = "HH:mm:ss"
             cell.timeOfRecordLabel.text = "\( formatter.string(from: date!) )"
         }
+        else {
+            cell.dateLabel.text = "--/--/--"
+            cell.timeOfRecordLabel.text = "\(r.name)"
+        }
         
         if r.url != nil {
             cell.recordURL = r.url
+            cell.playButton.isEnabled = true
+            cell.removeRecordButton.isEnabled = true
         }
         else {
-            // TODO: deactivate the play button
+            cell.playButton.isEnabled = false
+            cell.removeRecordButton.isEnabled = false
         }
-        cell.recordProgressBar.isHidden = true
-        cell.recordProgressBar.trackTintColor = .gray
+        if r.progress != 0 && r.progress < 100 {
+            cell.recordProgressBar.isHidden = false
+            cell.recordProgressBar.progress = Float(r.progress) / 100.0
+            NSLog("progress \(r.progress)")
+        }
+        else {
+            cell.recordProgressBar.isHidden = true
+            cell.recordProgressBar.trackTintColor = .gray
+        }
         // TODO: define project-specific set of colors
         if r.isDownloaded {
             cell.contentView.backgroundColor = UIColor(rgb: 0x83eb86)
@@ -124,9 +136,20 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
         reloadTable()
     }
     
-    func didReceiveFileDataChunk(with progressPercentage: Double) {
+    func didReceiveFileDataChunk(with fileId: FileId, and progressPercentage: Double) {
         ftsStatusLabel.text = "FTS: fetching file, \(String(format: "%0.0f", progressPercentage * 100))%"
         //TODO: find the corresponding cell at this point and update the progress bar cell
+        if records.isEmpty {
+            return
+        }
+
+        for r in records {
+            if r.name == fileId.name {
+                getRecordsManager().setDownloadProgress(id: fileId, Float(progressPercentage))
+                reloadTable()
+                return
+            }
+        }
     }
     
     func didCompleteFileTransaction(name fileName: String, with duration: Int) {

@@ -180,7 +180,16 @@ class RecordsManager {
         
         records[0].creationTime = datetime
         saveContext()
+    }
+    
+    func setRecordDuration(id fileId: FileId, duration durationSeconds: Float) {
+        let records = getMetaData(NSPredicate(format: "name == %@", fileId.name))
+        if records.isEmpty {
+            return
+        }
         
+        records[0].duration = durationSeconds
+        saveContext()
     }
     
     // Metadata of download progress
@@ -189,7 +198,7 @@ class RecordsManager {
             return
         }
         
-        downloadMetaDataEntry.progress = progress
+        downloadMetaDataEntry.progress = progress * 100
         downloadMetaDataEntry.status = downloadStatusRunning
         
         saveContext()
@@ -334,6 +343,9 @@ class RecordsManager {
             if $0.creationTime != nil && $1.creationTime != nil {
                 return $0.creationTime! > $1.creationTime!
             }
+            if $0.name != nil && $1.name != nil {
+                return $0.name! > $1.name!
+            }
             return true
         })
         var records: [RecordViewData] = []
@@ -356,7 +368,8 @@ class RecordsManager {
                 records.append(recordViewData)
             }
             else {
-                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: 0)
+                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: Int(downloadMetaData.progress))
+                NSLog("progress: \(m.name!)-\(downloadMetaData.progress)")
                 records.append(recordViewData)
             }
         }

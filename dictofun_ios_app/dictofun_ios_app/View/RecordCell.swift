@@ -17,6 +17,8 @@ class RecordCell: UITableViewCell {
     @IBOutlet weak var playbackTimeLabel: UILabel!
     @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var transcriptLabel: UILabel!
+    @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var removeRecordButton: UIButton!
     
     var recordURL: URL?
     let audioPlayer: AudioPlayer = getAudioPlayer()

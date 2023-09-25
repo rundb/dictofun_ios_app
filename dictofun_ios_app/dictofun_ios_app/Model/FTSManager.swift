@@ -8,7 +8,7 @@ import Foundation
 protocol FtsToUiNotificationDelegate {
     func didReceiveFilesCount(with filesCount: Int)
     func didReceiveNextFileSize(with fileName: String, and fileSize: Int)
-    func didReceiveFileDataChunk(with progressPercentage: Double)
+    func didReceiveFileDataChunk(with fileId: FileId, and progressPercentage: Double)
     func didCompleteFileTransaction(name fileName: String, with duration: Int)
     func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int)
 }
@@ -89,7 +89,7 @@ extension FTSManager: FtsEventNotificationDelegate {
     }
     
     func didReceiveFileDataChunk(with fileId: FileId, and progressPercentage: Double) {
-        uiNotificationDelegate?.didReceiveFileDataChunk(with: progressPercentage)
+        uiNotificationDelegate?.didReceiveFileDataChunk(with: fileId, and: progressPercentage)
         rm.setDownloadProgress(id: fileId, Float(progressPercentage))
     }
     
@@ -141,6 +141,11 @@ extension FTSManager: FtsEventNotificationDelegate {
         
         let recordDate = convertFtsStringToDate(with: fileId.name)
         NSLog("Record's creation date/time: \(recordDate)")
+        
+        // TODO: replace this with a function that uses Audio framework of iOS. Currently hardcoded bytes per second
+        let recordBytesPerSecond = Float(7872.0)
+        let recordDuration = Float(data.count) / recordBytesPerSecond
+        rm.setRecordDuration(id: fileId, duration: recordDuration)
         
         // 2. store the raw URL in the database
         rm.completeFileReception(id: fileId, url: savedRecordUrl!)
