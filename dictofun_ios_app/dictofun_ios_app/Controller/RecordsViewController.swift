@@ -139,6 +139,7 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
         records = recordsManager!.getRecordsList()
+        NSLog("Table reload: \(records.count) entries")
         recordsTable.reloadData()
     }
     

@@ -143,14 +143,18 @@ class RecordsManager {
     
     func setRecordRawUrl(id fileId: FileId, url recordUrl: URL) {
         // fetch the metadata object, based on the file ID
-        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
+        let recordEntry = getMetaData(NSPredicate(format: "name == %@", fileId.name))
+        let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId)
+        
+        guard !(recordEntry.isEmpty || downloadMetaDataEntry == nil) else {
+            NSLog("Failed to store record URL: got an empty metadata/download metadata")
             return
         }
         
         // set the raw file stored URL
-        downloadMetaDataEntry.rawFileUrl = recordUrl
-        downloadMetaDataEntry.status = downloadStatusCompleted
-        downloadMetaDataEntry.progress = 100.0
+        recordEntry[0].filesystemUrl = recordUrl
+        downloadMetaDataEntry!.status = downloadStatusCompleted
+        downloadMetaDataEntry!.progress = 100.0
         
         // save the context
         saveContext()
@@ -284,13 +288,13 @@ class RecordsManager {
             }
             let fileId = FileId.getIdByName(with: metadata[0].name!)
             
-            NSLog("download MD: \(entry.id?.uuidString) : \(entry.status) : \(entry.rawFileSize) : \(fileId.name)")
+//            NSLog("download MD: \(entry.id?.uuidString) : \(entry.status) : \(entry.rawFileSize) : \(fileId.name)")
             
             if entry.status == downloadStatusMetadataUnknown {
                 jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: false, fileSize: 0))
             }
             else if entry.status != downloadStatusCompleted {
-                NSLog("defineFtsJobs without args: \(fileId.name) : \(entry.id?.uuidString) : \(entry.rawFileSize)")
+//                NSLog("defineFtsJobs without args: \(fileId.name) : \(entry.id?.uuidString) : \(entry.rawFileSize)")
                 jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(entry.rawFileSize)))
             }
         }
@@ -332,13 +336,14 @@ class RecordsManager {
         
         metadatas.sort(by: {
             if $0.creationTime != nil && $1.creationTime != nil {
-                return $0.creationTime! < $1.creationTime!
+                return $0.creationTime! > $1.creationTime!
             }
             return true
         })
         var records: [RecordViewData] = []
+        NSLog("Metadata count: \(metadatas.count)")
         for m in metadatas {
-            if m.size < 200 {
+            if m.size < 200 && m.size != 0 {
                 // Glitch of the current dictofun state - short recs have to be removed for the visual representation
                 continue
             }

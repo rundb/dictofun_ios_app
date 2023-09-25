@@ -37,8 +37,10 @@ class RecordCell: UITableViewCell {
     }
     @IBAction func playButtonPressed(_ sender: UIButton) {
         guard let url = recordURL else {
+            NSLog("play button: url is nil")
             return
         }
+        NSLog("Playing record \(url.relativePath)")
         let result = audioPlayer.playRecord(url)
         if result != nil {
             recordProgressBar.isHidden = false
