@@ -140,8 +140,10 @@
             <connections>
                 <outlet property="dateLabel" destination="h3Z-VG-z4s" id="Hxt-hS-yPb"/>
                 <outlet property="durationLabel" destination="oSu-Sx-p2E" id="flk-kp-qyc"/>
+                <outlet property="playButton" destination="9fS-24-6jQ" id="lxv-QO-06R"/>
                 <outlet property="playbackTimeLabel" destination="5bU-xa-baP" id="SsZ-po-Yok"/>
                 <outlet property="recordProgressBar" destination="xRl-SN-26a" id="nZ1-0r-saw"/>
+                <outlet property="removeRecordButton" destination="JYD-Rp-hq2" id="CPH-Fn-kVb"/>
                 <outlet property="timeOfRecordLabel" destination="L9C-N1-FT6" id="Z8a-Yb-4Bb"/>
                 <outlet property="transcriptLabel" destination="CEw-0B-qzw" id="KLU-H5-KnJ"/>
             </connections>
