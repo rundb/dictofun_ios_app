@@ -1,9 +1,7 @@
-//
-//  RecordCell.swift
-//  dictofun_ios_app
-//
-//  Created by Roman on 23.07.23.
-//
+// SPDX-License-Identifier:  Apache-2.0
+/*
+ * Copyright (c) 2023, Roman Turkin
+ */
 
 import UIKit
 
@@ -21,6 +19,7 @@ class RecordCell: UITableViewCell {
     @IBOutlet weak var transcriptLabel: UILabel!
     
     var recordURL: URL?
+    let audioPlayer: AudioPlayer = getAudioPlayer()
     
     var tableReloadDelegate: TableReloadDelegate?
     
@@ -36,15 +35,17 @@ class RecordCell: UITableViewCell {
     }
     @IBAction func playButtonPressed(_ sender: UIButton) {
         guard let url = recordURL else {
+            NSLog("play button: url is nil")
             return
         }
-        let result = getRecordsManager().playRecord(url)
+        NSLog("Playing record \(url.relativePath)")
+        let result = audioPlayer.playRecord(url)
         if result != nil {
             recordProgressBar.isHidden = false
         }
     }
     @IBAction func removeButtonPressed(_ sender: UIButton) {
-        getRecordsManager().removeRecord(recordURL!)
+        getAudioFilesManager().removeRecord(recordURL!)
         // TODO: remove the table cell too after this operation completion
         guard let delegate = tableReloadDelegate else {
             return

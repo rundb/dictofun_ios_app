@@ -63,6 +63,10 @@ protocol BluetoothManagerDelegate {
     func peripheralNotSupported()
 }
 
+protocol BleServicesDiscoveryDelegate {
+    func didDiscoverServices()
+}
+
 enum BluetoothManagerError: Error {
     case cannotFindPeripheral
     

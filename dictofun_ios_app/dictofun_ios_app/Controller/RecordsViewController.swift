@@ -15,7 +15,7 @@ class RecordsViewController: UIViewController {
     @IBOutlet weak var recordsTitleLabel: UILabel!
     @IBOutlet weak var ftsFsStatusLabel: UILabel!
     
-    var records: [Record] = []
+    var records: [RecordViewData] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,11 +23,11 @@ class RecordsViewController: UIViewController {
         ftsStatusLabel.textColor = .black
         ftsFsStatusLabel.textColor = .black
         getBluetoothManager().uiUpdateDelegate = self
-        getFileTransferService().uiUpdateDelegate = self
+        getFtsManager().uiNotificationDelegate = self
         recordsManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
-        records = recordsManager!.getRecordsList(excludeEmpty: true)
+        records = recordsManager!.getRecordsList()
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
         }
@@ -40,7 +40,7 @@ class RecordsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         getBluetoothManager().uiUpdateDelegate = nil
-        getFileTransferService().uiUpdateDelegate = nil
+        getFtsManager().uiNotificationDelegate = nil
     }
     
     @IBAction func menuButtonPressed(_ sender: UIButton) {
@@ -51,7 +51,9 @@ class RecordsViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        records = recordsManager!.getRecordsList(excludeEmpty: true)
+        records = recordsManager!.getRecordsList()
+        NSLog("records table contains \(records.count) entries")
+        
         return records.count
     }
     
@@ -63,14 +65,37 @@ extension RecordsViewController: UITableViewDataSource {
         cell.durationLabel.textColor = .darkGray
         let r = records[indexPath.row]
         
-        cell.durationLabel.text = String(format: "%02d:%02d", r.durationSeconds / 60, r.durationSeconds % 60)
+        if r.durationSeconds != nil {
+            cell.durationLabel.text = String(format: "%02d:%02d", r.durationSeconds! / 60, r.durationSeconds! % 60)
+        }
         
-        cell.dateLabel.text = "\( RecordsManager.getReadableRecordDate(with: r.name) )"
-        cell.timeOfRecordLabel.text = "\( RecordsManager.getReadableRecordTime(with: r.name) )"
+        let date = r.creationDate
+        if date != nil {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yy/MM/dd"
+            cell.dateLabel.text = "\(formatter.string(from: date!))"
+            formatter.dateFormat = "HH:mm:ss"
+            cell.timeOfRecordLabel.text = "\( formatter.string(from: date!) )"
+        }
         
-        cell.recordURL = r.url
+        if r.url != nil {
+            cell.recordURL = r.url
+        }
+        else {
+            // TODO: deactivate the play button
+        }
         cell.recordProgressBar.isHidden = true
         cell.recordProgressBar.trackTintColor = .gray
+        // TODO: define project-specific set of colors
+        if r.isDownloaded {
+            cell.contentView.backgroundColor = UIColor(rgb: 0x83eb86)
+        }
+        else if r.isSizeKnown {
+            cell.contentView.backgroundColor = UIColor(rgb: 0xBBDEFB)
+        }
+        else {
+            cell.contentView.backgroundColor = UIColor(rgb: 0xE3F2FD)
+        }
         cell.tableReloadDelegate = self
         return cell
     }
@@ -91,25 +116,30 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
     
     func didReceiveFilesCount(with filesCount: Int) {
         ftsFsStatusLabel.text = "Files count = \(filesCount)"
+        reloadTable()
     }
     
     func didReceiveNextFileSize(with fileName: String, and fileSize: Int) {
         ftsStatusLabel.text = "FTS: found new file \(fileName), \(fileSize) bytes"
+        reloadTable()
     }
     
     func didReceiveFileDataChunk(with progressPercentage: Double) {
         ftsStatusLabel.text = "FTS: fetching file, \(String(format: "%0.0f", progressPercentage * 100))%"
+        //TODO: find the corresponding cell at this point and update the progress bar cell
     }
     
-    func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int) {
-        ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec,\n throughput: \(throughput) bytes/sec"
-        recordsTable.reloadData()
+    func didCompleteFileTransaction(name fileName: String, with duration: Int) {
+        ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec"
+        reloadTable()
     }
 }
 
 // MARK: - TableReloadDelegate
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
+        records = recordsManager!.getRecordsList()
+
         recordsTable.reloadData()
     }
     

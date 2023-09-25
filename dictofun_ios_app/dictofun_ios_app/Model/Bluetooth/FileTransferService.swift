@@ -10,16 +10,12 @@ protocol CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?)
 }
 
-protocol FtsToUiNotificationDelegate {
-    func didReceiveFilesCount(with filesCount: Int)
-    func didReceiveNextFileSize(with fileName: String, and fileSize: Int)
-    func didReceiveFileDataChunk(with progressPercentage: Double)
-    func didCompleteFileTransaction(name fileName: String, with duration: Int, and throughput: Int)
+protocol FtsEventNotificationDelegate {
+    func didReceiveFilesList(with files: [FileId])
+    func didReceiveFileSize(with fileId: FileId, and fileSize: Int)
+    func didReceiveFileDataChunk(with fileId: FileId, and progressPercentage: Double)
+    func didCompleteFileTransaction(name fileId: FileId, with duration: Int, fileType type: FileType, _ data: Data)
     func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int)
-}
-
-protocol BleServicesDiscoveryDelegate {
-    func didDiscoverServices()
 }
 
 /**
@@ -31,7 +27,6 @@ protocol BleServicesDiscoveryDelegate {
 class FileTransferService {
     
     private var bluetoothManager: BluetoothManager
-    private var recordsManager: RecordsManager
     
     private let cpCharCBUUID = CBUUID(string: ServiceIds.FTS.controlPointCh)
     private let fileListCharCBUUID = CBUUID(string: ServiceIds.FTS.fileListCh)
@@ -46,7 +41,7 @@ class FileTransferService {
     
     private var fileIds: [FileId] = []
     
-    var uiUpdateDelegate: FtsToUiNotificationDelegate?
+    var ftsEventNotificationDelegate: FtsEventNotificationDelegate?
     
     private struct CurrentFile {
         var fileId: FileId
@@ -57,15 +52,15 @@ class FileTransferService {
         var endTimestamp: Date?
     }
     
+    // TODO: make this class stateless (so currentFile should be eventually removed)
     private var currentFile: CurrentFile
     
     static let minimalFileSize = 0x200
     
-    init(with bluetoothManager: BluetoothManager, andRecordsManager recordsManager: RecordsManager) {
+    init(with bluetoothManager: BluetoothManager) {
         self.bluetoothManager = bluetoothManager
-        self.recordsManager = recordsManager
         
-        self.currentFile = CurrentFile(fileId: FileId(value: Data([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])), size: 0, receivedSize: 0, data: Data([]))
+        self.currentFile = CurrentFile(fileId: FileId(value: Data(count: 16)), size: 0, receivedSize: 0, data: Data([]))
         self.filesListCtx = FilesListContext()
         
         guard bluetoothManager.registerNotificationDelegate(forCharacteristic: fileListCharCBUUID, delegate: self) == nil else {
@@ -92,7 +87,6 @@ class FileTransferService {
             assert(false)
             return
         }
-        bluetoothManager.serviceDiscoveryDelegate = self
     }
     
     enum FtsOpResult: Error {
@@ -148,7 +142,7 @@ class FileTransferService {
         return nil
     }
     
-    func requestFileData(with fileId: FileId) -> Error? {
+    func requestFileData(with fileId: FileId, and size: Int) -> Error? {
         var requestData = Data([UInt8(3)])
         requestData.append(fileId.value)
         
@@ -160,9 +154,12 @@ class FileTransferService {
             NSLog("FTS: Failed to send request to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
+        currentFile.fileId = fileId
         currentFile.data = Data([])
+        currentFile.size = size
         currentFile.receivedSize = 0
         currentFile.startTimestamp = Date()
+        NSLog("Requesting file data for file \(fileId.name) with size \(size)")
         return nil
     }
     
@@ -194,30 +191,6 @@ class FileTransferService {
         }
         
         return nil
-    }
-    
-    // File (atm) is an 8-byte long ID
-    struct FileId {
-        let value: Data
-        init(value: Data) {
-            self.value = value
-            assert(value.count == 16)
-        }
-        
-        var reversedValue: Data {
-            var tmp = Data([])
-            for b in value.reversed() {
-                tmp.append(b)
-            }
-            return tmp
-        }
-        
-        var name: String {
-            if let validAsciiString = String(data: value, encoding: .ascii) {
-                return validAsciiString
-            }
-            return "unknown"
-        }
     }
     
     struct FileInformation: Decodable {
@@ -346,96 +319,16 @@ class FileTransferService {
 // MARK: - CharNotificationDelegate
 extension FileTransferService: CharNotificationDelegate {
     
-    private func findNewFiles(new lhs: [String], existing rhs: [String]) -> [String] {
-        var rhsSet: Set<String> = []
-        for name in rhs {
-            rhsSet.insert(name)
-        }
-        var result: [String] = []
-        for name in lhs {
-            if !rhsSet.contains(name) {
-                result.append(name)
-            }
-        }
-        return result
-    }
-    
-    private func getFileIdByName(with name: String) -> FileId? {
-        for f in fileIds {
-            if f.name == name {
-                return f
-            }
-        }
-        return nil
-    }
-    
-    private func detectNewRecords(with files: [FileId]) -> [FileId] {
-        let existingRecords = recordsManager.getRecordsList()
-        var existingFileNames: [String] = []
-        for r in existingRecords {
-            existingFileNames.append(r.name)
-        }
-        
-        var fileNames: [String] = []
-        for f in files {
-            fileNames.append(f.name)
-        }
-        
-        let newFileNames = findNewFiles(new: fileNames, existing: existingFileNames)
-        var newFileIds: [FileId] = []
-        for name in newFileNames {
-            newFileIds.append(getFileIdByName(with: name)!)
-        }
-        return newFileIds
-    }
-    
     private func didReceiveFilesList(with data: Data) {
         let files = parseFilesList(with: data)
-        NSLog("FTS: Received files' list: ")
-        var fileNames: [String] = []
-        for f in files {
-            NSLog("\t\(f.name)")
-            fileNames.append(f.name)
-        }
+
         self.fileIds = files
         if filesListCtx.isNextFilesListCharNeeded
         {
             NSLog("New portion of files in the list is expected, so do nothing at this point")
             return
         }
-        uiUpdateDelegate?.didReceiveFilesCount(with: files.count)
-        
-        // Fetch the list of existing records too. If new files discovered - request the first new file in the list
-        let newFiles = detectNewRecords(with: files)
-        // TODO: replace with .map
-        var newFileNames: [String] = []
-        for f in newFiles {
-            newFileNames.append(f.name)
-        }
-        
-        if !newFileNames.isEmpty {
-            NSLog("FTS.didReceiveFilesList: discovered \(newFileNames.count) new files on the device")
-            let nextFileName = newFileNames.first
-            guard let nextFileId = getFileIdByName(with: nextFileName!) else {
-                NSLog("FTS: didReceiveFilesList error- failed to match name \(nextFileName!) to an existing file ID")
-                return
-            }
-
-            NSLog("FTS::didReceiveFilesList - fetching newly found file \(nextFileId.name)")
-            let requestResult = requestFileInfo(with: nextFileId)
-            if requestResult != nil {
-                NSLog("FTS::didReceiveFilesList: failed to request file information. Error: \(requestResult!.localizedDescription)")
-            }
-        }
-        else {
-            // Additionally by the end request the FS status data
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
-                let result = self.requestFileSystemStatus()
-                if result != nil {
-                    NSLog("Failed to request file system status")
-                }
-            })
-        }
+        ftsEventNotificationDelegate?.didReceiveFilesList(with: files)
     }
     
     private func didReceiveFilesListNext(with data: Data) {
@@ -443,29 +336,7 @@ extension FileTransferService: CharNotificationDelegate {
         NSLog("FTS: Received continuation of files' list with \(files.count) entries")
         self.fileIds.append(contentsOf: files)
         if !filesListCtx.isNextFilesListCharNeeded {
-            uiUpdateDelegate?.didReceiveFilesCount(with: fileIds.count)
-            
-            // Fetch the list of existing records too. If new files discovered - request the first new file in the list
-            let newFiles = detectNewRecords(with: fileIds)
-            var newFileNames: [String] = []
-            for f in newFiles {
-                newFileNames.append(f.name)
-            }
-            
-            if !newFileNames.isEmpty {
-                NSLog("FTS.didReceiveFilesListNext: discovered \(newFileNames.count) new files on the device")
-                let nextFileName = newFileNames.first
-                guard let nextFileId = getFileIdByName(with: nextFileName!) else {
-                    NSLog("FTS: didReceiveFilesListNext error- failed to match name \(nextFileName!) to an existing file ID")
-                    return
-                }
-
-                NSLog("FTS::didReceiveFilesList - fetching newly found file \(nextFileId.name)")
-                let requestResult = requestFileInfo(with: nextFileId)
-                if requestResult != nil {
-                    NSLog("FTS::didReceiveFilesList: failed to request file information. Error: \(requestResult!.localizedDescription)")
-                }
-            }
+            ftsEventNotificationDelegate?.didReceiveFilesList(with: fileIds)
         }
         else {
             NSLog("FTS did receive char next: waiting for \(filesListCtx.totalFilesCount) more files ")
@@ -500,11 +371,7 @@ extension FileTransferService: CharNotificationDelegate {
                 NSLog("FTS: Requested file information: size \(fileInfo.s)")
                 currentFile.size = fileInfo.s
                 
-                uiUpdateDelegate?.didReceiveNextFileSize(with: currentFile.fileId.name, and: currentFile.size)
-                let requestResult = requestFileData(with: currentFile.fileId)
-                if requestResult != nil {
-                    NSLog("FTS didCharNotify: failed to request file data. Error: \(requestResult!.localizedDescription)")
-                }
+                ftsEventNotificationDelegate?.didReceiveFileSize(with: currentFile.fileId, and: currentFile.size)
             }
             else {
                 NSLog("FTS: Received file info is invalid")
@@ -515,50 +382,40 @@ extension FileTransferService: CharNotificationDelegate {
             if let safeData = data {
                 currentFile.data.append(safeData)
                 currentFile.receivedSize += safeData.count
-                if currentFile.receivedSize == currentFile.size {
+                if currentFile.receivedSize == currentFile.size || (safeData.count == 0 && (currentFile.size - currentFile.receivedSize) < 200) {
+                    if safeData.count == 0 {
+                        NSLog("WARNING: 0-sized chunk detected in fileDataCh, FIXME")
+                    }
                     currentFile.endTimestamp = Date()
                     let transactionTime = currentFile.endTimestamp!.timeIntervalSinceReferenceDate - currentFile.startTimestamp!.timeIntervalSinceReferenceDate
                     let throughput = Double(currentFile.size) / transactionTime
                     NSLog(String(format: "Throughput: %0.1fbytes/second", throughput))
                     
-                    var decodedAdpcm: Data = Data([])
-                    
-                    if currentFile.data.count >= FileTransferService.minimalFileSize {
-                        decodedAdpcm = decodeAdpcm(from: currentFile.data.subdata(in: 0x100..<(currentFile.data.count - 1)))
-                    }
-                    
-                    let storeResult = recordsManager.saveRecord(withRawWav: decodedAdpcm, andFileName: currentFile.fileId.name)
-                    if nil != storeResult {
-                        NSLog("FTS: record \(currentFile.fileId.name) failed to be saved, error: \(storeResult!.localizedDescription)")
-                    }
-                    NSLog("FTS: successfully stored record")
-                    uiUpdateDelegate?.didCompleteFileTransaction(name: currentFile.fileId.name, with: Int(transactionTime), and: Int(throughput))
-                    let reqResult = requestFilesList()
-                    if reqResult != nil {
-                        NSLog("FTS: failed to re-request files list")
-                    }
+                    ftsEventNotificationDelegate?.didCompleteFileTransaction(
+                        name: currentFile.fileId,
+                        with: Int(transactionTime),
+                        fileType: .adpcmData,
+                        currentFile.data)
                 }
                 else {
                     let progress = Double(currentFile.receivedSize) / Double(currentFile.size)
-                    uiUpdateDelegate?.didReceiveFileDataChunk(with: progress)
+                    ftsEventNotificationDelegate?.didReceiveFileDataChunk(with: currentFile.fileId, and: progress)
                 }
             }
         }
-        
         else if char.uuidString == ServiceIds.FTS.fsStatusCh {
             NSLog("Received file system status")
             if let safeData = data {
                 let fsInfo = parseFileSystemInformation(with: safeData)
                 if let safeFsInfo = fsInfo {
                     NSLog("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
-                    uiUpdateDelegate?.didReceiveFileSystemState(count: safeFsInfo.count, occupied: safeFsInfo.occupied, free: safeFsInfo.free)
+                    ftsEventNotificationDelegate?.didReceiveFileSystemState(count: safeFsInfo.count, occupied: safeFsInfo.occupied, free: safeFsInfo.free)
                 }
                 else {
                     NSLog("FTS: Failed to parse received FileSystem info")
                 }
             }
         }
-        
         else if char.uuidString == ServiceIds.FTS.statusCh {
             if let safeData = data {
                 if safeData.count == 0 {
@@ -581,16 +438,6 @@ extension FileTransferService: CharNotificationDelegate {
         }
         else {
             NSLog("FTS notification: unknown")
-        }
-    }
-}
-
-extension FileTransferService: BleServicesDiscoveryDelegate {
-    
-    func didDiscoverServices() {
-        let result = self.requestFilesList()
-        if result != nil {
-            NSLog("FTS: service discovery callback - files' request has failed")
         }
     }
 }
