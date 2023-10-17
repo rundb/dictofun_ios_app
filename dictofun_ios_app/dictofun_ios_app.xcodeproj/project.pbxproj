@@ -436,6 +436,8 @@
 				INFOPLIST_FILE = dictofun_ios_app/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Dictofun;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This application uses Bluetooth in the background to be able to find the voice recorder nearby";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "This application has to use Bluetooth to access the voice recorder";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -469,6 +471,8 @@
 				INFOPLIST_FILE = dictofun_ios_app/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Dictofun;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This application uses Bluetooth in the background to be able to find the voice recorder nearby";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "This application has to use Bluetooth to access the voice recorder";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

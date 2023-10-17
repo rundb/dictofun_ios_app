@@ -92,7 +92,6 @@ extension RecordsViewController: UITableViewDataSource {
         if r.progress != 0 && r.progress < 100 {
             cell.recordProgressBar.isHidden = false
             cell.recordProgressBar.progress = Float(r.progress) / 100.0
-            NSLog("progress \(r.progress)")
         }
         else {
             cell.recordProgressBar.isHidden = true

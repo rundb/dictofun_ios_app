@@ -257,6 +257,9 @@ class FileTransferService {
             return []
         }
         let filesInListCount = data.count / fileIdSize
+        if filesInListCount < 1 {
+            return []
+        }
         var fileIds: [FileId] = []
         for i in 0...(filesInListCount - 1) {
             let fileIdBytes = data.subdata(in: (fileIdSize * i)..<(fileIdSize * (i + 1)) )

@@ -3,9 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>This application uses Bluetooth in the background to be able to find the voice recorder nearby</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>This application has to use Bluetooth to access the voice recorder</string>
+	<string>BLE is used in the background do discover Dictofun and fetch records from it</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -25,5 +23,12 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+		<string>bluetooth-central</string>
+		<string>processing</string>
+	</array>
 </dict>
 </plist>

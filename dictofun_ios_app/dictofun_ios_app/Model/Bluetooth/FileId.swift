@@ -10,7 +10,7 @@ struct FileId {
     let value: Data
     init(value: Data) {
         self.value = value
-        assert(value.count == 16)
+//        assert(value.count == 16)
     }
     
     var name: String {

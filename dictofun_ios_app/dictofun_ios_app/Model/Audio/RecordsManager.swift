@@ -369,7 +369,6 @@ class RecordsManager {
             }
             else {
                 let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: Int(downloadMetaData.progress))
-                NSLog("progress: \(m.name!)-\(downloadMetaData.progress)")
                 records.append(recordViewData)
             }
         }

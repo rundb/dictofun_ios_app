@@ -347,11 +347,11 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        log(withLevel: .debug, andMessage: "[Callback] Central Manager did connect peripheral")
+        NSLog("[Callback] Central Manager did connect peripheral")
         if let name = peripheral.name {
-            log(withLevel: .info, andMessage: "Connected to: \(name)")
+            NSLog("Connected to: \(name)")
         } else {
-            log(withLevel: .info, andMessage: "Connected to device")
+            NSLog("Connected to device")
         }
         
         connected = true
@@ -415,7 +415,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             return
         }
         
-        log(withLevel: .info, andMessage: "Services discovered")
+        NSLog("Services discovered")
         
         for aService: CBService in peripheral.services! {
             if aService.uuid.isEqual(FTSServiceUUID) {
@@ -439,7 +439,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             logError(error: error!)
             return
         }
-        log(withLevel: .info, andMessage: "Characteristics discovered")
+        NSLog("Characteristics discovered")
         
         if service.uuid.isEqual(FTSServiceUUID) {
             for characteristic : CBCharacteristic in service.characteristics! {
