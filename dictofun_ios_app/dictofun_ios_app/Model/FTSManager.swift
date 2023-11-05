@@ -39,6 +39,10 @@ extension FTSManager: FtsEventNotificationDelegate {
     private func launchNextFtsJob(with jobs: [FtsJob]) {
         if jobs.isEmpty {
             NSLog("No more jobs to execute")
+            let reportResult = fts.reportReceivingCompletion()
+            if reportResult != nil {
+                NSLog("Failed to report reception completion")
+            }
             return
         }
         for job in jobs {

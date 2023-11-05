@@ -194,6 +194,15 @@ class FileTransferService {
         return nil
     }
     
+    func reportReceivingCompletion() -> Error? {
+        let requestData = Data([UInt8(6)])
+        guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
+            NSLog("FTS: Failed to send completion report to CP char \(cpCharCBUUID.uuidString)")
+            return .some(FtsOpResult.communicationError)
+        }
+        return nil
+    }
+    
     struct FileInformation: Decodable {
         let s: Int
         let f: Int?
