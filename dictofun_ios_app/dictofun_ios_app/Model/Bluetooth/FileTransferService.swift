@@ -116,6 +116,7 @@ class FileTransferService {
             NSLog("FTS: Failed to send request to CP \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
+        NSLog("Requested files list")
         
         return nil
     }

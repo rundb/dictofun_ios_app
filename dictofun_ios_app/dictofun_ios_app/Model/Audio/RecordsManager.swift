@@ -368,7 +368,11 @@ class RecordsManager {
                 records.append(recordViewData)
             }
             else {
-                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: Int(downloadMetaData.progress))
+                var progress = 0
+                if downloadMetaData.progress .isFinite {
+                    progress = Int(downloadMetaData.progress)
+                }
+                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: progress)
                 records.append(recordViewData)
             }
         }

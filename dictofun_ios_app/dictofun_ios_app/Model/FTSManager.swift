@@ -165,6 +165,7 @@ extension FTSManager: FtsEventNotificationDelegate {
 // MARK: - BleServicesDiscoveryDelegate
 extension FTSManager: BleServicesDiscoveryDelegate {
     func didDiscoverServices() {
+        NSLog("requesting files list")
         let result = fts.requestFilesList()
         if result != nil {
             NSLog("FTS: service discovery callback - files' request has failed")

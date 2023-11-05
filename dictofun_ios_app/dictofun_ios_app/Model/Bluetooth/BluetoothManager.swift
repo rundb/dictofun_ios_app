@@ -188,7 +188,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     }
     
     func startScanning() {
-        log(withLevel: .info, andMessage: "start scanning")
+        NSLog("start scanning")
         centralManager.scanForPeripherals(withServices: [FTSServiceUUID])
     }
     
@@ -372,8 +372,8 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             log(withLevel: .debug, andMessage: "[Callback] Central Manager did disconnect peripheral")
             logError(error: e)
         }
-        log(withLevel: .debug, andMessage: "[Callback] Central Manager did disconnect peripheral successfully")
-        log(withLevel: .info, andMessage: "Disconnected")
+        NSLog("[Callback] Central Manager did disconnect peripheral successfully")
+        NSLog("Disconnected")
         
         connected = false
         delegate?.didDisconnectPeripheral()
@@ -386,6 +386,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         ftsChars.removeAll(keepingCapacity: false)
         
         // Restart scanning to be able to catch up with Dictofun on it's next appearance
+        NSLog("restart scanning")
         startScanning()
     }
     
