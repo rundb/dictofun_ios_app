@@ -17,6 +17,8 @@
 		3034B8A52AA0C8D900873CE7 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */; };
 		3034B8A82AA12FDB00873CE7 /* RecordsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034B8A72AA12FDB00873CE7 /* RecordsManager.swift */; };
 		30445C3F2A9F733D004EB1B6 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */; };
+		304A4AC62AFACF0B0048219C /* TranscriptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A4AC52AFACF0B0048219C /* TranscriptionJob.swift */; };
+		304A4AC82AFAE4DD0048219C /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A4AC72AFAE4DD0048219C /* TranscriptionManager.swift */; };
 		3064D5D92AB8D7750022A4CC /* FileId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3064D5D82AB8D7750022A4CC /* FileId.swift */; };
 		3064D5DB2AB8D7AE0022A4CC /* FtsJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3064D5DA2AB8D7AE0022A4CC /* FtsJob.swift */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
@@ -52,6 +54,8 @@
 		3034B8A42AA0C8D900873CE7 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		3034B8A72AA12FDB00873CE7 /* RecordsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsManager.swift; sourceTree = "<group>"; };
 		30445C3E2A9F733D004EB1B6 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
+		304A4AC52AFACF0B0048219C /* TranscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionJob.swift; sourceTree = "<group>"; };
+		304A4AC72AFAE4DD0048219C /* TranscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionManager.swift; sourceTree = "<group>"; };
 		3064D5D82AB8D7750022A4CC /* FileId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileId.swift; sourceTree = "<group>"; };
 		3064D5DA2AB8D7AE0022A4CC /* FtsJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FtsJob.swift; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,6 +118,15 @@
 			path = Audio;
 			sourceTree = "<group>";
 		};
+		304A4AC42AFACEF60048219C /* Transcription */ = {
+			isa = PBXGroup;
+			children = (
+				304A4AC52AFACF0B0048219C /* TranscriptionJob.swift */,
+				304A4AC72AFAE4DD0048219C /* TranscriptionManager.swift */,
+			);
+			path = Transcription;
+			sourceTree = "<group>";
+		};
 		30998CBE2A607198002157B3 = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +162,7 @@
 		30998CDE2A6071DC002157B3 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				304A4AC42AFACEF60048219C /* Transcription */,
 				3034B8A62AA12DD300873CE7 /* Audio */,
 				3034B89F2AA086E000873CE7 /* Bluetooth */,
 				30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */,
@@ -274,6 +288,7 @@
 				30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */,
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */,
+				304A4AC62AFACF0B0048219C /* TranscriptionJob.swift in Sources */,
 				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
 				3034B8A12AA08E7A00873CE7 /* FTSManager.swift in Sources */,
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
@@ -281,6 +296,7 @@
 				3064D5D92AB8D7750022A4CC /* FileId.swift in Sources */,
 				30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */,
 				30EC65622AC0BB6F00DF0011 /* UIColor+RGB.swift in Sources */,
+				304A4AC82AFAE4DD0048219C /* TranscriptionManager.swift in Sources */,
 				3034B8A82AA12FDB00873CE7 /* RecordsManager.swift in Sources */,
 				30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */,
 				30998CEC2A614855002157B3 /* RecordsViewController.swift in Sources */,

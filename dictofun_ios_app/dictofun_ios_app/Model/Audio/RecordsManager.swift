@@ -49,6 +49,22 @@ class RecordsManager {
         return result
     }
     
+    private func getTranscriptions(_ predicate: NSPredicate?) -> [Transcription] {
+        let request = Transcription.fetchRequest()
+        if (predicate != nil) {
+            request.predicate = predicate
+        }
+        var result: [Transcription] = []
+        do {
+            result = try context.fetch(request)
+        }
+        catch {
+            NSLog("getTranscriptions(): CoreData fetch failed. Error: \(error)")
+            return []
+        }
+        return result
+    }
+    
     private func getDownloadMetaData(_ predicate: NSPredicate?) -> [DownloadMetaData] {
         let request = DownloadMetaData.fetchRequest()
         if predicate != nil {
@@ -377,5 +393,25 @@ class RecordsManager {
             }
         }
         return records
+    }
+    
+    func getTranscriptionJobs() -> [TranscriptionJob]
+    {
+        let transcriptions = getTranscriptions(nil)
+        var jobs: [TranscriptionJob] = []
+        for t in transcriptions {
+            let uuid = t.id!
+            if t.isCompleted {
+                continue
+            }
+            let metaData = getMetaData(NSPredicate(format: "id == %@", uuid.uuidString))[0]
+            let url = metaData.filesystemUrl
+            if url == nil || metaData.size < 400 {
+                continue
+            }
+            let job = TranscriptionJob(uuid: uuid, fileUrl: url!, transcription: nil, isCompleted: false)
+            jobs.append(job)
+        }
+        return jobs
     }
 }

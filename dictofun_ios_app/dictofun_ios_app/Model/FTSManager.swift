@@ -20,15 +20,37 @@ class FTSManager {
     let fts: FileTransferService
     let afm: AudioFilesManager
     let rm: RecordsManager
+    let tm: TranscriptionManager
     
     var uiNotificationDelegate: FtsToUiNotificationDelegate?
     
-    init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager) {
+    init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager, transcriptionManager tm: TranscriptionManager) {
         self.fts = fts
         self.afm = afm
         self.rm = rm
+        self.tm = tm
         
         getBluetoothManager().serviceDiscoveryDelegate = self
+    }
+    
+    func launchTranscriptions() {
+        let transcrtiptionJobs = rm.getTranscriptionJobs()
+        for job in transcrtiptionJobs {
+            NSLog("transcription job:\(job.uuid)} \(job.fileUrl)")
+        }
+        if !transcrtiptionJobs.isEmpty {
+            let job = transcrtiptionJobs[0]
+            tm.requestTranscription(url: job.fileUrl, callback: transcriptionCallback)
+        }
+    }
+    
+    func transcriptionCallback(with error: TranscriptionManager.CompletionError?, and text: String?) {
+        if error != nil {
+            NSLog("FTS Manager: transcription failed")
+        }
+        else {
+            NSLog("FTS Manager: received transcription \(text!)")
+        }
     }
 }
 
@@ -43,6 +65,7 @@ extension FTSManager: FtsEventNotificationDelegate {
             if reportResult != nil {
                 NSLog("Failed to report reception completion")
             }
+            launchTranscriptions()
             return
         }
         for job in jobs {
