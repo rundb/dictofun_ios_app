@@ -22,6 +22,8 @@ class FTSManager {
     let rm: RecordsManager
     let tm: TranscriptionManager
     
+    var currentTranscriptionJob: TranscriptionJob?
+    
     var uiNotificationDelegate: FtsToUiNotificationDelegate?
     
     init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager, transcriptionManager tm: TranscriptionManager) {
@@ -40,17 +42,33 @@ class FTSManager {
         }
         if !transcrtiptionJobs.isEmpty {
             let job = transcrtiptionJobs[0]
-            tm.requestTranscription(url: job.fileUrl, callback: transcriptionCallback)
+            let transcriptionRequestResult = tm.requestTranscription(url: job.fileUrl, callback: transcriptionCallback)
+            if transcriptionRequestResult != nil {
+                NSLog("failed to launch transcription")
+                return
+            }
+            currentTranscriptionJob = job
+        }
+        else {
+            currentTranscriptionJob = nil
         }
     }
     
     func transcriptionCallback(with error: TranscriptionManager.CompletionError?, and text: String?) {
         if error != nil {
             NSLog("FTS Manager: transcription failed")
+            return
         }
         else {
             NSLog("FTS Manager: received transcription \(text!)")
+            guard let job = currentTranscriptionJob else {
+                NSLog("Fatal error: currently active transcription is nil")
+                return
+            }
+            rm.setRecordTranscription(with: job.uuid, and: text!)
         }
+        // Continue with launching transcripting
+        launchTranscriptions()
     }
 }
 

@@ -33,9 +33,8 @@ class TranscriptionManager
         case recognitionError, otherError
     }
     init() {
-        NSLog("recognizer - before constructor")
         recognizer = SFSpeechRecognizer()
-        NSLog("recognizer - after constructor")
+
         Task(priority: .background) {
             do {
                 guard recognizer != nil else {
@@ -53,9 +52,14 @@ class TranscriptionManager
         }
     }
     
-    func requestTranscription(url: URL, callback: @escaping (CompletionError?, String?) -> Void) {
+    func requestTranscription(url: URL, callback: @escaping (CompletionError?, String?) -> Void) -> Error? {
+        if recognizer == nil || !recognizer!.isAvailable {
+            NSLog("recognizer is not available")
+            return RecognizerError.recognizerIsUnavailable
+        }
         let request = SFSpeechURLRecognitionRequest(url: url)
         request.shouldReportPartialResults = false
+        request.requiresOnDeviceRecognition = true
         recognizer?.recognitionTask(with: request, resultHandler: {(result, error) in
             if result != nil {
                 // successful recognition
@@ -79,5 +83,6 @@ class TranscriptionManager
                 NSLog("never supposed to happen")
             }
         })
+        return nil
     }
 }

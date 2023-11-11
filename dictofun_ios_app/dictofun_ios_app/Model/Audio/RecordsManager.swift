@@ -114,6 +114,7 @@ class RecordsManager {
         let transcription = Transcription(context: context)
         let newUUID = UUID()
         metaData.id = newUUID
+        metaData.is_deleted = false
         downloadMetaData.id = newUUID
         downloadMetaData.status = downloadStatusMetadataUnknown
         transcription.id = newUUID
@@ -323,7 +324,20 @@ class RecordsManager {
     }
     
     // Transcription-related methods
-    func setRecordTranscription(with fileId: FileId, and text: String) {}
+    
+    func setRecordTranscription(with id: UUID, and text: String) {
+        let uuidRequestResult = getTranscriptions(NSPredicate(format: "id == %@", id.uuidString))
+        if uuidRequestResult.isEmpty {
+            NSLog("Transcription entry with UUID \(id.uuidString) is not found.")
+            return
+        }
+        uuidRequestResult[0].transcriptionText = text
+        uuidRequestResult[0].isCompleted = true
+        // TODO: add functionality of defining language
+        uuidRequestResult[0].language = "en"
+        saveContext()
+    }
+    
     func finalizeTranscription(with fileId: FileId) {}
     func getUntranscribedRecords() -> [FileId] { return [] }
     
