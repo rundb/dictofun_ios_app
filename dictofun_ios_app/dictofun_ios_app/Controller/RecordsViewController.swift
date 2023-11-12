@@ -14,6 +14,7 @@ class RecordsViewController: UIViewController {
     @IBOutlet weak var ftsStatusLabel: UILabel!
     @IBOutlet weak var recordsTitleLabel: UILabel!
     @IBOutlet weak var ftsFsStatusLabel: UILabel!
+    @IBOutlet weak var batteryLevelLabel: UILabel!
     
     var records: [RecordViewData] = []
     
@@ -22,8 +23,10 @@ class RecordsViewController: UIViewController {
         statusDataLabel.textColor = .black
         ftsStatusLabel.textColor = .black
         ftsFsStatusLabel.textColor = .black
+        batteryLevelLabel.textColor = .black
         getBluetoothManager().uiUpdateDelegate = self
         getFtsManager().uiNotificationDelegate = self
+        getBluetoothManager().batteryLevelUpdateDelegate = self
         recordsManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
@@ -45,6 +48,19 @@ class RecordsViewController: UIViewController {
     
     @IBAction func menuButtonPressed(_ sender: UIButton) {
         self.performSegue(withIdentifier: K.recordsToMenuSegue, sender: self)
+    }
+}
+
+// MARK: BASBatteryLevelUpdated
+extension RecordsViewController: BASBatteryLevelUpdated {
+    func didUpdateBatteryLevel(with level: Int) {
+        if level > 10 {
+            batteryLevelLabel.isHidden = false
+            batteryLevelLabel.text = "Battery: \(level)%"
+        }
+        else {
+            batteryLevelLabel.isHidden = true
+        }
     }
 }
 

@@ -67,6 +67,10 @@ protocol BleServicesDiscoveryDelegate {
     func didDiscoverServices()
 }
 
+protocol BASBatteryLevelUpdated {
+    func didUpdateBatteryLevel(with level: Int)
+}
+
 enum BluetoothManagerError: Error {
     case cannotFindPeripheral
     
@@ -92,9 +96,12 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     var pairDelegate: PairDelegate?
     var uiUpdateDelegate: UIBleStatusUpdateDelegate?
     var serviceDiscoveryDelegate: BleServicesDiscoveryDelegate?
+    var batteryLevelUpdateDelegate: BASBatteryLevelUpdated?
     
     //MARK: - Class Properties
     fileprivate let FTSServiceUUID             : CBUUID
+    fileprivate let BASServiceUUID             : CBUUID
+    fileprivate var isBASServiceFound = false
     
     fileprivate var centralManager              : CBCentralManager
     fileprivate var bluetoothPeripheral         : CBPeripheral?
@@ -120,6 +127,8 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     private let btQueue = DispatchQueue(label: "com.nRF-toolbox.bluetoothManager", qos: .utility)
     
+    private var batteryLevel: Int = 0
+    
     // MARK: - public API intended for use by services
     var charNotifyDelegates: [CBUUID : CharNotificationDelegate] = [:]
     
@@ -144,8 +153,19 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         return .some(CharOpError.notImplemented)
     }
     
-    func readFrom(characteristic char: CBUUID) -> Data? {
-        return nil
+    func readFrom(characteristic char: CBCharacteristic) {
+        bluetoothPeripheral?.readValue(for: char)
+    }
+    
+    func getBatteryLevel() -> Int {
+        return batteryLevel
+    }
+    
+    func updateBatteryLevel(with level: Int) {
+        batteryLevel = level
+        if batteryLevelUpdateDelegate != nil {
+            batteryLevelUpdateDelegate!.didUpdateBatteryLevel(with: level)
+        }
     }
     
     func setNotificationStateFor(characteristic char: CBUUID, toEnabled state: Bool) -> Error? {
@@ -167,6 +187,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     required init(withManager aManager : CBCentralManager = CBCentralManager()) {
         centralManager = aManager
         FTSServiceUUID          = CBUUID(string: ServiceIds.FTS.service)
+        BASServiceUUID = CBUUID(string: ServiceIds.BAS.service)
 
         super.init()
         
@@ -376,6 +397,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         NSLog("Disconnected")
         
         connected = false
+        isBASServiceFound = false
         delegate?.didDisconnectPeripheral()
         DispatchQueue.main.async {
             self.uiUpdateDelegate?.didConnectionStatusUpdate(newState: .off)
@@ -384,6 +406,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         bluetoothPeripheral = nil
         connectDelegate?.didDisconnectFromPeripheral()
         ftsChars.removeAll(keepingCapacity: false)
+        updateBatteryLevel(with: 0)
         
         // Restart scanning to be able to catch up with Dictofun on it's next appearance
         NSLog("restart scanning")
@@ -418,20 +441,32 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         
         NSLog("Services discovered")
         
+        var isFTSFound = false
         for aService: CBService in peripheral.services! {
+            NSLog("service: \(aService.uuid)")
             if aService.uuid.isEqual(FTSServiceUUID) {
                 log(withLevel: .verbose, andMessage: "FTS Service found")
                 log(withLevel: .verbose, andMessage: "Discovering characteristics...")
                 log(withLevel: .debug, andMessage: "peripheral.discoverCharacteristics(nil, for: \(aService.uuid.uuidString))")
                 bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
-                return
+                if !isBASServiceFound {
+                    bluetoothPeripheral!.discoverServices([BASServiceUUID])
+                }
+                isFTSFound = true
+            }
+            if aService.uuid.isEqual(BASServiceUUID) {
+                NSLog("BAS service found")
+                isBASServiceFound = true
+                bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
             }
         }
         
-        //No UART service discovered
-        log(withLevel: .warning, andMessage: "FTS Service not found. Try to turn bluetooth Off and On again to clear the cache.")
-        delegate?.peripheralNotSupported()
-        cancelPeripheralConnection()
+        //No FTS service discovered
+        if !isFTSFound {
+            log(withLevel: .warning, andMessage: "FTS Service not found. Try to turn bluetooth Off and On again to clear the cache.")
+            delegate?.peripheralNotSupported()
+            cancelPeripheralConnection()
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
@@ -453,8 +488,24 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                     log(withLevel: .warning, andMessage: "Characteristic \(characteristic.uuid) is unknown")
                 }
             }
+            serviceDiscoveryDelegate?.didDiscoverServices()
         }
-        serviceDiscoveryDelegate?.didDiscoverServices()
+        if service.uuid.isEqual(BASServiceUUID) {
+            for characteristic : CBCharacteristic in service.characteristics! {
+                let uuid = characteristic.uuid.uuidString
+                NSLog("BAS characteristic discovered: \(uuid)")
+                
+                readFrom(characteristic: characteristic)
+
+                if characteristic.value != nil {
+                    NSLog("BAS battery level: \(characteristic.value![0])")
+                    updateBatteryLevel(with: Int(characteristic.value![0]))
+                }
+                else {
+                    NSLog("BAS Battery level has not yet been set")
+                }
+            }
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
@@ -515,6 +566,10 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 return
             }
             ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
+        }
+        if characteristic.uuid == CBUUID(string: ServiceIds.BAS.batteryLevelCh) {
+            NSLog("Battery level update: \(characteristic.value![0])")
+            updateBatteryLevel(with: Int(characteristic.value![0]))
         }
     }
 }

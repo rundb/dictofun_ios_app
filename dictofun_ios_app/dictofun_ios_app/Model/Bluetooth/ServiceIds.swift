@@ -17,6 +17,10 @@ struct ServiceIds {
         static let statusCh =  "1007"
         static let fileListNextCh = "1008"
     }
+    struct BAS {
+        static let service = "0000180F-0000-1000-8000-00805f9b34fb"
+        static let batteryLevelCh = "2A19"
+    }
     static let pairingWriteCh = "10FE"
 
 }
