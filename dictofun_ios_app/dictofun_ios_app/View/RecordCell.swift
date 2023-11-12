@@ -21,6 +21,7 @@ class RecordCell: UITableViewCell {
     @IBOutlet weak var removeRecordButton: UIButton!
     
     var recordURL: URL?
+    var recordUUID: UUID?
     let audioPlayer: AudioPlayer = getAudioPlayer()
     
     var tableReloadDelegate: TableReloadDelegate?
@@ -41,13 +42,19 @@ class RecordCell: UITableViewCell {
             return
         }
         NSLog("Playing record \(url.relativePath)")
+        // TODO: add delegate to stop refresh the table 
         let result = audioPlayer.playRecord(url)
         if result != nil {
             recordProgressBar.isHidden = false
         }
     }
     @IBAction func removeButtonPressed(_ sender: UIButton) {
-        getAudioFilesManager().removeRecord(recordURL!)
+//        getAudioFilesManager().removeRecord(recordURL!)
+        guard let uuid = recordUUID else {
+            NSLog("uuid of record was not set, failed to delete")
+            return
+        }
+        getRecordsManager().deleteRecord(with: uuid)
         // TODO: remove the table cell too after this operation completion
         guard let delegate = tableReloadDelegate else {
             return

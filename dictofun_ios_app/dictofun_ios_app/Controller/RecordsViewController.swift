@@ -80,6 +80,8 @@ extension RecordsViewController: UITableViewDataSource {
             cell.timeOfRecordLabel.text = "\(r.name)"
         }
         
+        cell.recordUUID = r.uuid
+        
         if r.url != nil {
             cell.recordURL = r.url
             cell.playButton.isEnabled = true
@@ -106,6 +108,13 @@ extension RecordsViewController: UITableViewDataSource {
         }
         else {
             cell.contentView.backgroundColor = UIColor(rgb: 0xE3F2FD)
+        }
+        if r.transcription != nil {
+            cell.transcriptLabel.text = r.transcription
+            cell.transcriptLabel.isHidden = false
+        }
+        else {
+            cell.transcriptLabel.isHidden = true
         }
         cell.tableReloadDelegate = self
         return cell

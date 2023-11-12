@@ -341,16 +341,26 @@ class RecordsManager {
     func finalizeTranscription(with fileId: FileId) {}
     func getUntranscribedRecords() -> [FileId] { return [] }
     
-    func deleteAllRecords() {
+    func deleteRecord(with uuid: UUID) {
+        let metaData = getMetaData(NSPredicate(format: "id == %@", uuid.uuidString))
+        
+        if metaData.isEmpty {
+            return
+        }
+        metaData[0].is_deleted = true
+        saveContext()
+    }
+    
+    func forceDeleteAllRecords() {
         let metadataFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "MetaData")
         let metadataDeleteRequest = NSBatchDeleteRequest(fetchRequest: metadataFetchRequest)
-        
+
         let downloadMetadataFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "DownloadMetaData")
         let downloadMetadataDeleteRequest = NSBatchDeleteRequest(fetchRequest: downloadMetadataFetchRequest)
-        
+
         let transcriptionFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Transcription")
         let transcriptionDeleteRequest = NSBatchDeleteRequest(fetchRequest: transcriptionFetchRequest)
-        
+
         do {
             try context.execute(metadataDeleteRequest)
             NSLog("metadata table request succeeded")
@@ -366,8 +376,16 @@ class RecordsManager {
         }
     }
     
+    func deleteAllRecords() {
+        let metadatas = getMetaData(nil)
+        for m in metadatas {
+            m.is_deleted = true
+        }
+        saveContext()
+    }
+    
     func getRecordsList() -> [RecordViewData] {
-        var metadatas = getMetaData(nil)
+        var metadatas = getMetaData(NSPredicate(format: "is_deleted == false"))
         
         metadatas.sort(by: {
             if $0.creationTime != nil && $1.creationTime != nil {
@@ -389,12 +407,18 @@ class RecordsManager {
             let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", uuid.uuidString))[0]
             let status = downloadMetaData.status
             
+            let transcriptionData = getTranscriptions(NSPredicate(format: "id == %@", uuid.uuidString))[0]
+            var transcription: String? = nil
+            if transcriptionData.isCompleted {
+                transcription = transcriptionData.transcriptionText
+            }
+            
             if status == downloadStatusMetadataUnknown {
-                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: false, name: m.name!, progress: 0)
+                let recordViewData = RecordViewData(url: nil, uuid: uuid, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: false, name: m.name!, progress: 0, transcription: transcription)
                 records.append(recordViewData)
             }
             else if status == downloadStatusCompleted {
-                let recordViewData = RecordViewData(url: m.filesystemUrl, creationDate: m.creationTime, durationSeconds: Int(m.duration), isDownloaded: true, isSizeKnown: true, name: m.name!, progress: 100)
+                let recordViewData = RecordViewData(url: m.filesystemUrl, uuid: uuid, creationDate: m.creationTime, durationSeconds: Int(m.duration), isDownloaded: true, isSizeKnown: true, name: m.name!, progress: 100, transcription: transcription)
                 records.append(recordViewData)
             }
             else {
@@ -402,9 +426,10 @@ class RecordsManager {
                 if downloadMetaData.progress .isFinite {
                     progress = Int(downloadMetaData.progress)
                 }
-                let recordViewData = RecordViewData(url: nil, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: progress)
+                let recordViewData = RecordViewData(url: nil, uuid: uuid, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: progress, transcription: transcription)
                 records.append(recordViewData)
             }
+            
         }
         return records
     }
