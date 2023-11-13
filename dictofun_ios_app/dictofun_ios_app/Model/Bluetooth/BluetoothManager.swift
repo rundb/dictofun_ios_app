@@ -65,6 +65,7 @@ protocol BluetoothManagerDelegate {
 
 protocol BleServicesDiscoveryDelegate {
     func didDiscoverServices()
+    func onDisconnect()
 }
 
 protocol BASBatteryLevelUpdated {
@@ -399,6 +400,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         connected = false
         isBASServiceFound = false
         delegate?.didDisconnectPeripheral()
+        serviceDiscoveryDelegate?.onDisconnect()
         DispatchQueue.main.async {
             self.uiUpdateDelegate?.didConnectionStatusUpdate(newState: .off)
         }

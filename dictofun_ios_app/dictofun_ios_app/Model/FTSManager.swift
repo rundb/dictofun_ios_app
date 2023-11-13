@@ -26,6 +26,8 @@ class FTSManager {
     
     var uiNotificationDelegate: FtsToUiNotificationDelegate?
     
+    var isFilesListRequestCompleted = false
+    
     init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager, transcriptionManager tm: TranscriptionManager) {
         self.fts = fts
         self.afm = afm
@@ -210,10 +212,20 @@ extension FTSManager: FtsEventNotificationDelegate {
 // MARK: - BleServicesDiscoveryDelegate
 extension FTSManager: BleServicesDiscoveryDelegate {
     func didDiscoverServices() {
-        NSLog("requesting files list")
-        let result = fts.requestFilesList()
-        if result != nil {
-            NSLog("FTS: service discovery callback - files' request has failed")
+        if !isFilesListRequestCompleted {
+            NSLog("requesting files list")
+            let result = fts.requestFilesList()
+            if result != nil {
+                NSLog("FTS: service discovery callback - files' request has failed")
+            }
+            isFilesListRequestCompleted = true
         }
+        else {
+            NSLog("second request upon service discovery in this session. Do nothing")
+        }
+    }
+    
+    func onDisconnect() {
+        isFilesListRequestCompleted = false
     }
 }

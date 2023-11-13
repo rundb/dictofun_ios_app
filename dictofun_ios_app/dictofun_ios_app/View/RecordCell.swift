@@ -45,7 +45,7 @@ class RecordCell: UITableViewCell {
         // TODO: add delegate to stop refresh the table 
         let result = audioPlayer.playRecord(url)
         if result != nil {
-            recordProgressBar.isHidden = false
+//            recordProgressBar.isHidden = false
         }
     }
     @IBAction func removeButtonPressed(_ sender: UIButton) {
