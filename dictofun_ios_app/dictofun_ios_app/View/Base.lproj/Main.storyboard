@@ -180,6 +180,7 @@
                         <outlet property="recordsTitleLabel" destination="iWV-CQ-ElS" id="CI9-uX-LPL"/>
                         <outlet property="statusDataLabel" destination="NlK-zC-zMo" id="bms-FB-2nK"/>
                         <segue destination="Jme-Cm-0XP" kind="presentation" identifier="recordsToMenuSegue" id="uBa-ot-Hsr"/>
+                        <segue destination="lYQ-Aq-Ooa" kind="presentation" identifier="recordsToDetailsSegue" modalTransitionStyle="coverVertical" id="06N-Fj-Omg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IoW-zt-oNG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -334,7 +335,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hqp-i1-gi7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2652.6717557251909" y="800"/>
+            <point key="canvasLocation" x="564" y="839"/>
         </scene>
         <!--Connection View Controller-->
         <scene sceneID="LnV-xf-BdA">
@@ -519,16 +520,163 @@
             </objects>
             <point key="canvasLocation" x="889.3129770992366" y="-2.1126760563380285"/>
         </scene>
+        <!--Record Details View Controller-->
+        <scene sceneID="edb-dT-sFI">
+            <objects>
+                <viewController modalTransitionStyle="flipHorizontal" id="lYQ-Aq-Ooa" customClass="RecordDetailsViewController" customModule="dictofun_ios_app" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dvC-Zz-lw9">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="center" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="YMn-Ci-7Hk">
+                                <rect key="frame" x="10" y="50" width="373" height="782"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 Nov 2023" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdf-aj-F8g" userLabel="recordDateLabel">
+                                        <rect key="frame" x="0.0" y="0.0" width="373" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="whV-ki-Sud"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="20:23" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4bw-8X-HRK" userLabel="recordTimeLabel">
+                                        <rect key="frame" x="0.0" y="40" width="373" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="eyg-0Y-2uG"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RvJ-ML-Nen" userLabel="playbackControlStack">
+                                        <rect key="frame" x="0.0" y="80" width="373" height="40"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oTH-4v-gpU" userLabel="playPauseButton">
+                                                <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="40" id="SF9-wY-1xu"/>
+                                                    <constraint firstAttribute="height" constant="40" id="lox-Du-s3j"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="arrowtriangle.right.fill" catalog="system"/>
+                                                <connections>
+                                                    <action selector="onPlayPauseButtonPress:" destination="lYQ-Aq-Ooa" eventType="touchUpInside" id="tXE-DS-0Iw"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yec-3g-TKj" userLabel="stopButton">
+                                                <rect key="frame" x="40" y="0.0" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="tuL-Ok-YGS"/>
+                                                    <constraint firstAttribute="width" constant="40" id="xNH-Lc-7Bo"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="square.fill" catalog="system"/>
+                                                <connections>
+                                                    <action selector="onStopButtonPress:" destination="lYQ-Aq-Ooa" eventType="touchUpInside" id="UHr-Ry-3kU"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B9G-gx-day" userLabel="playbackPositionLabel">
+                                                <rect key="frame" x="80" y="0.0" width="46" height="40"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" systemColor="systemGrayColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="eNA-4X-Win">
+                                                <rect key="frame" x="126" y="0.0" width="164" height="40"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dfy-bf-LiQ" userLabel="progressSpacerTop">
+                                                        <rect key="frame" x="0.0" y="0.0" width="164" height="5"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="5" id="JtE-Jh-uQi"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="8"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <progressView opaque="NO" contentMode="center" semanticContentAttribute="playback" verticalHuggingPriority="247" ambiguous="YES" progress="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="Uao-50-kJ1" userLabel="playbackProgressBar">
+                                                        <rect key="frame" x="0.0" y="5" width="164" height="35"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </progressView>
+                                                </subviews>
+                                            </stackView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="00:15" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wjk-dw-Y1o" userLabel="playbackRecordDuration">
+                                                <rect key="frame" x="290" y="0.0" width="43" height="40"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <color key="textColor" systemColor="systemGrayColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c9Y-57-xia" userLabel="recordDeletionLabel">
+                                                <rect key="frame" x="333" y="0.0" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="H99-Fw-LwL"/>
+                                                    <constraint firstAttribute="width" constant="40" id="j2W-Z9-Kn0"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="trash" catalog="system"/>
+                                                <connections>
+                                                    <action selector="onDeleteButtonPress:" destination="lYQ-Aq-Ooa" eventType="touchUpInside" id="Q4f-MW-ffP"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.47208847286667532" green="0.95231408897620029" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" red="0.0" green="0.48003494740000002" blue="0.99965018029999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </stackView>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Sample record from the dictofun, should also be editable" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Ksf-Gb-Hr2" userLabel="recordTranscriptionText">
+                                        <rect key="frame" x="0.0" y="120" width="373" height="662"/>
+                                        <color key="backgroundColor" red="0.68280005460000004" green="0.943590343" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="tintColor" red="0.0" green="0.48003494740000002" blue="0.99965018029999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="textColor" systemColor="labelColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.68280005460000004" green="0.943590343" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="a3F-p8-TgT"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="YMn-Ci-7Hk" firstAttribute="leading" secondItem="a3F-p8-TgT" secondAttribute="leading" constant="10" id="FkM-Fi-JUU"/>
+                            <constraint firstItem="YMn-Ci-7Hk" firstAttribute="top" secondItem="a3F-p8-TgT" secondAttribute="top" constant="50" id="PUT-OC-tDZ"/>
+                            <constraint firstItem="a3F-p8-TgT" firstAttribute="trailing" secondItem="YMn-Ci-7Hk" secondAttribute="trailing" constant="10" id="ilu-Qr-f6a"/>
+                            <constraint firstItem="a3F-p8-TgT" firstAttribute="bottom" secondItem="YMn-Ci-7Hk" secondAttribute="bottom" constant="10" id="r7m-Oy-SKc"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="playPauseButton" destination="oTH-4v-gpU" id="POm-VX-xnf"/>
+                        <outlet property="playbackDurationLabel" destination="Wjk-dw-Y1o" id="Q4h-HH-SU7"/>
+                        <outlet property="playbackPositionLabel" destination="B9G-gx-day" id="QmQ-kJ-x67"/>
+                        <outlet property="playbackProgressBar" destination="Uao-50-kJ1" id="Y0Y-Tb-H4R"/>
+                        <outlet property="recordDateLabel" destination="gdf-aj-F8g" id="ukw-dz-rXG"/>
+                        <outlet property="recordTimeLabel" destination="4bw-8X-HRK" id="fRn-8O-Ep5"/>
+                        <outlet property="stopButton" destination="Yec-3g-TKj" id="HRb-N8-wW8"/>
+                        <outlet property="transcriptionText" destination="Ksf-Gb-Hr2" id="HiZ-o6-TCz"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IuO-lV-gQ5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2635.8778625954196" y="790.84507042253529"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="uBa-ot-Hsr"/>
     </inferredMetricsTieBreakers>
     <resources>
+        <image name="arrowtriangle.right.fill" catalog="system" width="128" height="113"/>
+        <image name="square.fill" catalog="system" width="128" height="114"/>
+        <image name="trash" catalog="system" width="117" height="128"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBlueColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

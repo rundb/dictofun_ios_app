@@ -14,11 +14,7 @@ class RecordCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var timeOfRecordLabel: UILabel!
     @IBOutlet weak var recordProgressBar: UIProgressView!
-    @IBOutlet weak var playbackTimeLabel: UILabel!
-    @IBOutlet weak var durationLabel: UILabel!
     @IBOutlet weak var transcriptLabel: UILabel!
-    @IBOutlet weak var playButton: UIButton!
-    @IBOutlet weak var removeRecordButton: UIButton!
     
     var recordURL: URL?
     var recordUUID: UUID?
@@ -36,30 +32,4 @@ class RecordCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-    @IBAction func playButtonPressed(_ sender: UIButton) {
-        guard let url = recordURL else {
-            NSLog("play button: url is nil")
-            return
-        }
-        NSLog("Playing record \(url.relativePath)")
-        // TODO: add delegate to stop refresh the table 
-        let result = audioPlayer.playRecord(url)
-        if result != nil {
-//            recordProgressBar.isHidden = false
-        }
-    }
-    @IBAction func removeButtonPressed(_ sender: UIButton) {
-//        getAudioFilesManager().removeRecord(recordURL!)
-        guard let uuid = recordUUID else {
-            NSLog("uuid of record was not set, failed to delete")
-            return
-        }
-        getRecordsManager().deleteRecord(with: uuid)
-        // TODO: remove the table cell too after this operation completion
-        guard let delegate = tableReloadDelegate else {
-            return
-        }
-        delegate.reloadTable()
-    }
-    
 }
