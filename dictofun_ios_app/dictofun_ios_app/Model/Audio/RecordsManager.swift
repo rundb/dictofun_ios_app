@@ -440,7 +440,7 @@ class RecordsManager {
             }
             let metaData = getMetaData(NSPredicate(format: "id == %@", uuid.uuidString))[0]
             let url = metaData.filesystemUrl
-            if url == nil || metaData.size < 400 {
+            if url == nil || metaData.size < 400 || metaData.is_deleted {
                 continue
             }
             let job = TranscriptionJob(uuid: uuid, fileUrl: url!, transcription: nil, isCompleted: false)

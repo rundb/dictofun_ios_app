@@ -36,16 +36,6 @@ class AudioFilesManager {
             }
         }
         else {
-            do {
-                let contents = try fileManager.contentsOfDirectory(atPath: recordsFolderUrl.relativePath)
-                NSLog("existing records: ")
-                for file in contents {
-                    NSLog("\(file)")
-                }
-            }
-            catch  {
-                NSLog("failed to fetch contents of records folder")
-            }
         }
     }
     

@@ -74,8 +74,8 @@ class TranscriptionManager
                 }
             }
             else if error != nil{
-                callback(.otherError, nil)
-                NSLog("other error in recognition process (\(error?.localizedDescription)")
+                callback(.recognitionError, nil)
+                NSLog("other error in recognition process (\(error!.localizedDescription)")
             }
             else
             {

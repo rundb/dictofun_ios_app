@@ -65,6 +65,13 @@ class FTSManager {
     func transcriptionCallback(with error: TranscriptionManager.CompletionError?, and text: String?) {
         if error != nil {
             NSLog("FTS Manager: transcription failed")
+            guard let job = currentTranscriptionJob else {
+                NSLog("Fatal error: currently active transcription is nil")
+                return
+            }
+            if error == TranscriptionManager.CompletionError.recognitionError {
+                rm.setRecordTranscription(with: job.uuid, and: "--- no speech detected ---")
+            }
             return
         }
         else {
