@@ -6,12 +6,19 @@
 import Foundation
 import AVFoundation
 
+protocol PlaybackEndDelegate {
+    func playbackFinished()
+}
+
 class AudioPlayer: NSObject {
     var player: AVAudioPlayer? = nil
     
     enum PlaybackError: Error {
         case failedToPlay
+        case failedToPause
     }
+    
+    var playbackEndDelegate: PlaybackEndDelegate?
     
     func playRecord(_ url: URL) -> Error? {
         NSLog("AudioPlayer: playing \(url.relativePath)")
@@ -26,7 +33,7 @@ class AudioPlayer: NSObject {
                 }
                 let playResult = safePlayer.play()
                 if !playResult {
-                    NSLog("RecordsManager: failed to play record \(url.relativePath). Playback error")
+                    NSLog("RecordsManager: failed to play record \(url.relativePath). Playback error (\(playResult.description)")
                     return .some(PlaybackError.failedToPlay)
                 }
             }
@@ -41,6 +48,40 @@ class AudioPlayer: NSObject {
         }
         return nil
     }
+    
+//    func pause() -> Error? {
+//        NSLog("pause the playback")
+//        guard let safePlayer = player else {
+//            NSLog("audio player is nil. error")
+//            return .some(PlaybackError.failedToPause)
+//        }
+//        safePlayer.pause()
+//        return nil
+//    }
+    
+//    func resume() -> Error? {
+//        NSLog("resuming playback")
+//        guard let safePlayer = player else {
+//            NSLog("audio player is nil. error")
+//            return .some(PlaybackError.failedToPlay)
+//        }
+//        let result = safePlayer.play()
+//        if !result {
+//            NSLog("failed to resume record. Error: \(result.description)")
+//            return .some(PlaybackError.failedToPlay)
+//        }
+//        return nil
+//    }
+    
+    func stopPlayingRecord() {
+        NSLog("stopping the playback")
+        guard let safePlayer = player else {
+            NSLog("audio player is nil. doing nothing")
+            return
+        }
+        safePlayer.stop()
+        player = nil
+    }
 }
 
 extension AudioPlayer: AVAudioPlayerDelegate {
@@ -51,6 +92,9 @@ extension AudioPlayer: AVAudioPlayerDelegate {
         }
         catch let error {
             NSLog("RecordsManager: failed to deactivate av audio session. Error: \(error.localizedDescription)")
+        }
+        if playbackEndDelegate != nil {
+            playbackEndDelegate?.playbackFinished()
         }
     }
 }

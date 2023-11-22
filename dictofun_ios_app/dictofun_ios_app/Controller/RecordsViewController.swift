@@ -17,6 +17,7 @@ class RecordsViewController: UIViewController {
     @IBOutlet weak var batteryLevelLabel: UILabel!
     
     var records: [RecordViewData] = []
+    var selectedTableRow = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,7 @@ class RecordsViewController: UIViewController {
         recordsManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
+        recordsTable.delegate = self
         records = recordsManager!.getRecordsList()
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
@@ -49,6 +51,14 @@ class RecordsViewController: UIViewController {
     @IBAction func menuButtonPressed(_ sender: UIButton) {
         self.performSegue(withIdentifier: K.recordsToMenuSegue, sender: self)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == K.recordsToDetailsSegue {
+            let destinationVC = segue.destination as! RecordDetailsViewController
+            destinationVC.recordViewData = records[selectedTableRow]
+            destinationVC.recordsTableReloadDelegate = self
+        }
+    }
 }
 
 // MARK: BASBatteryLevelUpdated
@@ -64,6 +74,24 @@ extension RecordsViewController: BASBatteryLevelUpdated {
     }
 }
 
+// MARK: - UITableViewDelegate
+extension RecordsViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // open a corresponding segue
+        selectedTableRow = indexPath.row
+        if records[selectedTableRow].isDownloaded {
+            self.performSegue(withIdentifier: K.recordsToDetailsSegue, sender: self)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        NSLog("swiping call")
+        return nil
+    }
+}
+
+
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -75,13 +103,7 @@ extension RecordsViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: K.Record.reusableCellName, for: indexPath) as! RecordCell
         cell.dateLabel.textColor = .darkGray
         cell.timeOfRecordLabel.textColor = .black
-        cell.playbackTimeLabel.textColor = .darkGray
-        cell.durationLabel.textColor = .darkGray
         let r = records[indexPath.row]
-        
-        if r.durationSeconds != nil {
-            cell.durationLabel.text = String(format: "%02d:%02d", r.durationSeconds! / 60, r.durationSeconds! % 60)
-        }
         
         let date = r.creationDate
         if date != nil {
@@ -100,12 +122,8 @@ extension RecordsViewController: UITableViewDataSource {
         
         if r.url != nil {
             cell.recordURL = r.url
-            cell.playButton.isEnabled = true
-            cell.removeRecordButton.isEnabled = true
         }
         else {
-            cell.playButton.isEnabled = false
-            cell.removeRecordButton.isEnabled = false
         }
         if r.progress != 0 && r.progress < 100 {
             cell.recordProgressBar.isHidden = false

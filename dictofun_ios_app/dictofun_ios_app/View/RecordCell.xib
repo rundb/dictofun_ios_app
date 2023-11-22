@@ -23,31 +23,31 @@
                         <rect key="frame" x="0.0" y="0.0" width="363" height="70"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mcj-4E-kED">
-                                <rect key="frame" x="0.0" y="0.0" width="328" height="70"/>
+                                <rect key="frame" x="0.0" y="0.0" width="363" height="70"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" semanticContentAttribute="spatial" distribution="fillProportionally" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="YlK-bU-IJF" userLabel="Record Info Stack View">
-                                        <rect key="frame" x="10" y="0.0" width="308" height="18"/>
+                                        <rect key="frame" x="10" y="0.0" width="343" height="18"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23.07.23" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h3Z-VG-z4s" userLabel="recordDateLabel">
-                                                <rect key="frame" x="0.0" y="0.0" width="46.333333333333336" height="18"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="51.666666666666664" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="12"/>
                                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13:15:10" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L9C-N1-FT6" userLabel="recordTimeLabel">
-                                                <rect key="frame" x="54.333333333333329" y="0.0" width="59.333333333333329" height="18"/>
+                                                <rect key="frame" x="59.666666666666671" y="0.0" width="66" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VAG-7K-q4M" userLabel="emptySpacerLabel1">
-                                                <rect key="frame" x="121.66666666666664" y="0.0" width="152.33333333333337" height="18"/>
+                                                <rect key="frame" x="133.66666666666669" y="0.0" width="169.66666666666669" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="34x-CL-7ZW" userLabel="emptySpacerLabel2">
-                                                <rect key="frame" x="282" y="0.0" width="26" height="18"/>
+                                                <rect key="frame" x="311.33333333333331" y="0.0" width="31.666666666666686" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -55,46 +55,17 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="aPC-If-MHW" userLabel="Playback Stack View">
-                                        <rect key="frame" x="10" y="26" width="308" height="18"/>
+                                        <rect key="frame" x="10" y="26" width="343" height="18"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9fS-24-6jQ" userLabel="playPauseButton">
-                                                <rect key="frame" x="0.0" y="0.0" width="30" height="18"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="30" id="Pdf-ds-FKx"/>
-                                                </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" image="arrowtriangle.right.fill" catalog="system" buttonSize="large"/>
-                                                <connections>
-                                                    <action selector="playButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="JHR-TU-dC6"/>
-                                                </connections>
-                                            </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5bU-xa-baP" userLabel="playbackTimeLabel">
-                                                <rect key="frame" x="40" y="0.0" width="29" height="18"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" semanticContentAttribute="playback" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="xRl-SN-26a" userLabel="recordPlaybackProgressBar">
-                                                <rect key="frame" x="79.000000000000014" y="0.0" width="190.33333333333337" height="18"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="343" height="18"/>
                                                 <color key="progressTintColor" systemColor="tintColor"/>
                                                 <color key="trackTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </progressView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:05" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oSu-Sx-p2E" userLabel="recordDurationLabel">
-                                                <rect key="frame" x="279.33333333333331" y="0.0" width="28.666666666666686" height="18"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                                <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                         </subviews>
-                                        <constraints>
-                                            <constraint firstItem="oSu-Sx-p2E" firstAttribute="leading" secondItem="xRl-SN-26a" secondAttribute="trailing" constant="10" id="5wg-U9-XEH"/>
-                                            <constraint firstItem="xRl-SN-26a" firstAttribute="leading" secondItem="5bU-xa-baP" secondAttribute="trailing" constant="10" id="AVx-6T-GwA"/>
-                                            <constraint firstItem="5bU-xa-baP" firstAttribute="leading" secondItem="9fS-24-6jQ" secondAttribute="trailing" constant="10" id="Ocr-vY-Pxc"/>
-                                            <constraint firstItem="9fS-24-6jQ" firstAttribute="leading" secondItem="aPC-If-MHW" secondAttribute="leading" constant="10" id="Ptx-BR-bCK"/>
-                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pdH-WJ-0Eh">
-                                        <rect key="frame" x="164" y="52" width="0.0" height="18"/>
+                                        <rect key="frame" x="181.66666666666666" y="52" width="0.0" height="18"/>
                                         <subviews>
                                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="10" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CEw-0B-qzw" userLabel="transcriptLabel">
                                                 <rect key="frame" x="0.0" y="0.0" width="0.0" height="14.333333333333334"/>
@@ -112,17 +83,6 @@
                                     <constraint firstItem="aPC-If-MHW" firstAttribute="leading" secondItem="mcj-4E-kED" secondAttribute="leading" constant="10" id="oXI-CP-3aI"/>
                                 </constraints>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JYD-Rp-hq2" userLabel="deleteRecordButton">
-                                <rect key="frame" x="328" y="18.000000000000004" width="35" height="34.333333333333343"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="35" id="oTZ-nD-g1y"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="trash" catalog="system"/>
-                                <connections>
-                                    <action selector="removeButtonPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="DQO-iK-Ejd"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="mcj-4E-kED" firstAttribute="top" secondItem="34q-Mq-fhO" secondAttribute="top" id="0yL-Zo-rMY"/>
@@ -144,11 +104,7 @@
             <color key="backgroundColor" red="1" green="0.7983643359" blue="0.87774293650000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
             <connections>
                 <outlet property="dateLabel" destination="h3Z-VG-z4s" id="Hxt-hS-yPb"/>
-                <outlet property="durationLabel" destination="oSu-Sx-p2E" id="flk-kp-qyc"/>
-                <outlet property="playButton" destination="9fS-24-6jQ" id="lxv-QO-06R"/>
-                <outlet property="playbackTimeLabel" destination="5bU-xa-baP" id="SsZ-po-Yok"/>
                 <outlet property="recordProgressBar" destination="xRl-SN-26a" id="nZ1-0r-saw"/>
-                <outlet property="removeRecordButton" destination="JYD-Rp-hq2" id="CPH-Fn-kVb"/>
                 <outlet property="timeOfRecordLabel" destination="L9C-N1-FT6" id="Z8a-Yb-4Bb"/>
                 <outlet property="transcriptLabel" destination="CEw-0B-qzw" id="KLU-H5-KnJ"/>
             </connections>
@@ -156,8 +112,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="arrowtriangle.right.fill" catalog="system" width="128" height="113"/>
-        <image name="trash" catalog="system" width="117" height="128"/>
         <systemColor name="tintColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

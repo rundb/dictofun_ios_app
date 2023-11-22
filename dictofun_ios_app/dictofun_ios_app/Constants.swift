@@ -9,6 +9,7 @@ struct K {
     static let connectionViewSegueName = "connectionViewSegue"
     static let initialToRecordsSegueName = "initialToRecordsView"
     static let recordsToMenuSegue = "recordsToMenuSegue"
+    static let recordsToDetailsSegue = "recordsToDetailsSegue"
     
     struct Pairing {
         static let connectButtonText = "Connect"

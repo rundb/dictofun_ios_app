@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		300C2E392B055F84006A15EE /* RecordDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300C2E382B055F84006A15EE /* RecordDetailsViewController.swift */; };
 		30267FAE2A6AD27500A072B2 /* AudioFilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAD2A6AD27500A072B2 /* AudioFilesManager.swift */; };
 		30267FB02A6B196300A072B2 /* Adpcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FAF2A6B196300A072B2 /* Adpcm.swift */; };
 		30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30267FB12A6D457000A072B2 /* RecordCell.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		300C2E382B055F84006A15EE /* RecordDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordDetailsViewController.swift; sourceTree = "<group>"; };
 		30267FAD2A6AD27500A072B2 /* AudioFilesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFilesManager.swift; sourceTree = "<group>"; };
 		30267FAF2A6B196300A072B2 /* Adpcm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Adpcm.swift; sourceTree = "<group>"; };
 		30267FB12A6D457000A072B2 /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				30998CED2A614862002157B3 /* MenuViewController.swift */,
 				30998D032A67C2C2002157B3 /* PairingViewController.swift */,
 				30EC65612AC0BB6F00DF0011 /* UIColor+RGB.swift */,
+				300C2E382B055F84006A15EE /* RecordDetailsViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -276,6 +279,7 @@
 				30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */,
 				3034B8A32AA0C71400873CE7 /* Wav.swift in Sources */,
 				30267FB62A6D4CA900A072B2 /* RecordViewData.swift in Sources */,
+				300C2E392B055F84006A15EE /* RecordDetailsViewController.swift in Sources */,
 				30445C3F2A9F733D004EB1B6 /* DataModel.xcdatamodeld in Sources */,
 				30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */,
 				3034B8A52AA0C8D900873CE7 /* AudioPlayer.swift in Sources */,
