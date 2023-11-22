@@ -6,7 +6,7 @@
 import Foundation
 
 struct RecordViewData {
-    let url: URL?
+    var url: URL?
     let uuid: UUID?
     let creationDate: Date?
     let durationSeconds: Int?

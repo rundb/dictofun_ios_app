@@ -55,7 +55,11 @@ class RecordsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == K.recordsToDetailsSegue {
             let destinationVC = segue.destination as! RecordDetailsViewController
+            // URL modification is required (FIXME: it should be implemented properly)
+            let url = records[selectedTableRow].url!
+            let actualUrl = getAudioFilesManager().getRecordURL(withFileName: url.lastPathComponent)
             destinationVC.recordViewData = records[selectedTableRow]
+            destinationVC.recordViewData?.url = actualUrl
             destinationVC.recordsTableReloadDelegate = self
         }
     }

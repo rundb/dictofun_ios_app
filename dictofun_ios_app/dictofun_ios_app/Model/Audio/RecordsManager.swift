@@ -175,12 +175,6 @@ class RecordsManager {
         saveContext()
     }
     
-    func getRecordRawUrl(id fileId: FileId) -> URL? {
-        guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
-            return nil
-        }
-        return downloadMetaDataEntry.rawFileUrl
-    }
     func getRecordUrl(id fileId: FileId) -> URL? {
         let records = getMetaData(NSPredicate(format: "name == %@", fileId.name))
         if records.isEmpty {
@@ -412,6 +406,7 @@ class RecordsManager {
             if transcriptionData.isCompleted {
                 transcription = transcriptionData.transcriptionText
             }
+            
             
             if status == downloadStatusMetadataUnknown {
                 let recordViewData = RecordViewData(url: nil, uuid: uuid, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: false, name: m.name!, progress: 0, transcription: transcription)

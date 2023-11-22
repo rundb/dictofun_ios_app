@@ -16,6 +16,7 @@ class AudioFilesManager {
     }
     
     init() {
+        NSLog("afm.init()")
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             assert(false)
             NSLog("RecordsManager: failed to initialize the records' folder URL")
@@ -32,6 +33,18 @@ class AudioFilesManager {
             }
             catch let error {
                 NSLog("RecordsManager: failed to create records' directory, error: \(error.localizedDescription)")
+            }
+        }
+        else {
+            do {
+                let contents = try fileManager.contentsOfDirectory(atPath: recordsFolderUrl.relativePath)
+                NSLog("existing records: ")
+                for file in contents {
+                    NSLog("\(file)")
+                }
+            }
+            catch  {
+                NSLog("failed to fetch contents of records folder")
             }
         }
     }

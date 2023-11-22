@@ -38,9 +38,15 @@ class FTSManager {
     }
     
     func launchTranscriptions() {
-        let transcrtiptionJobs = rm.getTranscriptionJobs()
-        for job in transcrtiptionJobs {
-            NSLog("transcription job:\(job.uuid)} \(job.fileUrl)")
+        var transcrtiptionJobs = rm.getTranscriptionJobs()
+        if !transcrtiptionJobs.isEmpty
+        {
+            for i in 0...transcrtiptionJobs.count - 1 {
+                let url = transcrtiptionJobs[i].fileUrl
+                let actualUrl = getAudioFilesManager().getRecordURL(withFileName: url.lastPathComponent)
+                transcrtiptionJobs[i].fileUrl = actualUrl!
+                NSLog("transcription job:\(transcrtiptionJobs[i].uuid)} \(transcrtiptionJobs[i].fileUrl)")
+            }
         }
         if !transcrtiptionJobs.isEmpty {
             let job = transcrtiptionJobs[0]
