@@ -28,6 +28,8 @@ class FTSManager {
     
     var isFilesListRequestCompleted = false
     
+    var pendingJob: FtsJob?
+    
     init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager, transcriptionManager tm: TranscriptionManager) {
         self.fts = fts
         self.afm = afm
@@ -90,8 +92,25 @@ class FTSManager {
 
 // MARK: - FtsEventNotificationDelegate
 extension FTSManager: FtsEventNotificationDelegate {
+    func didReceiveFileSystemError(with error: FileSystemError) {
+        switch error {
+        case FileSystemError.fileNotFound:
+            NSLog("DF reported file not found error")
+            
+            if let safeJob = pendingJob {
+                rm.deleteRecord(fileId: safeJob.fileId)
+                let ftsJobs = rm.defineFtsJobs()
+                launchNextFtsJob(with: ftsJobs)
+            }
+        case FileSystemError.fsCorrupt: NSLog("DF reported file system corruption")
+            // TODO: add display of this issue in the UI
+        case FileSystemError.generalError: NSLog("DF reported generic FS error")
+        }
+    }
+    
     
     private func launchNextFtsJob(with jobs: [FtsJob]) {
+        pendingJob = nil
         if jobs.isEmpty {
             NSLog("No more jobs to execute")
             let reportResult = fts.reportReceivingCompletion()
@@ -109,6 +128,7 @@ extension FTSManager: FtsEventNotificationDelegate {
                 }
                 else {
                     NSLog("Requested file meta data for \(job.fileId.name)")
+                    pendingJob = job
                 }
                 return
             }
@@ -121,6 +141,7 @@ extension FTSManager: FtsEventNotificationDelegate {
                 }
                 else {
                     NSLog("Requested file data for \(job.fileId.name)")
+                    pendingJob = job
                 }
                 return
             }
