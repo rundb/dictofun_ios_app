@@ -10,12 +10,19 @@ protocol CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?)
 }
 
+enum FileSystemError {
+    case fsCorrupt
+    case fileNotFound
+    case generalError
+}
+
 protocol FtsEventNotificationDelegate {
     func didReceiveFilesList(with files: [FileId])
     func didReceiveFileSize(with fileId: FileId, and fileSize: Int)
     func didReceiveFileDataChunk(with fileId: FileId, and progressPercentage: Double)
     func didCompleteFileTransaction(name fileId: FileId, with duration: Int, fileType type: FileType, _ data: Data)
     func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int)
+    func didReceiveFileSystemError(with error: FileSystemError)
 }
 
 /**
@@ -437,15 +444,19 @@ extension FileTransferService: CharNotificationDelegate {
                 }
                 if safeData[0] == 2 {
                     NSLog("\tFTS: file not found error")
+                    ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.fileNotFound)
                 }
                 else if safeData[0] == 3 {
                     NSLog("\tFTS: file system corruption error")
+                    ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.fsCorrupt)
                 }
                 else if safeData[0] == 4 {
                     NSLog("\tFTS: transaction aborted error")
+                    ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.generalError)
                 }
                 else if safeData[0] == 5 {
                     NSLog("\tFTS: generic error")
+                    ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.generalError)
                 }
             }
         }

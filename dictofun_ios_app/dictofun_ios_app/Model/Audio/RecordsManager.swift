@@ -229,9 +229,7 @@ class RecordsManager {
     // For some - metadata needs to be fetched, for some - data needs to be fetched
     func defineFtsJobs(with fileIds: [FileId]) -> [FtsJob] {
         let recordsMetadataList = getRecords()
-        if !recordsMetadataList.isEmpty {
-            NSLog("existing records: ")
-        }
+
         var existingFileIds: [FileId] = []
         for r in recordsMetadataList {
             if r.name != nil {
@@ -244,6 +242,7 @@ class RecordsManager {
             var doesRecExist = false
             var isMetadataFetchNeeded = false
             var isDataFetchNeeded = false
+            var isRecordDeleted = false
             var recordSize = 0
             // todo: replace with logic based on use of a set
             for r in existingFileIds {
@@ -282,7 +281,9 @@ class RecordsManager {
                     }
                 }
             }
-            ftsJobs.append(FtsJob(fileId: f, shouldFetchMetadata: isMetadataFetchNeeded, shouldFetchData: isDataFetchNeeded, fileSize: recordSize))
+            if (!isRecordDeleted) {
+                ftsJobs.append(FtsJob(fileId: f, shouldFetchMetadata: isMetadataFetchNeeded, shouldFetchData: isDataFetchNeeded, fileSize: recordSize))
+            }
         }
         return ftsJobs
     }
@@ -307,11 +308,14 @@ class RecordsManager {
             }
             let fileId = FileId.getIdByName(with: metadata[0].name!)
                         
-            if entry.status == downloadStatusMetadataUnknown {
-                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: false, fileSize: 0))
-            }
-            else if entry.status != downloadStatusCompleted {
-                jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(entry.rawFileSize)))
+            if !metadata[0].is_deleted
+            {
+                if entry.status == downloadStatusMetadataUnknown {
+                    jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: true, shouldFetchData: false, fileSize: 0))
+                }
+                else if entry.status != downloadStatusCompleted {
+                    jobs.append(FtsJob(fileId: fileId, shouldFetchMetadata: false, shouldFetchData: true, fileSize: Int(entry.rawFileSize)))
+                }
             }
         }
         return jobs
@@ -341,7 +345,22 @@ class RecordsManager {
         if metaData.isEmpty {
             return
         }
-        metaData[0].is_deleted = true
+        for m in metaData {
+            m.is_deleted = true
+        }
+        saveContext()
+    }
+    
+    func deleteRecord(fileId id: FileId)
+    {
+        let metadata = getMetaData(NSPredicate(format: "name == %@", id.name))
+        if metadata.isEmpty {
+            return
+        }
+
+        for m in metadata {
+            m.is_deleted = true
+        }
         saveContext()
     }
     
