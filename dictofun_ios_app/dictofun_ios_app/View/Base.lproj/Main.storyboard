@@ -284,16 +284,39 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KA9-US-4xb" userLabel="menuSpacer4Label">
-                                        <rect key="frame" x="0.0" y="235" width="373" height="20"/>
+                                        <rect key="frame" x="0.0" y="235" width="373" height="10"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="nNu-5p-M5y"/>
+                                            <constraint firstAttribute="height" constant="10" id="7XN-GK-97O"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MeI-RR-G7T" userLabel="menuLaunchDFU">
+                                        <rect key="frame" x="0.0" y="245" width="373" height="50"/>
+                                        <color key="backgroundColor" red="0.0" green="0.48003494740000002" blue="0.99965018029999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="ZfM-eJ-cvw"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Launch Firmware Update">
+                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="launchDFUButtonPressed:" destination="Jme-Cm-0XP" eventType="touchUpInside" id="Yya-mv-w7v"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TZe-Lb-MK8" userLabel="spacer">
+                                        <rect key="frame" x="0.0" y="295" width="373" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="YPG-9e-ZcW"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connection status: disconnected" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CqX-vk-vuv" userLabel="menuViewConnectionStatusLabel">
-                                        <rect key="frame" x="0.0" y="255" width="373" height="25"/>
+                                        <rect key="frame" x="0.0" y="315" width="373" height="25"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="25" id="435-ZO-3aY"/>
                                         </constraints>
@@ -302,7 +325,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xjT-Vn-oOQ" userLabel="menuViewFtsStatus">
-                                        <rect key="frame" x="0.0" y="280" width="373" height="542"/>
+                                        <rect key="frame" x="0.0" y="340" width="373" height="482"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>

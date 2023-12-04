@@ -27,6 +27,10 @@ class MenuViewController: UIViewController {
         getBluetoothManager().uiUpdateDelegate = nil
     }
     
+    @IBAction func launchDFUButtonPressed(_ sender: Any) {
+        getBluetoothManager().launchDfu()
+    }
+    
     @IBAction func menuUnpairButtonPressed(_ sender: UIButton) {
         getBluetoothManager().unpair()
         self.navigationController?.popToRootViewController(animated: true)
@@ -34,12 +38,8 @@ class MenuViewController: UIViewController {
     
     @IBAction func deleteAllRecordsButtonPressed(_ sender: UIButton) {
         getAudioFilesManager().removeAllRecords()
-        getRecordsManager().forceDeleteAllRecords()
+        getRecordsManager().deleteAllRecords()
     }
-    @IBAction func testDatabaseAccess(_ sender: UIButton) {
-        NSLog("REMOVE ME")
-    }
-    
 }
 
 extension MenuViewController: UIBleStatusUpdateDelegate {

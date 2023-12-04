@@ -102,7 +102,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     //MARK: - Class Properties
     fileprivate let FTSServiceUUID             : CBUUID
     fileprivate let BASServiceUUID             : CBUUID
+    fileprivate let DFUServiceUUID             : CBUUID
     fileprivate var isBASServiceFound = false
+    fileprivate var isDFUServiceFound = false
     
     fileprivate var centralManager              : CBCentralManager
     fileprivate var bluetoothPeripheral         : CBPeripheral?
@@ -130,6 +132,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     private var batteryLevel: Int = 0
     
+    private var dfuControlCharacteristic: CBCharacteristic?
     // MARK: - public API intended for use by services
     var charNotifyDelegates: [CBUUID : CharNotificationDelegate] = [:]
     
@@ -189,6 +192,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         centralManager = aManager
         FTSServiceUUID          = CBUUID(string: ServiceIds.FTS.service)
         BASServiceUUID = CBUUID(string: ServiceIds.BAS.service)
+        DFUServiceUUID = CBUUID(string: ServiceIds.DFU.service)
 
         super.init()
         
@@ -211,7 +215,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func startScanning() {
         NSLog("start scanning")
-        centralManager.scanForPeripherals(withServices: [FTSServiceUUID])
+        centralManager.scanForPeripherals(withServices: [FTSServiceUUID, BASServiceUUID, DFUServiceUUID])
     }
     
     func stopScanning() {
@@ -319,7 +323,19 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         userDefaults.setValue(false, forKey: K.isPairedKey)
         log(withLevel: .info, andMessage: "Completed unpairing, user defaults were reset")
     }
+    //MARK: - DFU Control API
+    func launchDfu() {
+        guard dfuControlCharacteristic != nil else {
+            NSLog("DFU char is unavailable. Update will not happen")
+            return
+        }
 
+        bluetoothPeripheral?.setNotifyValue(true, for: dfuControlCharacteristic!)
+        
+        let requestData = Data([UInt8(1)])
+        bluetoothPeripheral?.writeValue(requestData, for: dfuControlCharacteristic!, type: .withResponse)
+    }
+    
     
     //MARK: - Logger API
     
@@ -399,6 +415,8 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         
         connected = false
         isBASServiceFound = false
+        isDFUServiceFound = false
+        dfuControlCharacteristic = nil
         delegate?.didDisconnectPeripheral()
         serviceDiscoveryDelegate?.onDisconnect()
         DispatchQueue.main.async {
@@ -454,6 +472,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 if !isBASServiceFound {
                     bluetoothPeripheral!.discoverServices([BASServiceUUID])
                 }
+                else if !isDFUServiceFound {
+                    bluetoothPeripheral!.discoverServices([DFUServiceUUID])
+                }
                 isFTSFound = true
             }
             if aService.uuid.isEqual(BASServiceUUID) {
@@ -461,11 +482,16 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 isBASServiceFound = true
                 bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
             }
+            if aService.uuid.isEqual(DFUServiceUUID) {
+                NSLog("DFU Service found")
+                isDFUServiceFound = true
+                bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
+            }
         }
         
         //No FTS service discovered
         if !isFTSFound {
-            log(withLevel: .warning, andMessage: "FTS Service not found. Try to turn bluetooth Off and On again to clear the cache.")
+            NSLog("FTS Service not found. Try to turn bluetooth Off and On again to clear the cache.")
             delegate?.peripheralNotSupported()
             cancelPeripheralConnection()
         }
@@ -505,6 +531,15 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 }
                 else {
                     NSLog("BAS Battery level has not yet been set")
+                }
+            }
+        }
+        if service.uuid.isEqual(DFUServiceUUID) {
+            for characteristic: CBCharacteristic in service.characteristics! {
+                let uuid = characteristic.uuid.uuidString
+                NSLog("DFU characteristic discovered: \(uuid)")
+                if uuid == ServiceIds.DFU.dfuWithoutBondsCh {
+                    dfuControlCharacteristic = characteristic
                 }
             }
         }
