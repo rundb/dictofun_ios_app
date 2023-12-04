@@ -21,6 +21,10 @@ struct ServiceIds {
         static let service = "0000180F-0000-1000-8000-00805f9b34fb"
         static let batteryLevelCh = "2A19"
     }
+    struct DFU {
+        static let service = "0000FE59-0000-1000-8000-00805F9B34FB"
+        static let dfuWithoutBondsCh = "8EC90003-F315-4F60-9FB8-838830DAEA50"
+    }
     static let pairingWriteCh = "10FE"
 
 }
