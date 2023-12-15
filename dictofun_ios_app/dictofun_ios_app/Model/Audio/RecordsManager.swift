@@ -126,8 +126,20 @@ class RecordsManager {
     
     
     func getRecords() -> [MetaData] {
+        // TODO: move this validation logic into DB structure (make file name unique)
         
-        return getMetaData(nil)
+        let metadata = getMetaData(nil)
+        let crossReference = Dictionary(grouping: metadata, by: \.name)
+        let duplicates = crossReference.filter { $1.count > 1 }.keys
+        if !duplicates.isEmpty
+        {
+            NSLog("warning: found duplicates in the database. Attempting duplicates removal")
+            for d in duplicates {
+                deleteRecord(fileId: FileId.getIdByName(with: d!))
+            }
+            return getMetaData(nil)
+        }
+        return metadata
     }
     
     func setRecordRawSize(id fileId: FileId, _ size: Int) {

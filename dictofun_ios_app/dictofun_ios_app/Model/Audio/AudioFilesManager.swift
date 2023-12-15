@@ -54,7 +54,8 @@ class AudioFilesManager {
         }
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
         
-        return recordsFolderUrl.appending(path: name)
+//        return recordsFolderUrl.appending(path: name)
+        return recordsFolderUrl.appendingPathComponent(name, conformingTo: .url)
     }
     
     
