@@ -15,7 +15,7 @@ class RecordCell: UITableViewCell {
     @IBOutlet weak var timeOfRecordLabel: UILabel!
     @IBOutlet weak var recordProgressBar: UIProgressView!
     @IBOutlet weak var transcriptLabel: UILabel!
-    
+     
     var recordURL: URL?
     var recordUUID: UUID?
     let audioPlayer: AudioPlayer = getAudioPlayer()

@@ -215,7 +215,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func startScanning() {
         NSLog("start scanning")
-        centralManager.scanForPeripherals(withServices: [FTSServiceUUID, BASServiceUUID, DFUServiceUUID])
+        centralManager.scanForPeripherals(withServices: [FTSServiceUUID])
     }
     
     func stopScanning() {
