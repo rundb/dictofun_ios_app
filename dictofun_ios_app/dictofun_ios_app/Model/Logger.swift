@@ -33,9 +33,9 @@
 import Foundation
 import os.log
 
-protocol Logger {
-    func log(level aLevel: LogType, message aMessage: String)
-}
+//protocol Logger {
+//    func log(level aLevel: LogType, message aMessage: String)
+//}
 
 struct LogType: Equatable, RawRepresentable {
     typealias RawValue = String

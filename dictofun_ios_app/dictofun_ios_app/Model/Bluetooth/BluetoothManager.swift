@@ -34,6 +34,7 @@
 
 import UIKit
 import CoreBluetooth
+import Logging
 
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
     switch (lhs, rhs) {
@@ -91,7 +92,6 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     //MARK: - Delegate Properties
     var delegate: BluetoothManagerDelegate?
-    var logger: Logger?
     var scannerDelegate: ScannerDelegate?
     var connectDelegate: ConnectDelegate?
     var pairDelegate: PairDelegate?
@@ -111,6 +111,8 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     var userDefaults: UserDefaults = .standard
     
+    static var logger = Logger(label: "ble")
+    
     // FTS Characteristics
     let ftsCharsIDs: Set = [
         ServiceIds.FTS.controlPointCh,
@@ -127,8 +129,6 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     fileprivate var connected = false
     var paired = false
     private var connectingPeripheral: CBPeripheral!
-    
-    private let btQueue = DispatchQueue(label: "com.nRF-toolbox.bluetoothManager", qos: .utility)
     
     private var batteryLevel: Int = 0
     
@@ -205,16 +205,14 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         if isPairedValue == nil {
             userDefaults.setValue(false, forKey: K.isPairedKey)
             paired = false
-            log(withLevel: .info, andMessage: "User default value for paired not found, resetting")
+            Self.logger.info("User default value for paired not found, resetting")
         }
         else {
-            log(withLevel: .info, andMessage: "User default value for paired found, value: \(isPairedValue as! Bool ? "true" : "false")")
             paired = isPairedValue as! Bool
         }
     }
     
     func startScanning() {
-        NSLog("start scanning")
         centralManager.scanForPeripherals(withServices: [FTSServiceUUID])
     }
     
@@ -228,17 +226,8 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
      */
     func connectPeripheral(peripheral aPeripheral : CBPeripheral) {
         delegate?.requestedConnect(peripheral: aPeripheral)
-        
         bluetoothPeripheral = aPeripheral
-        
-        // we assign the bluetoothPeripheral property after we establish a connection, in the callback
-        if let name = aPeripheral.name {
-            log(withLevel: .verbose, andMessage: "Connecting to: \(name)...")
-        } else {
-            log(withLevel: .verbose, andMessage: "Connecting to device...")
-        }
-        log(withLevel: .debug, andMessage: "centralManager.connect(peripheral, options:nil)")
-        
+
         guard let p = centralManager.retrievePeripherals(withIdentifiers: [aPeripheral.identifier]).first else {
             centralManager.delegate?.centralManager?(centralManager, didFailToConnect: aPeripheral, error: BluetoothManagerError.cannotFindPeripheral)
             return
@@ -253,15 +242,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
      */
     func cancelPeripheralConnection() {
         guard bluetoothPeripheral != nil else {
-            log(withLevel: .warning, andMessage: "Peripheral not set")
             return
         }
-        if connected {
-            log(withLevel: .verbose, andMessage: "Disconnecting...")
-        } else {
-            log(withLevel: .verbose, andMessage: "Cancelling connection...")
-        }
-        log(withLevel: .debug, andMessage: "centralManager.cancelPeripheralConnection(peripheral)")
+
         centralManager.cancelPeripheralConnection(bluetoothPeripheral!)
         
         // In case the previous connection attempt failed before establishing a connection
@@ -307,11 +290,11 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func pairingCallback(error: Error?) {
         guard error == nil else {
-            log(withLevel: .error, andMessage: "Pairing has failed. Aborting. Error: \(error!.localizedDescription)")
+            Self.logger.error("Pairing has failed. Aborting. Error: \(error!.localizedDescription)")
             pairDelegate?.didPairWithPeripheral(error: error)
             return
         }
-        log(withLevel: .info, andMessage: "Pairing successful, updating user defaults")
+
         paired = true
         userDefaults.setValue(paired, forKey: K.isPairedKey)
         pairDelegate?.didPairWithPeripheral(error: nil)
@@ -321,12 +304,12 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         // Unfortunately, rest has to be done by the user.
         paired = false
         userDefaults.setValue(false, forKey: K.isPairedKey)
-        log(withLevel: .info, andMessage: "Completed unpairing, user defaults were reset")
+        Self.logger.info("Completed unpairing, user defaults were reset")
     }
     //MARK: - DFU Control API
     func launchDfu() {
         guard dfuControlCharacteristic != nil else {
-            NSLog("DFU char is unavailable. Update will not happen")
+            Self.logger.error("DFU char is unavailable. Update will not happen")
             return
         }
 
@@ -334,17 +317,6 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         
         let requestData = Data([UInt8(1)])
         bluetoothPeripheral?.writeValue(requestData, for: dfuControlCharacteristic!, type: .withResponse)
-    }
-    
-    
-    //MARK: - Logger API
-    
-    func log(withLevel aLevel : LogType, andMessage aMessage : String) {
-        logger?.log(level: aLevel,message: aMessage)
-    }
-    
-    func logError(error anError : Error) {
-        logger?.log(level: .error, message: "Error: \(anError.localizedDescription)")
     }
     
     //MARK: - CBCentralManagerDelegate
@@ -368,12 +340,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         default:
             state = "Unknown"
         }
-        
-        log(withLevel: .info, andMessage: "[Callback] Central Manager did update state to: \(state)")
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        log(withLevel: .info, andMessage: "discovered \(peripheral.identifier) with RSSI \(RSSI.intValue)")
         // TODO: at this point make sure that it's our peripheral (so ID is matching with what we paired to)
         if paired {
             connectPeripheral(peripheral: peripheral)
@@ -385,11 +354,10 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        NSLog("[Callback] Central Manager did connect peripheral")
         if let name = peripheral.name {
-            NSLog("Connected to: \(name)")
+            Self.logger.debug("Connected to: \(name)")
         } else {
-            NSLog("Connected to device")
+            Self.logger.warning("Connected to device \(peripheral.identifier.uuidString)")
         }
         
         connected = true
@@ -400,18 +368,11 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             self.uiUpdateDelegate?.didConnectionStatusUpdate(newState: .on)
         }
         connectDelegate?.didConnectToPeripheral(error: nil)
-        log(withLevel: .verbose, andMessage: "Discovering services...")
-        log(withLevel: .debug, andMessage: "peripheral.discoverServices([\(FTSServiceUUID.uuidString)])")
         peripheral.discoverServices([FTSServiceUUID])
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        if case .some(let e) = error {
-            log(withLevel: .debug, andMessage: "[Callback] Central Manager did disconnect peripheral")
-            logError(error: e)
-        }
-        NSLog("[Callback] Central Manager did disconnect peripheral successfully")
-        NSLog("Disconnected")
+        Self.logger.info("Disconnected from \(peripheral.name ?? "unknown device")")
         
         connected = false
         isBASServiceFound = false
@@ -429,18 +390,16 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         updateBatteryLevel(with: 0)
         
         // Restart scanning to be able to catch up with Dictofun on it's next appearance
-        NSLog("restart scanning")
         startScanning()
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         guard error == nil else {
-            log(withLevel: .debug, andMessage: "[Callback] Central Manager did fail to connect to peripheral")
-            logError(error: error!)
+            Self.logger.error("Central Manager did fail to connect to peripheral")
             return
         }
-        log(withLevel: .debug, andMessage: "[Callback] Central Manager did fail to connect to peripheral without errors")
-        log(withLevel: .info, andMessage: "Failed to connect")
+
+        Self.logger.error("Failed to connect to peripheral \(peripheral.identifier.uuidString)")
         
         connected = false
         delegate?.didDisconnectPeripheral()
@@ -453,21 +412,13 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard error == nil else {
-            log(withLevel: .warning, andMessage: "Service discovery failed")
-            logError(error: error!)
-            //TODO: Disconnect?
+            Self.logger.error("Service discovery failed")
             return
         }
-        
-        NSLog("Services discovered")
-        
+
         var isFTSFound = false
         for aService: CBService in peripheral.services! {
-            NSLog("service: \(aService.uuid)")
             if aService.uuid.isEqual(FTSServiceUUID) {
-                log(withLevel: .verbose, andMessage: "FTS Service found")
-                log(withLevel: .verbose, andMessage: "Discovering characteristics...")
-                log(withLevel: .debug, andMessage: "peripheral.discoverCharacteristics(nil, for: \(aService.uuid.uuidString))")
                 bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
                 if !isBASServiceFound {
                     bluetoothPeripheral!.discoverServices([BASServiceUUID])
@@ -478,12 +429,10 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 isFTSFound = true
             }
             if aService.uuid.isEqual(BASServiceUUID) {
-                NSLog("BAS service found")
                 isBASServiceFound = true
                 bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
             }
             if aService.uuid.isEqual(DFUServiceUUID) {
-                NSLog("DFU Service found")
                 isDFUServiceFound = true
                 bluetoothPeripheral!.discoverCharacteristics(nil, for: aService)
             }
@@ -491,7 +440,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         
         //No FTS service discovered
         if !isFTSFound {
-            NSLog("FTS Service not found. Try to turn bluetooth Off and On again to clear the cache.")
+            Self.logger.error("FTS Service not found. Try to turn bluetooth Off and On again to clear the cache.")
             delegate?.peripheralNotSupported()
             cancelPeripheralConnection()
         }
@@ -499,21 +448,19 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard error == nil else {
-            log(withLevel: .warning, andMessage: "Characteristics discovery failed")
-            logError(error: error!)
+            Self.logger.error("Characteristics discovery failed (\(error!.localizedDescription)")
             return
         }
-        NSLog("Characteristics discovered")
         
         if service.uuid.isEqual(FTSServiceUUID) {
             for characteristic : CBCharacteristic in service.characteristics! {
                 let key = characteristic.uuid.uuidString
                 if ftsCharsIDs.contains(key) {
-                    log(withLevel: .verbose, andMessage: "FTS Characteristic found: 0x\(key)")
+//                    Self.logger.error("FTS Characteristic found: 0x\(key)")
                     ftsChars[characteristic.uuid.uuidString] = characteristic
                 }
                 else {
-                    log(withLevel: .warning, andMessage: "Characteristic \(characteristic.uuid) is unknown")
+                    Self.logger.warning("Characteristic \(characteristic.uuid) is unknown")
                 }
             }
             serviceDiscoveryDelegate?.didDiscoverServices()
@@ -521,23 +468,23 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         if service.uuid.isEqual(BASServiceUUID) {
             for characteristic : CBCharacteristic in service.characteristics! {
                 let uuid = characteristic.uuid.uuidString
-                NSLog("BAS characteristic discovered: \(uuid)")
+                Self.logger.debug("BAS characteristic discovered: \(uuid)")
                 
                 readFrom(characteristic: characteristic)
 
                 if characteristic.value != nil {
-                    NSLog("BAS battery level: \(characteristic.value![0])")
+                    Self.logger.debug("BAS battery level: \(characteristic.value![0])")
                     updateBatteryLevel(with: Int(characteristic.value![0]))
                 }
                 else {
-                    NSLog("BAS Battery level has not yet been set")
+                    Self.logger.debug("BAS Battery level has not yet been set")
                 }
             }
         }
         if service.uuid.isEqual(DFUServiceUUID) {
             for characteristic: CBCharacteristic in service.characteristics! {
                 let uuid = characteristic.uuid.uuidString
-                NSLog("DFU characteristic discovered: \(uuid)")
+                Self.logger.debug("DFU characteristic discovered: \(uuid)")
                 if uuid == ServiceIds.DFU.dfuWithoutBondsCh {
                     dfuControlCharacteristic = characteristic
                 }
@@ -547,65 +494,60 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         guard error == nil else {
-            log(withLevel: .warning, andMessage: "Enabling notifications failed")
-            logError(error: error!)
+
             return
         }
         
-        if characteristic.isNotifying {
-            log(withLevel: .info, andMessage: "Notifications enabled for characteristic: \(characteristic.uuid.uuidString)")
-        } else {
-            log(withLevel: .info, andMessage: "Notifications disabled for characteristic: \(characteristic.uuid.uuidString)")
-        }
+//        if characteristic.isNotifying {
+//            Self.logger.debug("Notifications enabled for characteristic: \(characteristic.uuid.uuidString)")
+//        } else {
+//            Self.logger.debug("Notifications disabled for characteristic: \(characteristic.uuid.uuidString)")
+//        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         guard error == nil else {
-            log(withLevel: .warning, andMessage: "Writing value to characteristic has failed")
-            logError(error: error!)
+            Self.logger.error("Writing value to characteristic has failed")
             if ftsChars[ServiceIds.pairingWriteCh] != nil && characteristic.isEqual(ftsChars[ServiceIds.pairingWriteCh]!!) {
                 pairingCallback(error: error)
             }
             return
         }
-        log(withLevel: .info, andMessage: "Data written to characteristic: \(characteristic.uuid.uuidString)")
+//        Self.logger.debug("Data written to characteristic: \(characteristic.uuid.uuidString)")
         
         if let storedPairingCh = ftsChars[ServiceIds.pairingWriteCh] {
             if characteristic.uuid.uuidString == storedPairingCh?.uuid.uuidString {
-                log(withLevel: .info, andMessage: "launching pairing callback with nil-error")
+                Self.logger.error("launching pairing callback with nil-error")
                 pairingCallback(error: nil)
             }
         }
         else {
-            log(withLevel: .warning, andMessage: "no stored pairing char found")
+            Self.logger.error("no stored pairing char found")
         }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
         guard error == nil else {
-            log(withLevel: .warning, andMessage: "Writing value to descriptor has failed")
-            logError(error: error!)
+            Self.logger.error("Writing value to descriptor has failed")
             return
         }
-        log(withLevel: .info, andMessage: "Data written to descriptor: \(descriptor.uuid.uuidString)")
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard error == nil else {
-            log(withLevel: .warning, andMessage: "Updating characteristic has failed")
-            logError(error: error!)
+//            Self.logger.error("Updating characteristic has failed")
             return
         }
         
         if let ftsDelegate = charNotifyDelegates[characteristic.uuid], let ftsChar = getCharByCBUUID(with: characteristic.uuid) {
             guard let bytesReceived = characteristic.value else {
-                log(withLevel: .info, andMessage: "Notification received from FTS Char: \(ftsChar.uuid.uuidString), with empty value")
+                Self.logger.warning("Notification received from FTS Char: \(ftsChar.uuid.uuidString), with empty value")
                 return
             }
             ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
         }
         if characteristic.uuid == CBUUID(string: ServiceIds.BAS.batteryLevelCh) {
-            NSLog("Battery level update: \(characteristic.value![0])")
+            Self.logger.info("Battery level update", metadata: ["level":"\(characteristic.value![0])"])
             updateBatteryLevel(with: Int(characteristic.value![0]))
         }
     }

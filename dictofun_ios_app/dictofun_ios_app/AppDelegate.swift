@@ -5,9 +5,10 @@
 
 import UIKit
 import CoreData
+import Logging
+import GoogleCloudLogging
 
 var bluetoothManager = BluetoothManager()
-var printLogger = PrintLogger()
 var audioFilesManager = AudioFilesManager()
 var recordsManager = RecordsManager()
 var transcriptionManager = TranscriptionManager()
@@ -47,11 +48,18 @@ func getTranscriptionManager() -> TranscriptionManager {
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        bluetoothManager.logger = printLogger
         fileTransferService.ftsEventNotificationDelegate = ftsManager
         ftsManager.launchTranscriptions()
         
-        // Override point for customization after application launch.
+        LoggingSystem.bootstrap { MultiplexLogHandler([GoogleCloudLogHandler(label: $0), StreamLogHandler.standardOutput(label: $0)]) }
+
+        do {
+            try GoogleCloudLogHandler.setup(serviceAccountCredentials: Bundle.main.url(forResource: "dictofun-ios-logging-token", withExtension: "json")!, clientId: UIDevice.current.identifierForVendor)
+        } catch {
+            NSLog("Failed to initialize GoogleCloudLogHandler")
+        }
+        GoogleCloudLogHandler.uploadInterval = 60
+        
         return true
     }
 

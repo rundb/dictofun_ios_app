@@ -5,6 +5,7 @@
 
 import Foundation
 import CoreBluetooth
+import Logging
 
 protocol CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?)
@@ -24,6 +25,7 @@ protocol FtsEventNotificationDelegate {
     func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int)
     func didReceiveFileSystemError(with error: FileSystemError)
 }
+
 
 /**
  This class implements all functions needed for file transfer service to operate, according to FTS specification:
@@ -47,6 +49,8 @@ class FileTransferService {
     private let fileCountFieldSize = 8
     
     private var fileIds: [FileId] = []
+    
+    static var logger = Logger(label: "fts")
     
     var ftsEventNotificationDelegate: FtsEventNotificationDelegate?
     
@@ -123,7 +127,7 @@ class FileTransferService {
             NSLog("FTS: Failed to send request to CP \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
-        NSLog("Requested files list")
+        Self.logger.debug("requested files list")
         
         return nil
     }
