@@ -4,6 +4,7 @@
  */
 
 import Foundation
+import Logging
 
 /// This class implements the storage functionality for files received from the Dictofun
 class AudioFilesManager {
@@ -15,24 +16,25 @@ class AudioFilesManager {
         case fileWriteError(String)
     }
     
+    static var logger = Logger(label: "afm")
+    
     init() {
-        NSLog("afm.init()")
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             assert(false)
-            NSLog("RecordsManager: failed to initialize the records' folder URL")
+            Self.logger.error("failed to initialize the records' folder URL")
             return
         }
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
         
         var isDir: ObjCBool = true
         if !fileManager.fileExists(atPath: recordsFolderUrl.relativePath, isDirectory: &isDir) {
-            NSLog("RecordsManager: records' folder doesn't exist: creating one")
+            Self.logger.info("records' folder doesn't exist: creating one")
             do {
                 try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: false)
-                NSLog("RecordsManager: created records'folder")
+                Self.logger.info("created records'folder")
             }
             catch let error {
-                NSLog("RecordsManager: failed to create records' directory, error: \(error.localizedDescription)")
+                Self.logger.error("failed to create records' directory, error: \(error.localizedDescription)")
             }
         }
         else {
@@ -54,7 +56,6 @@ class AudioFilesManager {
         }
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
         
-//        return recordsFolderUrl.appending(path: name)
         return recordsFolderUrl.appendingPathComponent(name, conformingTo: .url)
     }
     
@@ -63,19 +64,19 @@ class AudioFilesManager {
     /// that all decoding has been performed before entering this class. Wav header should also be applied before the call.
     func saveRecord(withRawWav data: Data, andFileName name: String) -> URL? {
         guard let url = makeRecordURL(forFileNamed: name) else {
-            NSLog("failed to create record url")
+            Self.logger.error("failed to create record url for name \(name)")
             return nil
         }
         
         let wavFile = createWaveFile(data: data)
         
-        NSLog("Records Manager: creating path \(url.relativePath)")
+        Self.logger.debug("creating path \(url.relativePath)")
         do {
             try wavFile.write(to: url)
-            NSLog("Records Manager: saved a wav file to \(url.relativePath)")
+            Self.logger.debug("saved a wav file to \(url.relativePath)")
         }
         catch {
-            NSLog("RecordsManager: failed to write record's data")
+            Self.logger.error("failed to write record's data")
             return nil
         }
         
@@ -112,13 +113,13 @@ class AudioFilesManager {
             try fileManager.removeItem(at: url)
         }
         catch let error {
-            NSLog("RecordsManager: failed to remove record \(url.relativePath). Error: \(error.localizedDescription)")
+            Self.logger.error("failed to remove record \(url.relativePath). Error: \(error.localizedDescription)")
         }
     }
     
     func removeAllRecords() {
         guard let recordsPath = makeRecordURL(forFileNamed: "") else {
-            NSLog("RecordsManager::removeAllRecords - failed to get folder's URL")
+            Self.logger.error("removeAllRecords - failed to get folder's URL")
             return
         }
         do {
@@ -130,13 +131,13 @@ class AudioFilesManager {
                     try fileManager.removeItem(at: url)
                 }
                 catch let error {
-                    NSLog("remove records: failed to remove error \(item), error: \(error.localizedDescription)")
+                    Self.logger.error("remove records: failed to remove record \(item), error: \(error.localizedDescription)")
                 }
             }
             
         }
         catch let error {
-            NSLog("removeAllRecords(): error \(error.localizedDescription)")
+            Self.logger.error("removeAllRecords(): \(error.localizedDescription)")
         }
     }
 }

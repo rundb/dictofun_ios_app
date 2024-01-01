@@ -22,6 +22,8 @@
 		304A4AC82AFAE4DD0048219C /* TranscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304A4AC72AFAE4DD0048219C /* TranscriptionManager.swift */; };
 		3064D5D92AB8D7750022A4CC /* FileId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3064D5D82AB8D7750022A4CC /* FileId.swift */; };
 		3064D5DB2AB8D7AE0022A4CC /* FtsJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3064D5DA2AB8D7AE0022A4CC /* FtsJob.swift */; };
+		307D106A2B42F9C400F9A2F4 /* GoogleCloudLogging in Frameworks */ = {isa = PBXBuildFile; productRef = 307D10692B42F9C400F9A2F4 /* GoogleCloudLogging */; };
+		307D106C2B42FEEB00F9A2F4 /* dictofun-ios-logging-token.json in Resources */ = {isa = PBXBuildFile; fileRef = 307D106B2B42FEEB00F9A2F4 /* dictofun-ios-logging-token.json */; };
 		30998CCB2A607198002157B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCA2A607198002157B3 /* AppDelegate.swift */; };
 		30998CCD2A607198002157B3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCC2A607198002157B3 /* SceneDelegate.swift */; };
 		30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CCE2A607198002157B3 /* InitialViewController.swift */; };
@@ -33,8 +35,6 @@
 		30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CED2A614862002157B3 /* MenuViewController.swift */; };
 		30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CEF2A669A1F002157B3 /* BluetoothManager.swift */; };
 		30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF12A669C10002157B3 /* ServiceIds.swift */; };
-		30998CF42A66B718002157B3 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF32A66B718002157B3 /* Logger.swift */; };
-		30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF72A66D4E7002157B3 /* PrintLogger.swift */; };
 		30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */; };
 		30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */; };
 		30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */; };
@@ -60,6 +60,7 @@
 		304A4AC72AFAE4DD0048219C /* TranscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionManager.swift; sourceTree = "<group>"; };
 		3064D5D82AB8D7750022A4CC /* FileId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileId.swift; sourceTree = "<group>"; };
 		3064D5DA2AB8D7AE0022A4CC /* FtsJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FtsJob.swift; sourceTree = "<group>"; };
+		307D106B2B42FEEB00F9A2F4 /* dictofun-ios-logging-token.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "dictofun-ios-logging-token.json"; path = "../../../../Documents/dictofun-ios-logging-token.json"; sourceTree = "<group>"; };
 		30998CC72A607198002157B3 /* dictofun_ios_app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dictofun_ios_app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30998CCA2A607198002157B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		30998CCC2A607198002157B3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -73,8 +74,6 @@
 		30998CED2A614862002157B3 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		30998CEF2A669A1F002157B3 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		30998CF12A669C10002157B3 /* ServiceIds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIds.swift; sourceTree = "<group>"; };
-		30998CF32A66B718002157B3 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		30998CF72A66D4E7002157B3 /* PrintLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintLogger.swift; sourceTree = "<group>"; };
 		30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredPeripheral.swift; sourceTree = "<group>"; };
 		30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredDeviceCell.swift; sourceTree = "<group>"; };
 		30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DiscoveredDeviceCell.xib; sourceTree = "<group>"; };
@@ -89,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				307D106A2B42F9C400F9A2F4 /* GoogleCloudLogging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,6 +148,7 @@
 		30998CC92A607198002157B3 /* dictofun_ios_app */ = {
 			isa = PBXGroup;
 			children = (
+				307D106B2B42FEEB00F9A2F4 /* dictofun-ios-logging-token.json */,
 				30998CE02A6071E7002157B3 /* Controller */,
 				30998CDF2A6071E3002157B3 /* View */,
 				30998CDE2A6071DC002157B3 /* Model */,
@@ -168,8 +169,6 @@
 				3034B8A62AA12DD300873CE7 /* Audio */,
 				3034B89F2AA086E000873CE7 /* Bluetooth */,
 				30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */,
-				30998CF32A66B718002157B3 /* Logger.swift */,
-				30998CF72A66D4E7002157B3 /* PrintLogger.swift */,
 				30267FB52A6D4CA900A072B2 /* RecordViewData.swift */,
 				3034B8A02AA08E7A00873CE7 /* FTSManager.swift */,
 			);
@@ -218,6 +217,9 @@
 			dependencies = (
 			);
 			name = dictofun_ios_app;
+			packageProductDependencies = (
+				307D10692B42F9C400F9A2F4 /* GoogleCloudLogging */,
+			);
 			productName = dictofun_ios_app;
 			productReference = 30998CC72A607198002157B3 /* dictofun_ios_app.app */;
 			productType = "com.apple.product-type.application";
@@ -246,6 +248,9 @@
 				Base,
 			);
 			mainGroup = 30998CBE2A607198002157B3;
+			packageReferences = (
+				307D10682B42F9C400F9A2F4 /* XCRemoteSwiftPackageReference "GoogleCloudLogging" */,
+			);
 			productRefGroup = 30998CC82A607198002157B3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -263,6 +268,7 @@
 				30998CD72A607199002157B3 /* LaunchScreen.storyboard in Resources */,
 				30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */,
 				30998CD42A607199002157B3 /* Assets.xcassets in Resources */,
+				307D106C2B42FEEB00F9A2F4 /* dictofun-ios-logging-token.json in Resources */,
 				30998CD22A607198002157B3 /* Main.storyboard in Resources */,
 				30267FB42A6D457000A072B2 /* RecordCell.xib in Resources */,
 			);
@@ -281,7 +287,6 @@
 				30267FB62A6D4CA900A072B2 /* RecordViewData.swift in Sources */,
 				300C2E392B055F84006A15EE /* RecordDetailsViewController.swift in Sources */,
 				30445C3F2A9F733D004EB1B6 /* DataModel.xcdatamodeld in Sources */,
-				30998CF82A66D4E7002157B3 /* PrintLogger.swift in Sources */,
 				3034B8A52AA0C8D900873CE7 /* AudioPlayer.swift in Sources */,
 				3064D5DB2AB8D7AE0022A4CC /* FtsJob.swift in Sources */,
 				30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */,
@@ -293,7 +298,6 @@
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */,
 				304A4AC62AFACF0B0048219C /* TranscriptionJob.swift in Sources */,
-				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
 				3034B8A12AA08E7A00873CE7 /* FTSManager.swift in Sources */,
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,
@@ -538,6 +542,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		307D10682B42F9C400F9A2F4 /* XCRemoteSwiftPackageReference "GoogleCloudLogging" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/DnV1eX/GoogleCloudLogging.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		307D10692B42F9C400F9A2F4 /* GoogleCloudLogging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 307D10682B42F9C400F9A2F4 /* XCRemoteSwiftPackageReference "GoogleCloudLogging" */;
+			productName = GoogleCloudLogging;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */ = {

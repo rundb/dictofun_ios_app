@@ -6,6 +6,7 @@
 import Foundation
 import CoreData
 import UIKit
+import Logging
 
 /**
  This entity is responsible for the management of full lifecycle of a record.
@@ -13,6 +14,7 @@ import UIKit
 class RecordsManager {
     
     let context: NSManagedObjectContext
+    static var logger = Logger(label: "rm")
     
     private let downloadStatusMetadataUnknown = "metadata-unknown"
     private let downloadStatusNotStarted = "not-started"
@@ -22,6 +24,7 @@ class RecordsManager {
     init() {
         // add references to files' manager and db manager
         context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        Self.logger.logLevel = .debug
     }
     
     private func saveContext() {
@@ -29,7 +32,7 @@ class RecordsManager {
             try context.save()
         }
         catch {
-            NSLog("Failed to save db context: \(error)")
+            Self.logger.error("Failed to save db context: \(error)")
         }
     }
     
@@ -43,7 +46,7 @@ class RecordsManager {
             result = try context.fetch(request)
         }
         catch {
-            NSLog("getMetaData(): CoreData fetch failed. Error: \(error)")
+            Self.logger.error("getMetaData(): CoreData fetch failed. Error: \(error)")
             return []
         }
         return result
@@ -59,7 +62,7 @@ class RecordsManager {
             result = try context.fetch(request)
         }
         catch {
-            NSLog("getTranscriptions(): CoreData fetch failed. Error: \(error)")
+            Self.logger.error("getTranscriptions(): CoreData fetch failed. Error: \(error)")
             return []
         }
         return result
@@ -75,7 +78,7 @@ class RecordsManager {
             result = try context.fetch(request)
         }
         catch {
-            NSLog("getDownloadMetaData(): CoreData fetch failed. Error: \(error)")
+            Self.logger.error("getDownloadMetaData(): CoreData fetch failed. Error: \(error)")
             return []
         }
         return result
@@ -84,12 +87,12 @@ class RecordsManager {
     private func getDownloadMetaDataByFileId(_ fileId: FileId) -> DownloadMetaData? {
         let uuidRequestResult = getMetaData(NSPredicate(format: "name == %@", fileId.name))
         if uuidRequestResult.isEmpty {
-            NSLog("Record with name \(fileId.name) is not found.")
+            Self.logger.error("Record with name \(fileId.name) is not found.")
             return nil
         }
 
         guard let uuid = uuidRequestResult[0].id else {
-            NSLog("Failed to fetch correct UUID for record \(fileId.name)")
+            Self.logger.error("Failed to fetch correct UUID for record \(fileId.name)")
             return nil
         }
         
@@ -97,7 +100,7 @@ class RecordsManager {
         let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", uuid.uuidString))
         if downloadMetaData.isEmpty {
             // TODO: it may be a valid case, consider creating a new entry
-            NSLog("DownloadMetaData fetch result is empty. ATM we do not continue from this point. Name: \(fileId.name)")
+            Self.logger.warning("DownloadMetaData fetch result is empty. ATM we do not continue from this point. Name: \(fileId.name)")
             return nil
         }
         
@@ -120,7 +123,7 @@ class RecordsManager {
         transcription.id = newUUID
         transcription.isCompleted = false
         metaData.name = fileId.name
-        NSLog("new DB entry: \(newUUID.uuidString):\(fileId.name)")
+        Self.logger.info("new DB entry: \(newUUID.uuidString):\(fileId.name)")
         saveContext()
     }
     
@@ -133,7 +136,7 @@ class RecordsManager {
         let duplicates = crossReference.filter { $1.count > 1 }.keys
         if !duplicates.isEmpty
         {
-            NSLog("warning: found duplicates in the database. Attempting duplicates removal")
+            Self.logger.warning("found duplicates in the database. Attempting duplicates removal")
             for d in duplicates {
                 deleteRecord(fileId: FileId.getIdByName(with: d!))
             }
@@ -152,7 +155,7 @@ class RecordsManager {
         downloadMetaDataEntry.rawFileSize = Int32(size)
         downloadMetaDataEntry.status = downloadStatusNotStarted
         
-        NSLog("Storing record size: \(fileId.name) - \(size)")
+        Self.logger.debug("Storing record size: \(fileId.name) - \(size)")
         
         // save the DB context
         saveContext()
@@ -161,7 +164,7 @@ class RecordsManager {
     func setRecordSize(id fileId: FileId, _ size: Int) {
         let records = getMetaData(NSPredicate(format: "name == %@", fileId.name))
         if records.isEmpty {
-            NSLog("Error: attempt to set size \(size) to non-existent record \(fileId.name)")
+            Self.logger.error("attempt to set size \(size) to non-existent record \(fileId.name)")
             return
         }
         records[0].size = Int32(size)
@@ -174,7 +177,7 @@ class RecordsManager {
         let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId)
         
         guard !(recordEntry.isEmpty || downloadMetaDataEntry == nil) else {
-            NSLog("Failed to store record URL: got an empty metadata/download metadata")
+            Self.logger.error("Failed to store record URL: got an empty metadata/download metadata")
             return
         }
         
@@ -264,7 +267,7 @@ class RecordsManager {
             }
             if !doesRecExist {
                 // todo: create new entry in the database
-                NSLog("registering a new record in the database")
+                Self.logger.debug("registering a new record in the database")
                 registerRecord(f)
                 isMetadataFetchNeeded = true
                 isDataFetchNeeded = true
@@ -274,7 +277,7 @@ class RecordsManager {
                     if r.name == f.name {
                         let downloadMetaData = getDownloadMetaData(NSPredicate(format: "id == %@", r.id!.uuidString))
                         if downloadMetaData.isEmpty {
-                            NSLog("WARNING: DownloadMetaData entry doesn't exist for record \(f.name)")
+                            Self.logger.warning("DownloadMetaData entry doesn't exist for record \(f.name)")
                             isMetadataFetchNeeded = true
                             isDataFetchNeeded = true
                         }
@@ -338,7 +341,7 @@ class RecordsManager {
     func setRecordTranscription(with id: UUID, and text: String) {
         let uuidRequestResult = getTranscriptions(NSPredicate(format: "id == %@", id.uuidString))
         if uuidRequestResult.isEmpty {
-            NSLog("Transcription entry with UUID \(id.uuidString) is not found.")
+            Self.logger.error("Transcription entry with UUID \(id.uuidString) is not found.")
             return
         }
         uuidRequestResult[0].transcriptionText = text
@@ -388,16 +391,16 @@ class RecordsManager {
 
         do {
             try context.execute(metadataDeleteRequest)
-            NSLog("metadata table request succeeded")
+            Self.logger.info("metadata table request succeeded")
             try context.execute(downloadMetadataDeleteRequest)
-            NSLog("download metadata table request succeeded")
+            Self.logger.info("download metadata table request succeeded")
             try context.execute(transcriptionDeleteRequest)
-            NSLog("transcription table request succeeded")
+            Self.logger.info("transcription table request succeeded")
             try context.save()
-            NSLog("context save has succeeded")
+            Self.logger.info("context save has succeeded")
         }
         catch let error {
-            NSLog("CoreData remove attempt has failed. Error: \(error)")
+            Self.logger.error("CoreData remove attempt has failed. Error: \(error)")
         }
     }
     
