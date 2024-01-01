@@ -35,7 +35,6 @@
 		30998CEE2A614862002157B3 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CED2A614862002157B3 /* MenuViewController.swift */; };
 		30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CEF2A669A1F002157B3 /* BluetoothManager.swift */; };
 		30998CF22A669C10002157B3 /* ServiceIds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF12A669C10002157B3 /* ServiceIds.swift */; };
-		30998CF42A66B718002157B3 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF32A66B718002157B3 /* Logger.swift */; };
 		30998CFA2A66E0F9002157B3 /* DiscoveredPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */; };
 		30998D012A6707BC002157B3 /* DiscoveredDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */; };
 		30998D022A6707BC002157B3 /* DiscoveredDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */; };
@@ -75,7 +74,6 @@
 		30998CED2A614862002157B3 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		30998CEF2A669A1F002157B3 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		30998CF12A669C10002157B3 /* ServiceIds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIds.swift; sourceTree = "<group>"; };
-		30998CF32A66B718002157B3 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		30998CF92A66E0F9002157B3 /* DiscoveredPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredPeripheral.swift; sourceTree = "<group>"; };
 		30998CFF2A6707BC002157B3 /* DiscoveredDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredDeviceCell.swift; sourceTree = "<group>"; };
 		30998D002A6707BC002157B3 /* DiscoveredDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DiscoveredDeviceCell.xib; sourceTree = "<group>"; };
@@ -171,7 +169,6 @@
 				3034B8A62AA12DD300873CE7 /* Audio */,
 				3034B89F2AA086E000873CE7 /* Bluetooth */,
 				30445C3D2A9F733D004EB1B6 /* DataModel.xcdatamodeld */,
-				30998CF32A66B718002157B3 /* Logger.swift */,
 				30267FB52A6D4CA900A072B2 /* RecordViewData.swift */,
 				3034B8A02AA08E7A00873CE7 /* FTSManager.swift */,
 			);
@@ -301,7 +298,6 @@
 				30998CCF2A607198002157B3 /* InitialViewController.swift in Sources */,
 				30267FB32A6D457000A072B2 /* RecordCell.swift in Sources */,
 				304A4AC62AFACF0B0048219C /* TranscriptionJob.swift in Sources */,
-				30998CF42A66B718002157B3 /* Logger.swift in Sources */,
 				3034B8A12AA08E7A00873CE7 /* FTSManager.swift in Sources */,
 				30998D082A691B6D002157B3 /* FileTransferService.swift in Sources */,
 				30998CF02A669A1F002157B3 /* BluetoothManager.swift in Sources */,
