@@ -6,6 +6,7 @@
 import Foundation
 import CoreBluetooth
 import Logging
+import GoogleCloudLogging
 
 protocol CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?)
@@ -50,7 +51,7 @@ class FileTransferService {
     
     private var fileIds: [FileId] = []
     
-    static var logger = Logger(label: "fts")
+    var logger: Logger?
     
     var ftsEventNotificationDelegate: FtsEventNotificationDelegate?
     
@@ -69,7 +70,7 @@ class FileTransferService {
     static let minimalFileSize = 0x200
     
     init(with bluetoothManager: BluetoothManager) {
-        Self.logger.logLevel = .debug
+//        logger?.logLevel = .debug        
         self.bluetoothManager = bluetoothManager
         
         self.currentFile = CurrentFile(fileId: FileId(value: Data(count: 16)), size: 0, receivedSize: 0, data: Data([]))
@@ -101,6 +102,11 @@ class FileTransferService {
         }
     }
     
+    func init_logger() {
+        logger = Logger(label: "fts")
+        logger?.logLevel = .debug
+    }
+    
     enum FtsOpResult: Error {
         case setupError
         case communicationError
@@ -111,24 +117,24 @@ class FileTransferService {
         let requestData = Data([UInt8(1)])
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileListCharCBUUID, toEnabled: true) == nil else {
-            Self.logger.error("failed to enable notifications for file list char \(fileListCharCBUUID.uuidString)")
+            logger?.error("failed to enable notifications for file list char \(fileListCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.setNotificationStateFor(characteristic: fileListNextCharCBUUID, toEnabled: true) == nil else {
-            Self.logger.error("failed to enable notifications for file list next char \(fileListNextCharCBUUID.uuidString)")
+            logger?.error("failed to enable notifications for file list next char \(fileListNextCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         // At this point also enable notifications for status char, as this operation should always be the first in the chain of FTS calls
         guard bluetoothManager.setNotificationStateFor(characteristic: statusCharCBUUID, toEnabled: true) == nil else {
-            Self.logger.error("Failed to enable notifications for status char \(statusCharCBUUID.uuidString)")
+            logger?.error("Failed to enable notifications for status char \(statusCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            Self.logger.error("Failed to send files list request to CP \(cpCharCBUUID.uuidString)")
+            logger?.error("Failed to send files list request to CP \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
-        Self.logger.debug("requested files list")
+        logger?.debug("requested files list")
         
         return nil
     }
@@ -142,11 +148,11 @@ class FileTransferService {
         requestData.append(fileId.value)
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileInfoCharCBUUID, toEnabled: true) == nil else {
-            Self.logger.error("Failed to enable notifications for file info char \(fileInfoCharCBUUID.uuidString)")
+            logger?.error("Failed to enable notifications for file info char \(fileInfoCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            Self.logger.error("Failed to send file info request to CP Char \(cpCharCBUUID.uuidString)")
+            logger?.error("Failed to send file info request to CP Char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         self.currentFile.fileId = fileId
@@ -160,11 +166,11 @@ class FileTransferService {
         requestData.append(fileId.value)
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileDataCharCBUUID, toEnabled: true) == nil else {
-            Self.logger.error("Failed to enable notifications for file data char \(fileDataCharCBUUID.uuidString)")
+            logger?.error("Failed to enable notifications for file data char \(fileDataCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            Self.logger.error("Failed to send request to CP char \(cpCharCBUUID.uuidString)")
+            logger?.error("Failed to send request to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         currentFile.fileId = fileId
@@ -172,14 +178,14 @@ class FileTransferService {
         currentFile.size = size
         currentFile.receivedSize = 0
         currentFile.startTimestamp = Date()
-        Self.logger.debug("Requesting file data for file \(fileId.name) with size \(size)")
+        logger?.debug("Requesting file data for file \(fileId.name) with size \(size)")
         return nil
     }
     
     func requestFileSystemStatus() -> Error? {
         let requestData = Data([UInt8(4)])
         
-        Self.logger.debug("FTS: requesting file system status")
+        logger?.debug("FTS: requesting file system status")
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fileDataCharCBUUID, toEnabled: false) == nil else {
             return .some(FtsOpResult.setupError)
@@ -195,11 +201,11 @@ class FileTransferService {
         }
         
         guard bluetoothManager.setNotificationStateFor(characteristic: fsStatusCharCBUUID, toEnabled: true) == nil else {
-            Self.logger.error("Failed to enable notifications for fs status char \(fsStatusCharCBUUID.uuidString)")
+            logger?.error("Failed to enable notifications for fs status char \(fsStatusCharCBUUID.uuidString)")
             return .some(FtsOpResult.setupError)
         }
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            Self.logger.error("Failed to send request to CP char \(cpCharCBUUID.uuidString)")
+            logger?.error("Failed to send request to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         
@@ -209,7 +215,7 @@ class FileTransferService {
     func reportReceivingCompletion() -> Error? {
         let requestData = Data([UInt8(6)])
         guard bluetoothManager.writeTo(characteristic: cpCharCBUUID, with: requestData) == nil else {
-            Self.logger.error("Failed to send completion report to CP char \(cpCharCBUUID.uuidString)")
+            logger?.error("Failed to send completion report to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
         return nil
@@ -244,10 +250,10 @@ class FileTransferService {
             
             if safeData.count != filesCount * fileIdSize + fileCountFieldSize {
                 if filesCount > FilesListContext.maxFilesCount {
-                    Self.logger.error("FTS: received a malformed files list (\(filesCount) > max files \(FilesListContext.maxFilesCount)")
+                    logger?.error("FTS: received a malformed files list (\(filesCount) > max files \(FilesListContext.maxFilesCount)")
                     return []
                 }
-                Self.logger.debug("FTS: count is bigger than actual size, so there are more files in fileListNext char")
+                logger?.debug("FTS: count is bigger than actual size, so there are more files in fileListNext char")
                 filesListCtx.totalFilesCount = filesCount
                 filesListCtx.isNextFilesListCharNeeded = true
                 filesCount = (safeData.count - fileCountFieldSize) / fileIdSize
@@ -255,10 +261,10 @@ class FileTransferService {
             }
 
             let totalFilesCount = filesListCtx.isNextFilesListCharNeeded ? filesListCtx.totalFilesCount : filesCount
-            Self.logger.debug("safedata size: \(safeData.count), filesCount: \(filesCount), totalFilesCount: \(totalFilesCount)")
+            logger?.debug("safedata size: \(safeData.count), filesCount: \(filesCount), totalFilesCount: \(totalFilesCount)")
             
             var fileIds: [FileId] = []
-            Self.logger.info("FTS: \(totalFilesCount) files are present on the Dictofun, in this char \(filesCount) files")
+            logger?.info("FTS: \(totalFilesCount) files are present on the Dictofun, in this char \(filesCount) files")
             if totalFilesCount == 0 {
                 return []
             }
@@ -275,7 +281,7 @@ class FileTransferService {
     
     private func parseFilesListNext(with data: Data) -> [FileId] {
         if data.count % fileIdSize != 0 {
-            Self.logger.error("files list next parser: invalid size of the list \(data.count) % \(fileIdSize) != 0")
+            logger?.error("files list next parser: invalid size of the list \(data.count) % \(fileIdSize) != 0")
             return []
         }
         let filesInListCount = data.count / fileIdSize
@@ -299,7 +305,7 @@ class FileTransferService {
         if let safeData = data {
             let expectedDataSize = Int(safeData[0]) + (Int(safeData[1]) << 8)
             if safeData.count != expectedDataSize + 2 {
-                Self.logger.error("Failed to parse file info: mismatch in size (\(safeData.count) != \(expectedDataSize + 2))")
+                logger?.error("Failed to parse file info: mismatch in size (\(safeData.count) != \(expectedDataSize + 2))")
                 return nil
             }
             if let fileInfoRawString = String(bytes: safeData.subdata(in: 2..<(expectedDataSize + 2)), encoding: .ascii) {
@@ -308,10 +314,10 @@ class FileTransferService {
                     return fileInfo
                 }
                 catch let DecodingError.keyNotFound(key, _) {
-                    Self.logger.error("FTS error: \(key) key was not found in the json")
+                    logger?.error("FTS error: \(key) key was not found in the json")
                 }
                 catch {
-                    Self.logger.error("FTS error: general decoding error in JSONDecoder")
+                    logger?.error("FTS error: general decoding error in JSONDecoder")
                 }
                 return nil
             }
@@ -324,7 +330,7 @@ class FileTransferService {
         if let safeData = data {
             let expectedDataSize = Int(safeData[0]) + (Int(safeData[1]) << 8)
             if safeData.count != expectedDataSize  {
-                Self.logger.error("FTS: Failed to parse file system stats: mismatch in size (\(safeData.count) != \(expectedDataSize))")
+                logger?.error("FTS: Failed to parse file system stats: mismatch in size (\(safeData.count) != \(expectedDataSize))")
                 return nil
             }
             let freeSpaceRaw = safeData.subdata(in: 2..<6)
@@ -350,7 +356,7 @@ extension FileTransferService: CharNotificationDelegate {
         self.fileIds = files
         if filesListCtx.isNextFilesListCharNeeded
         {
-            Self.logger.debug("New portion of files in the list is expected, so do nothing at this point")
+            logger?.debug("New portion of files in the list is expected, so do nothing at this point")
             return
         }
         ftsEventNotificationDelegate?.didReceiveFilesList(with: files)
@@ -358,13 +364,13 @@ extension FileTransferService: CharNotificationDelegate {
     
     private func didReceiveFilesListNext(with data: Data) {
         let files = parseFilesListNext(with: data)
-        Self.logger.debug("Received continuation of files' list with \(files.count) entries")
+        logger?.debug("Received continuation of files' list with \(files.count) entries")
         self.fileIds.append(contentsOf: files)
         if !filesListCtx.isNextFilesListCharNeeded {
             ftsEventNotificationDelegate?.didReceiveFilesList(with: fileIds)
         }
         else {
-            Self.logger.debug("FTS did receive char next: waiting for \(filesListCtx.totalFilesCount) more files ")
+            logger?.debug("FTS did receive char next: waiting for \(filesListCtx.totalFilesCount) more files ")
         }
         
     }
@@ -372,7 +378,7 @@ extension FileTransferService: CharNotificationDelegate {
     func didCharNotify(with char: CBUUID, and data: Data?, error: Error?) {
         if char.uuidString == ServiceIds.FTS.fileListCh {
             guard error == nil else {
-                Self.logger.error("FTS didCharNotify: error in file list notification. Error: \(error!.localizedDescription)")
+                logger?.error("FTS didCharNotify: error in file list notification. Error: \(error!.localizedDescription)")
                 return
             }
             guard let safeData = data else {
@@ -381,9 +387,9 @@ extension FileTransferService: CharNotificationDelegate {
             didReceiveFilesList(with: safeData)
         }
         else if char.uuidString == ServiceIds.FTS.fileListNextCh {
-            Self.logger.debug("didCharNotify for filesListNext")
+            logger?.debug("didCharNotify for filesListNext")
             guard error == nil else {
-                Self.logger.error("didCharNotify: error in file list next notification. Error: \(error!.localizedDescription)")
+                logger?.error("didCharNotify: error in file list next notification. Error: \(error!.localizedDescription)")
                 return
             }
             guard let safeData = data else {
@@ -393,13 +399,13 @@ extension FileTransferService: CharNotificationDelegate {
         }
         else if char.uuidString == ServiceIds.FTS.fileInfoCh {
             if let fileInfo = parseFileInformation(with: data) {
-                Self.logger.info("received file information: size \(fileInfo.s)")
+                logger?.info("received file information: size \(fileInfo.s)")
                 currentFile.size = fileInfo.s
                 
                 ftsEventNotificationDelegate?.didReceiveFileSize(with: currentFile.fileId, and: currentFile.size)
             }
             else {
-                Self.logger.error("FTS: Received file info is invalid")
+                logger?.error("FTS: Received file info is invalid")
             }
         }
         
@@ -409,12 +415,12 @@ extension FileTransferService: CharNotificationDelegate {
                 currentFile.receivedSize += safeData.count
                 if currentFile.receivedSize == currentFile.size || (safeData.count == 0 && (currentFile.size - currentFile.receivedSize) < 200) {
                     if safeData.count == 0 {
-                        Self.logger.warning("0-sized chunk detected in fileDataCh, FIXME")
+                        logger?.warning("0-sized chunk detected in fileDataCh, FIXME")
                     }
                     currentFile.endTimestamp = Date()
                     let transactionTime = currentFile.endTimestamp!.timeIntervalSinceReferenceDate - currentFile.startTimestamp!.timeIntervalSinceReferenceDate
                     let throughput = Double(currentFile.size) / transactionTime
-                    Self.logger.info("throughput", metadata:  ["value": "\(String(format: "%0.1f", throughput))"])
+                    logger?.info("throughput", metadata:  ["value": "\(String(format: "%0.1f", throughput))"])
                     
                     ftsEventNotificationDelegate?.didCompleteFileTransaction(
                         name: currentFile.fileId,
@@ -429,44 +435,44 @@ extension FileTransferService: CharNotificationDelegate {
             }
         }
         else if char.uuidString == ServiceIds.FTS.fsStatusCh {
-            Self.logger.debug("Received file system status")
+            logger?.debug("Received file system status")
             if let safeData = data {
                 let fsInfo = parseFileSystemInformation(with: safeData)
                 if let safeFsInfo = fsInfo {
-                    Self.logger.info("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
+                    logger?.info("Received File System info: \(safeFsInfo.free) is free, \(safeFsInfo.occupied) occupied, with total of \(safeFsInfo.count) files")
                     ftsEventNotificationDelegate?.didReceiveFileSystemState(count: safeFsInfo.count, occupied: safeFsInfo.occupied, free: safeFsInfo.free)
                 }
                 else {
-                    Self.logger.error("FTS: Failed to parse received FileSystem info")
+                    logger?.error("FTS: Failed to parse received FileSystem info")
                 }
             }
         }
         else if char.uuidString == ServiceIds.FTS.statusCh {
             if let safeData = data {
                 if safeData.count == 0 {
-                    Self.logger.error("0-length status data received")
+                    logger?.error("0-length status data received")
                     return
                 }
                 if safeData[0] == 2 {
-                    Self.logger.error("file not found error")
+                    logger?.error("file not found error")
                     ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.fileNotFound)
                 }
                 else if safeData[0] == 3 {
-                    Self.logger.error("file system corruption error")
+                    logger?.error("file system corruption error")
                     ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.fsCorrupt)
                 }
                 else if safeData[0] == 4 {
-                    Self.logger.error("transaction aborted error")
+                    logger?.error("transaction aborted error")
                     ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.generalError)
                 }
                 else if safeData[0] == 5 {
-                    Self.logger.error("generic error")
+                    logger?.error("generic error")
                     ftsEventNotificationDelegate?.didReceiveFileSystemError(with: FileSystemError.generalError)
                 }
             }
         }
         else {
-            Self.logger.warning("FTS notification: unknown")
+            logger?.warning("FTS notification: unknown")
         }
     }
 }

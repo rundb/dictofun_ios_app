@@ -16,29 +16,34 @@ class AudioFilesManager {
         case fileWriteError(String)
     }
     
-    static var logger = Logger(label: "afm")
+    private var logger: Logger?
     
     init() {
         guard let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             assert(false)
-            Self.logger.error("failed to initialize the records' folder URL")
+            logger?.error("failed to initialize the records' folder URL")
             return
         }
         let recordsFolderUrl = url.appendingPathComponent(recordsFolderPath)
         
         var isDir: ObjCBool = true
         if !fileManager.fileExists(atPath: recordsFolderUrl.relativePath, isDirectory: &isDir) {
-            Self.logger.info("records' folder doesn't exist: creating one")
+            logger?.info("records' folder doesn't exist: creating one")
             do {
                 try fileManager.createDirectory(at: recordsFolderUrl, withIntermediateDirectories: false)
-                Self.logger.info("created records'folder")
+                logger?.info("created records'folder")
             }
             catch let error {
-                Self.logger.error("failed to create records' directory, error: \(error.localizedDescription)")
+                logger?.error("failed to create records' directory, error: \(error.localizedDescription)")
             }
         }
         else {
         }
+    }
+    
+    func init_logger() {
+        logger = Logger(label: "afm")
+        logger?.logLevel = .debug
     }
     
     private func getRecordsFolderUrl() -> URL? {
@@ -64,19 +69,19 @@ class AudioFilesManager {
     /// that all decoding has been performed before entering this class. Wav header should also be applied before the call.
     func saveRecord(withRawWav data: Data, andFileName name: String) -> URL? {
         guard let url = makeRecordURL(forFileNamed: name) else {
-            Self.logger.error("failed to create record url for name \(name)")
+            logger?.error("failed to create record url for name \(name)")
             return nil
         }
         
         let wavFile = createWaveFile(data: data)
         
-        Self.logger.debug("creating path \(url.relativePath)")
+        logger?.debug("creating path \(url.relativePath)")
         do {
             try wavFile.write(to: url)
-            Self.logger.debug("saved a wav file to \(url.relativePath)")
+            logger?.debug("saved a wav file to \(url.relativePath)")
         }
         catch {
-            Self.logger.error("failed to write record's data")
+            logger?.error("failed to write record's data")
             return nil
         }
         
@@ -113,13 +118,13 @@ class AudioFilesManager {
             try fileManager.removeItem(at: url)
         }
         catch let error {
-            Self.logger.error("failed to remove record \(url.relativePath). Error: \(error.localizedDescription)")
+            logger?.error("failed to remove record \(url.relativePath). Error: \(error.localizedDescription)")
         }
     }
     
     func removeAllRecords() {
         guard let recordsPath = makeRecordURL(forFileNamed: "") else {
-            Self.logger.error("removeAllRecords - failed to get folder's URL")
+            logger?.error("removeAllRecords - failed to get folder's URL")
             return
         }
         do {
@@ -131,13 +136,13 @@ class AudioFilesManager {
                     try fileManager.removeItem(at: url)
                 }
                 catch let error {
-                    Self.logger.error("remove records: failed to remove record \(item), error: \(error.localizedDescription)")
+                    logger?.error("remove records: failed to remove record \(item), error: \(error.localizedDescription)")
                 }
             }
             
         }
         catch let error {
-            Self.logger.error("removeAllRecords(): \(error.localizedDescription)")
+            logger?.error("removeAllRecords(): \(error.localizedDescription)")
         }
     }
 }

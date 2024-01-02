@@ -31,7 +31,7 @@ class FTSManager {
     
     var pendingJob: FtsJob?
     
-    static var logger = Logger(label: "ftsm")
+    var logger: Logger?
     
     init(ftsService fts: FileTransferService, audioFilesManager afm: AudioFilesManager, recordsManager rm: RecordsManager, transcriptionManager tm: TranscriptionManager) {
         self.fts = fts
@@ -40,7 +40,11 @@ class FTSManager {
         self.tm = tm
         
         getBluetoothManager().serviceDiscoveryDelegate = self
-        Self.logger.logLevel = .debug
+    }
+    
+    func init_logger() {
+        logger = Logger(label: "ftsm")
+        logger?.logLevel = .debug
     }
     
     func launchTranscriptions() {
@@ -51,14 +55,14 @@ class FTSManager {
                 let url = transcrtiptionJobs[i].fileUrl
                 let actualUrl = getAudioFilesManager().getRecordURL(withFileName: url.lastPathComponent)
                 transcrtiptionJobs[i].fileUrl = actualUrl!
-                Self.logger.debug("transcription job:\(transcrtiptionJobs[i].uuid)} \(transcrtiptionJobs[i].fileUrl)")
+                logger?.debug("transcription job:\(transcrtiptionJobs[i].uuid)} \(transcrtiptionJobs[i].fileUrl)")
             }
         }
         if !transcrtiptionJobs.isEmpty {
             let job = transcrtiptionJobs[0]
             let transcriptionRequestResult = tm.requestTranscription(url: job.fileUrl, callback: transcriptionCallback)
             if transcriptionRequestResult != nil {
-                Self.logger.error("failed to launch transcription: \(transcriptionRequestResult!.localizedDescription))")
+                logger?.error("failed to launch transcription: \(transcriptionRequestResult!.localizedDescription))")
                 return
             }
             currentTranscriptionJob = job
@@ -70,9 +74,9 @@ class FTSManager {
     
     func transcriptionCallback(with error: TranscriptionManager.CompletionError?, and text: String?) {
         if error != nil {
-            Self.logger.warning("FTS Manager: transcription failed")
+            logger?.warning("FTS Manager: transcription failed")
             guard let job = currentTranscriptionJob else {
-                Self.logger.error("currently active transcription is nil")
+                logger?.error("currently active transcription is nil")
                 return
             }
             if error == TranscriptionManager.CompletionError.recognitionError {
@@ -81,9 +85,9 @@ class FTSManager {
             return
         }
         else {
-            Self.logger.debug("FTS Manager: received transcription \(text!)")
+            logger?.debug("FTS Manager: received transcription \(text!)")
             guard let job = currentTranscriptionJob else {
-                Self.logger.error("currently active transcription is nil")
+                logger?.error("currently active transcription is nil")
                 return
             }
             rm.setRecordTranscription(with: job.uuid, and: text!)
@@ -99,16 +103,16 @@ extension FTSManager: FtsEventNotificationDelegate {
     func didReceiveFileSystemError(with error: FileSystemError) {
         switch error {
         case FileSystemError.fileNotFound:
-            Self.logger.error("DF reported file not found error")
+            logger?.error("DF reported file not found error")
             
             if let safeJob = pendingJob {
                 rm.deleteRecord(fileId: safeJob.fileId)
                 let ftsJobs = rm.defineFtsJobs()
                 launchNextFtsJob(with: ftsJobs)
             }
-        case FileSystemError.fsCorrupt: Self.logger.error("DF reported file system corruption")
+        case FileSystemError.fsCorrupt: logger?.error("DF reported file system corruption")
             // TODO: add display of this issue in the UI
-        case FileSystemError.generalError: Self.logger.error("DF reported generic FS error")
+        case FileSystemError.generalError: logger?.error("DF reported generic FS error")
         }
     }
     
@@ -116,10 +120,10 @@ extension FTSManager: FtsEventNotificationDelegate {
     private func launchNextFtsJob(with jobs: [FtsJob]) {
         pendingJob = nil
         if jobs.isEmpty {
-            Self.logger.debug("No more jobs to execute")
+            logger?.debug("No more jobs to execute")
             let reportResult = fts.reportReceivingCompletion()
             if reportResult != nil {
-                Self.logger.error("Failed to report reception completion")
+                logger?.error("Failed to report reception completion")
             }
             launchTranscriptions()
             return
@@ -128,10 +132,10 @@ extension FTSManager: FtsEventNotificationDelegate {
             if job.shouldFetchMetadata {
                 let reqResult = fts.requestFileInfo(with: job.fileId)
                 if reqResult != nil {
-                    Self.logger.error("Failed to request file info for \(job.fileId.name), error \(reqResult!.localizedDescription)")
+                    logger?.error("Failed to request file info for \(job.fileId.name), error \(reqResult!.localizedDescription)")
                 }
                 else {
-                    Self.logger.debug("Requested file meta data for \(job.fileId.name)")
+                    logger?.debug("Requested file meta data for \(job.fileId.name)")
                     pendingJob = job
                 }
                 return
@@ -141,16 +145,16 @@ extension FTSManager: FtsEventNotificationDelegate {
             if job.shouldFetchData {
                 let reqResult = fts.requestFileData(with: job.fileId, and: job.fileSize)
                 if reqResult != nil {
-                    Self.logger.error("Failed to request file data for \(job.fileId.name), error \(reqResult!.localizedDescription)")
+                    logger?.error("Failed to request file data for \(job.fileId.name), error \(reqResult!.localizedDescription)")
                 }
                 else {
-                    Self.logger.debug("Requested file data for \(job.fileId.name)")
+                    logger?.debug("Requested file data for \(job.fileId.name)")
                     pendingJob = job
                 }
                 return
             }
         }
-        Self.logger.debug("FTSManager: no FTS jobs left to launch")
+        logger?.debug("FTSManager: no FTS jobs left to launch")
     }
     
     func didReceiveFilesList(with files: [FileId]) {
@@ -160,7 +164,7 @@ extension FTSManager: FtsEventNotificationDelegate {
         if !ftsJobs.isEmpty {
             for job in ftsJobs {
                 if job.shouldFetchData || job.shouldFetchMetadata {
-                    Self.logger.debug("record from device: \(job.fileId.name) : \(job.shouldFetchMetadata) : \(job.shouldFetchData) : \(job.fileSize)")
+                    logger?.debug("record from device: \(job.fileId.name) : \(job.shouldFetchMetadata) : \(job.shouldFetchData) : \(job.fileSize)")
                 }
             }
             launchNextFtsJob(with: ftsJobs)
@@ -200,7 +204,7 @@ extension FTSManager: FtsEventNotificationDelegate {
         formatter.dateFormat = format
         let result = formatter.date(from: formattedDate)
         guard result != nil else {
-            Self.logger.warning("Failed to convert the received file ID to a valid date. Returning current time")
+            logger?.warning("Failed to convert the received file ID to a valid date. Returning current time")
             return Date.now
         }
         
@@ -222,12 +226,12 @@ extension FTSManager: FtsEventNotificationDelegate {
         // 1. store the raw file in the filesystem
         let savedRecordUrl = afm.saveRecord(withRawWav: record, andFileName: getFileNameFromFileId(with: fileId))
         if savedRecordUrl == nil {
-            Self.logger.error("Failed to store the record", metadata: ["name" : "\(getFileNameFromFileId(with: fileId))"])
+            logger?.error("Failed to store the record", metadata: ["name" : "\(getFileNameFromFileId(with: fileId))"])
             return
         }
         
         let recordDate = convertFtsStringToDate(with: fileId.name)
-        Self.logger.debug("Record's creation date/time: \(recordDate)")
+        logger?.debug("Record's creation date/time: \(recordDate)")
         
         // TODO: replace this with a function that uses Audio framework of iOS. Currently hardcoded bytes per second
         let recordBytesPerSecond = Float(7872.0)
@@ -253,15 +257,15 @@ extension FTSManager: FtsEventNotificationDelegate {
 extension FTSManager: BleServicesDiscoveryDelegate {
     func didDiscoverServices() {
         if !isFilesListRequestCompleted {
-            Self.logger.debug("requesting files list")
+            logger?.debug("requesting files list")
             let result = fts.requestFilesList()
             if result != nil {
-                Self.logger.error("FTS: service discovery callback - files' request has failed")
+                logger?.error("FTS: service discovery callback - files' request has failed")
             }
             isFilesListRequestCompleted = true
         }
         else {
-            Self.logger.info("second request upon service discovery in this session. Do nothing")
+            logger?.info("second request upon service discovery in this session. Do nothing")
         }
     }
     

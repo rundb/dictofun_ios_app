@@ -57,9 +57,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             try GoogleCloudLogHandler.setup(serviceAccountCredentials: Bundle.main.url(forResource: "dictofun-ios-logging-token", withExtension: "json")!, clientId: UIDevice.current.identifierForVendor)
             GoogleCloudLogHandler.uploadInterval = 60
             GoogleCloudLogHandler.logger.logLevel = .warning
+            
+            recordsManager.init_logger()
+            bluetoothManager.init_logger()
+            fileTransferService.init_logger()
+            ftsManager.init_logger()
+            audioFilesManager.init_logger()
         } catch {
             NSLog("Failed to initialize GoogleCloudLogHandler")
         }
+
         return true
     }
 
