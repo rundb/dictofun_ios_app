@@ -19,6 +19,11 @@ class RecordsViewController: UIViewController {
     var records: [RecordViewData] = []
     var selectedTableRow = 0
     
+    var recordInDownloadIndexPath: IndexPath?
+    var recordsInDownloadCount = 0
+    var receivedChunksCounter = 0
+    let cellReloadChunksCounter = 15
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         statusDataLabel.textColor = .black
@@ -100,6 +105,8 @@ extension RecordsViewController: UITableViewDelegate {
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         records = recordsManager!.getRecordsList()
+        recordsInDownloadCount = 0
+        recordInDownloadIndexPath = nil
         return records.count
     }
     
@@ -132,6 +139,13 @@ extension RecordsViewController: UITableViewDataSource {
         if r.progress != 0 && r.progress < 100 {
             cell.recordProgressBar.isHidden = false
             cell.recordProgressBar.progress = Float(r.progress) / 100.0
+            recordInDownloadIndexPath = indexPath;
+            recordsInDownloadCount += 1
+            if recordsInDownloadCount > 1 {
+                NSLog("error: more than 1 download in progress")
+                recordsInDownloadCount = 0
+                recordInDownloadIndexPath = nil
+            }
         }
         else {
             cell.recordProgressBar.isHidden = true
@@ -192,7 +206,17 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
         for r in records {
             if r.name == fileId.name {
                 getRecordsManager().setDownloadProgress(id: fileId, Float(progressPercentage))
-                reloadTable()
+                if recordInDownloadIndexPath != nil {
+                    receivedChunksCounter += 1
+                    if receivedChunksCounter % cellReloadChunksCounter == 0 {
+                        DispatchQueue.main.async {
+                            self.recordsTable.reloadRows(at: [self.recordInDownloadIndexPath!], with: .automatic)
+                        }
+                    }
+                }
+                else {
+                    reloadTable()
+                }
                 return
             }
         }
@@ -201,6 +225,8 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
     func didCompleteFileTransaction(name fileName: String, with duration: Int) {
         ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec"
         reloadTable()
+        recordInDownloadIndexPath = nil
+        recordsInDownloadCount = 0
     }
 }
 
@@ -208,8 +234,10 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
         records = recordsManager!.getRecordsList()
-
-        recordsTable.reloadData()
+        
+        DispatchQueue.main.async {
+            self.recordsTable.reloadData()
+        }
     }
     
     
