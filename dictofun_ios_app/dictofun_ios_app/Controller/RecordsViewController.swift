@@ -197,8 +197,6 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
     }
     
     func didReceiveFileDataChunk(with fileId: FileId, and progressPercentage: Double) {
-        ftsStatusLabel.text = "FTS: fetching file, \(String(format: "%0.0f", progressPercentage * 100))%"
-        //TODO: find the corresponding cell at this point and update the progress bar cell
         if records.isEmpty {
             return
         }
@@ -208,9 +206,14 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
                 getRecordsManager().setDownloadProgress(id: fileId, Float(progressPercentage))
                 if recordInDownloadIndexPath != nil {
                     receivedChunksCounter += 1
+                    DispatchQueue.main.async {
+                        self.ftsStatusLabel.text = "FTS: fetching file, \(String(format: "%0.0f", progressPercentage * 100))%"
+                    }
                     if receivedChunksCounter % cellReloadChunksCounter == 0 {
                         DispatchQueue.main.async {
-                            self.recordsTable.reloadRows(at: [self.recordInDownloadIndexPath!], with: .automatic)
+                            if UIApplication.shared.applicationState == .active {
+                                self.recordsTable.reloadRows(at: [self.recordInDownloadIndexPath!], with: .automatic)
+                            }
                         }
                     }
                 }
@@ -224,7 +227,11 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
     
     func didCompleteFileTransaction(name fileName: String, with duration: Int) {
         ftsStatusLabel.text = "FTS: fetched file \(fileName) in \(duration) sec"
-        reloadTable()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
+            if UIApplication.shared.applicationState == .active {
+                self.recordsTable.reloadData()
+            }
+        })
         recordInDownloadIndexPath = nil
         recordsInDownloadCount = 0
     }
@@ -234,9 +241,10 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
         records = recordsManager!.getRecordsList()
-        
         DispatchQueue.main.async {
-            self.recordsTable.reloadData()
+            if UIApplication.shared.applicationState == .active {
+                self.recordsTable.reloadData()
+            }
         }
     }
     
