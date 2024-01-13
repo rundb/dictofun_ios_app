@@ -129,6 +129,7 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     fileprivate var connected = false
     var paired = false
     private var connectingPeripheral: CBPeripheral!
+    var isUnpairingRequested = false
     
     private var batteryLevel: Int = 0
     
@@ -295,22 +296,45 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     }
     
     func pairingCallback(error: Error?) {
-        guard error == nil else {
-            logger?.error("Pairing has failed. Aborting. Error: \(error!.localizedDescription)")
-            pairDelegate?.didPairWithPeripheral(error: error)
-            return
+        if !isUnpairingRequested {
+            guard error == nil else {
+                logger?.error("Pairing has failed. Aborting. Error: \(error!.localizedDescription)")
+                pairDelegate?.didPairWithPeripheral(error: error)
+                return
+            }
+            
+            paired = true
+            userDefaults.setValue(paired, forKey: K.isPairedKey)
+            pairDelegate?.didPairWithPeripheral(error: nil)
         }
-
-        paired = true
-        userDefaults.setValue(paired, forKey: K.isPairedKey)
-        pairDelegate?.didPairWithPeripheral(error: nil)
+        else {
+            if error == nil {
+                // Unfortunately, rest has to be done by the user.
+                paired = false
+                userDefaults.setValue(false, forKey: K.isPairedKey)
+                logger?.info("Completed unpairing, user defaults were reset")
+            }
+            else {
+                logger?.error("Unpairing request has failed (\(error?.localizedDescription ?? "unknown cause"))")
+            }
+            isUnpairingRequested = false
+        }
     }
     
     func unpair() {
-        // Unfortunately, rest has to be done by the user.
-        paired = false
-        userDefaults.setValue(false, forKey: K.isPairedKey)
-        logger?.info("Completed unpairing, user defaults were reset")
+        if connected {
+            if let characteristic = ftsChars[ServiceIds.pairingWriteCh] {
+                var request = 0xAD
+                let requestData = Data(bytes: &request, count: 1)
+                
+                bluetoothPeripheral?.setNotifyValue(true, for: characteristic!)
+                bluetoothPeripheral?.writeValue(requestData, for: characteristic!, type: .withResponse)
+                isUnpairingRequested = true
+            }
+        }
+        else {
+            logger?.error("Unpairing failed: possible only if device is connected")
+        }
     }
     //MARK: - DFU Control API
     func launchDfu() {
