@@ -24,6 +24,8 @@ class RecordsViewController: UIViewController {
     var receivedChunksCounter = 0
     let cellReloadChunksCounter = 15
     
+    let maxRecordsAtInitialView = 20
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         statusDataLabel.textColor = .black
@@ -37,7 +39,7 @@ class RecordsViewController: UIViewController {
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
         recordsTable.delegate = self
-        records = recordsManager!.getRecordsList()
+        records = recordsManager!.getRecordsList(with: maxRecordsAtInitialView)
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
         }
@@ -45,6 +47,11 @@ class RecordsViewController: UIViewController {
             statusDataLabel.text = "Status: disconnected"
         }
         recordsTitleLabel.textColor = .black
+        
+        recordsTitleLabel.isHidden = true
+        ftsFsStatusLabel.isHidden = true
+        ftsStatusLabel.isHidden = true
+        statusDataLabel.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -98,13 +105,14 @@ extension RecordsViewController: UITableViewDelegate {
         NSLog("swiping call")
         return nil
     }
+    
 }
 
 
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        records = recordsManager!.getRecordsList()
+        records = recordsManager!.getRecordsList(with: maxRecordsAtInitialView)
         recordsInDownloadCount = 0
         recordInDownloadIndexPath = nil
         return records.count
@@ -240,7 +248,7 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
 // MARK: - TableReloadDelegate
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
-        records = recordsManager!.getRecordsList()
+        records = recordsManager!.getRecordsList(with: maxRecordsAtInitialView)
         DispatchQueue.main.async {
             if UIApplication.shared.applicationState == .active {
                 self.recordsTable.reloadData()

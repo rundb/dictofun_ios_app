@@ -94,7 +94,7 @@ class RecordsManager {
             logger?.error("Record with name \(fileId.name) is not found.")
             return nil
         }
-
+        
         guard let uuid = uuidRequestResult[0].id else {
             logger?.error("Failed to fetch correct UUID for record \(fileId.name)")
             return nil
@@ -142,6 +142,7 @@ class RecordsManager {
         {
             logger?.warning("found duplicates in the database. Attempting duplicates removal")
             for d in duplicates {
+                logger?.warning("duplicate: \(d ?? "unknown")")
                 deleteRecord(fileId: FileId.getIdByName(with: d!))
             }
             return getMetaData(nil)
@@ -151,7 +152,7 @@ class RecordsManager {
     
     func setRecordRawSize(id fileId: FileId, _ size: Int) {
         // create a fetch request based on the file ID
-
+        
         guard let downloadMetaDataEntry = getDownloadMetaDataByFileId(fileId) else {
             return
         }
@@ -248,7 +249,7 @@ class RecordsManager {
     // For some - metadata needs to be fetched, for some - data needs to be fetched
     func defineFtsJobs(with fileIds: [FileId]) -> [FtsJob] {
         let recordsMetadataList = getRecords()
-
+        
         var existingFileIds: [FileId] = []
         for r in recordsMetadataList {
             if r.name != nil {
@@ -326,7 +327,7 @@ class RecordsManager {
                 return []
             }
             let fileId = FileId.getIdByName(with: metadata[0].name!)
-                        
+            
             if !metadata[0].is_deleted
             {
                 if entry.status == downloadStatusMetadataUnknown {
@@ -376,7 +377,7 @@ class RecordsManager {
         if metadata.isEmpty {
             return
         }
-
+        
         for m in metadata {
             m.is_deleted = true
         }
@@ -386,13 +387,13 @@ class RecordsManager {
     func forceDeleteAllRecords() {
         let metadataFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "MetaData")
         let metadataDeleteRequest = NSBatchDeleteRequest(fetchRequest: metadataFetchRequest)
-
+        
         let downloadMetadataFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "DownloadMetaData")
         let downloadMetadataDeleteRequest = NSBatchDeleteRequest(fetchRequest: downloadMetadataFetchRequest)
-
+        
         let transcriptionFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Transcription")
         let transcriptionDeleteRequest = NSBatchDeleteRequest(fetchRequest: transcriptionFetchRequest)
-
+        
         do {
             try context.execute(metadataDeleteRequest)
             logger?.info("metadata table request succeeded")
@@ -416,7 +417,7 @@ class RecordsManager {
         saveContext()
     }
     
-    func getRecordsList() -> [RecordViewData] {
+    func getRecordsList(with maxRecords: Int?) -> [RecordViewData] {
         var metadatas = getMetaData(NSPredicate(format: "is_deleted == false"))
         
         metadatas.sort(by: {
@@ -429,7 +430,7 @@ class RecordsManager {
             return true
         })
         var records: [RecordViewData] = []
-
+        
         for m in metadatas {
             if m.size < 200 && m.size != 0 {
                 // Glitch of the current dictofun state - short recs have to be removed for the visual representation
@@ -464,7 +465,11 @@ class RecordsManager {
             }
             
         }
-        return records
+        if maxRecords == nil || maxRecords! > records.count{
+            return records
+        }
+
+        return records.dropLast(records.count - maxRecords!)
     }
     
     func getTranscriptionJobs() -> [TranscriptionJob]
