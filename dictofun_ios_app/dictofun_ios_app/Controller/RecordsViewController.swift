@@ -25,6 +25,8 @@ class RecordsViewController: UIViewController {
     let cellReloadChunksCounter = 15
     
     let maxRecordsAtInitialView = 20
+    var recordsTableSize: Int = 20
+    var isLoadingRecordsFromTable = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,11 +37,12 @@ class RecordsViewController: UIViewController {
         getBluetoothManager().uiUpdateDelegate = self
         getFtsManager().uiNotificationDelegate = self
         getBluetoothManager().batteryLevelUpdateDelegate = self
+        recordsTableSize = maxRecordsAtInitialView
         recordsManager = getRecordsManager()
         recordsTable.dataSource = self
         recordsTable.register(UINib(nibName: K.Record.recordNibName, bundle: nil), forCellReuseIdentifier: K.Record.reusableCellName)
         recordsTable.delegate = self
-        records = recordsManager!.getRecordsList(with: maxRecordsAtInitialView)
+        records = recordsManager!.getRecordsList(with: recordsTableSize)
         if getBluetoothManager().isConnected() {
             statusDataLabel.text = "Status: connected"
         }
@@ -106,13 +109,36 @@ extension RecordsViewController: UITableViewDelegate {
         return nil
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let height = scrollView.frame.size.height
+        let contentYOffset = scrollView.contentOffset.y
+        let distanceFromBottom = scrollView.contentSize.height - contentYOffset
+        if distanceFromBottom < height {
+            if !isLoadingRecordsFromTable
+            {
+                NSLog("loading more records from the records table (now \(records.count) entries)")
+                isLoadingRecordsFromTable = true
+                DispatchQueue.main.async {
+                    if self.records.count == self.recordsTableSize {
+                        self.recordsTableSize = self.recordsTableSize + 10
+                        self.reloadTable()
+                        NSLog("reloading table with \(self.recordsTableSize) entries")
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+                    self.isLoadingRecordsFromTable = false
+                })
+            }
+        }
+    }
+    
 }
 
 
 // MARK: - UITableViewDataSource
 extension RecordsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        records = recordsManager!.getRecordsList(with: maxRecordsAtInitialView)
+        records = recordsManager!.getRecordsList(with: recordsTableSize)
         recordsInDownloadCount = 0
         recordInDownloadIndexPath = nil
         return records.count
@@ -248,7 +274,7 @@ extension RecordsViewController: FtsToUiNotificationDelegate {
 // MARK: - TableReloadDelegate
 extension RecordsViewController: TableReloadDelegate {
     func reloadTable() {
-        records = recordsManager!.getRecordsList(with: maxRecordsAtInitialView)
+        records = recordsManager!.getRecordsList(with: recordsTableSize)
         DispatchQueue.main.async {
             if UIApplication.shared.applicationState == .active {
                 self.recordsTable.reloadData()
