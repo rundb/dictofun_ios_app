@@ -5,10 +5,15 @@
 
 import UIKit
 
+protocol TranscriptionUpdateDelegate {
+    func saveTranscriptionText(with id: UUID, and transcription: String)
+}
+
 class RecordDetailsViewController: UIViewController {
     
     @IBOutlet weak var playPauseButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
+    @IBOutlet weak var saveTranscriptionButton: UIButton!
     @IBOutlet weak var recordDateLabel: UILabel!
     @IBOutlet weak var recordTimeLabel: UILabel!
     @IBOutlet weak var playbackPositionLabel: UILabel!
@@ -19,8 +24,10 @@ class RecordDetailsViewController: UIViewController {
     var recordViewData: RecordViewData?
     var isPlaying = false
     var isPaused = false
+    var wasEdited = false
     let audioPlayer: AudioPlayer = getAudioPlayer()
     var recordsTableReloadDelegate: TableReloadDelegate?
+    var transcriptionUpdateDelegate: TranscriptionUpdateDelegate?
     
     override func viewDidLoad() {
         let formatter = DateFormatter()
@@ -34,6 +41,7 @@ class RecordDetailsViewController: UIViewController {
         
         if let duration = recordViewData?.durationSeconds {
             playbackPositionLabel.text = "00:00"
+            playbackPositionLabel.isHidden = true
             playbackDurationLabel.text = String(format: "%02d:%02d", duration / 60, duration % 60)
         }
         else {
@@ -62,9 +70,14 @@ class RecordDetailsViewController: UIViewController {
         }
         else {
             playPauseButton.isEnabled = false
-            
         }
+        transcriptionText.delegate = self
+        wasEdited = false
+        saveTranscriptionButton.isEnabled = wasEdited
+        saveTranscriptionButton.backgroundColor = .gray
+        saveTranscriptionButton.titleLabel?.textColor = .white
     }
+    
     
     fileprivate func disableButtonsAndPlayback() {
         playPauseButton.isEnabled = false
@@ -75,6 +88,7 @@ class RecordDetailsViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        recordsTableReloadDelegate?.reloadTable()
         // add playback stop at this point
     }
     
@@ -131,6 +145,20 @@ class RecordDetailsViewController: UIViewController {
             playPauseButton.isEnabled = true
         }
     }
+    @IBAction func onSaveTranscriptionPress(_ sender: UIButton) {
+        if wasEdited {
+            guard let delegate = transcriptionUpdateDelegate, let id = recordViewData?.uuid else
+            {
+                return
+            }
+            delegate.saveTranscriptionText(with: id, and: transcriptionText.text)
+            wasEdited = false
+            saveTranscriptionButton.isEnabled = wasEdited
+            saveTranscriptionButton.backgroundColor = .gray
+            view.endEditing(false)
+        }
+    }
+    
     @IBAction func onDeleteButtonPress(_ sender: Any) {
         if isPlaying {
             isPlaying = false
@@ -155,5 +183,14 @@ extension RecordDetailsViewController: PlaybackEndDelegate {
         stopButton.isHidden = true
         playPauseButton.isEnabled = true
         playPauseButton.setImage(UIImage(systemName: "arrowtriangle.right.fill"), for: .normal)
+    }
+}
+
+extension RecordDetailsViewController: UITextViewDelegate
+{
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        wasEdited = true
+        saveTranscriptionButton.isEnabled = true
+        saveTranscriptionButton.backgroundColor = .blue
     }
 }

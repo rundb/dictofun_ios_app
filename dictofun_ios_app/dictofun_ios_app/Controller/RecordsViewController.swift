@@ -76,6 +76,7 @@ class RecordsViewController: UIViewController {
             destinationVC.recordViewData = records[selectedTableRow]
             destinationVC.recordViewData?.url = actualUrl
             destinationVC.recordsTableReloadDelegate = self
+            destinationVC.transcriptionUpdateDelegate = self
         }
     }
 }
@@ -281,6 +282,10 @@ extension RecordsViewController: TableReloadDelegate {
             }
         }
     }
-    
-    
+}
+
+extension RecordsViewController: TranscriptionUpdateDelegate {
+    func saveTranscriptionText(with id: UUID, and transcription: String) {
+        recordsManager?.setRecordTranscription(with: id, and: transcription)
+    }
 }

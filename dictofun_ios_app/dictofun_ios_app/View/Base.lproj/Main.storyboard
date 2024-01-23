@@ -545,15 +545,33 @@
                             <stackView opaque="NO" contentMode="center" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="YMn-Ci-7Hk">
                                 <rect key="frame" x="10" y="50" width="373" height="782"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 Nov 2023" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdf-aj-F8g" userLabel="recordDateLabel">
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jtr-Cu-XYn">
                                         <rect key="frame" x="0.0" y="0.0" width="373" height="40"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="whV-ki-Sud"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15 Nov 2023" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdf-aj-F8g" userLabel="recordDateLabel">
+                                                <rect key="frame" x="0.0" y="0.0" width="293" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="whV-ki-Sud"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fJV-bo-SdA" userLabel="saveTranscriptionButton">
+                                                <rect key="frame" x="293" y="0.0" width="80" height="40"/>
+                                                <color key="backgroundColor" red="0.0" green="0.48003494740000002" blue="0.99965018029999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="80" id="zwi-Fv-Vpr"/>
+                                                </constraints>
+                                                <color key="tintColor" red="0.73705298259999996" green="0.93725219959999995" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Save"/>
+                                                <connections>
+                                                    <action selector="onSaveTranscriptionPress:" destination="lYQ-Aq-Ooa" eventType="touchUpInside" id="dtE-xE-sAd"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="20:23" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4bw-8X-HRK" userLabel="recordTimeLabel">
                                         <rect key="frame" x="0.0" y="40" width="373" height="40"/>
                                         <constraints>
@@ -664,6 +682,7 @@
                         <outlet property="playbackProgressBar" destination="Uao-50-kJ1" id="Y0Y-Tb-H4R"/>
                         <outlet property="recordDateLabel" destination="gdf-aj-F8g" id="ukw-dz-rXG"/>
                         <outlet property="recordTimeLabel" destination="4bw-8X-HRK" id="fRn-8O-Ep5"/>
+                        <outlet property="saveTranscriptionButton" destination="fJV-bo-SdA" id="7MX-cm-X5H"/>
                         <outlet property="stopButton" destination="Yec-3g-TKj" id="HRb-N8-wW8"/>
                         <outlet property="transcriptionText" destination="Ksf-Gb-Hr2" id="HiZ-o6-TCz"/>
                     </connections>
