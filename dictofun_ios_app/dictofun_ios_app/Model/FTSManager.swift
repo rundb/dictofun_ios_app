@@ -82,7 +82,6 @@ class FTSManager {
             if error == TranscriptionManager.CompletionError.recognitionError {
                 rm.setRecordTranscription(with: job.uuid, and: "--- no speech detected ---")
             }
-            return
         }
         else {
             logger?.debug("FTS Manager: received transcription \(text!)")
@@ -121,9 +120,9 @@ extension FTSManager: FtsEventNotificationDelegate {
         pendingJob = nil
         if jobs.isEmpty {
             logger?.debug("No more jobs to execute")
-            let reportResult = fts.reportReceivingCompletion()
-            if reportResult != nil {
-                logger?.error("Failed to report reception completion")
+            let fsStatusResult = fts.requestFileSystemStatus()
+            if fsStatusResult != nil {
+                logger?.error("Failed to request FS status")
             }
             launchTranscriptions()
             return
@@ -250,6 +249,10 @@ extension FTSManager: FtsEventNotificationDelegate {
     
     func didReceiveFileSystemState(count filesCount: Int, occupied occupiedMemory: Int, free freeMemory: Int) {
         uiNotificationDelegate?.didReceiveFileSystemState(count: filesCount, occupied: occupiedMemory, free: freeMemory)
+        let reportResult = fts.reportReceivingCompletion()
+        if reportResult != nil {
+            logger?.error("Failed to report reception completion")
+        }
     }
 }
 

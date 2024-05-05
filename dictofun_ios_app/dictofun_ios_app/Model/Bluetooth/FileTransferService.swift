@@ -218,6 +218,7 @@ class FileTransferService {
             logger?.error("Failed to send completion report to CP char \(cpCharCBUUID.uuidString)")
             return .some(FtsOpResult.communicationError)
         }
+        logger?.info("Successfully reported full completion to the device")
         return nil
     }
     
@@ -236,7 +237,7 @@ class FileTransferService {
     struct FilesListContext {
         var totalFilesCount: Int = 0
         var isNextFilesListCharNeeded: Bool = false
-        static let maxFilesCount = 128
+        static let maxFilesCount = 256
     }
     
     var filesListCtx: FilesListContext
@@ -359,7 +360,11 @@ extension FileTransferService: CharNotificationDelegate {
             logger?.debug("New portion of files in the list is expected, so do nothing at this point")
             return
         }
-        ftsEventNotificationDelegate?.didReceiveFilesList(with: files)
+        else
+        {
+            ftsEventNotificationDelegate?.didReceiveFilesList(with: files)
+            logger?.debug("Complete files list has been received")
+        }
     }
     
     private func didReceiveFilesListNext(with data: Data) {

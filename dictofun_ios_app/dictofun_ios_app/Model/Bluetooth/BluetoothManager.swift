@@ -403,6 +403,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         logger?.info("Disconnected from \(peripheral.name ?? "unknown device")")
+        if error != nil {
+            logger?.info("Disconnect error: \(error?.localizedDescription)")
+        }
         
         connected = false
         isBASServiceFound = false
@@ -420,7 +423,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
         updateBatteryLevel(with: 0)
         
         // Restart scanning to be able to catch up with Dictofun on it's next appearance
-        startScanning()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0, execute: {
+            self.startScanning()
+        })
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -528,11 +533,11 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
             return
         }
         
-//        if characteristic.isNotifying {
-//            logger?.debug("Notifications enabled for characteristic: \(characteristic.uuid.uuidString)")
-//        } else {
-//            logger?.debug("Notifications disabled for characteristic: \(characteristic.uuid.uuidString)")
-//        }
+        if characteristic.isNotifying {
+            logger?.debug("Notifications enabled for characteristic: \(characteristic.uuid.uuidString)")
+        } else {
+            logger?.debug("Notifications disabled for characteristic: \(characteristic.uuid.uuidString)")
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
