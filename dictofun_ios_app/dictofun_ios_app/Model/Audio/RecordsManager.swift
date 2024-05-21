@@ -262,7 +262,6 @@ class RecordsManager {
             var doesRecExist = false
             var isMetadataFetchNeeded = false
             var isDataFetchNeeded = false
-            var isRecordDeleted = false
             var recordSize = 0
             // todo: replace with logic based on use of a set
             for r in existingFileIds {
@@ -301,9 +300,7 @@ class RecordsManager {
                     }
                 }
             }
-            if (!isRecordDeleted) {
-                ftsJobs.append(FtsJob(fileId: f, shouldFetchMetadata: isMetadataFetchNeeded, shouldFetchData: isDataFetchNeeded, fileSize: recordSize))
-            }
+            ftsJobs.append(FtsJob(fileId: f, shouldFetchMetadata: isMetadataFetchNeeded, shouldFetchData: isDataFetchNeeded, fileSize: recordSize))
         }
         return ftsJobs
     }
@@ -429,6 +426,11 @@ class RecordsManager {
             }
             return true
         })
+        
+        if maxRecords != nil && metadatas.count > maxRecords! {
+            metadatas = metadatas.dropLast(metadatas.count - maxRecords!)
+        }
+        
         var records: [RecordViewData] = []
         
         for m in metadatas {
@@ -463,7 +465,6 @@ class RecordsManager {
                 let recordViewData = RecordViewData(url: nil, uuid: uuid, creationDate: nil, durationSeconds: nil, isDownloaded: false, isSizeKnown: true, name: m.name!, progress: progress, transcription: transcription)
                 records.append(recordViewData)
             }
-            
         }
         if maxRecords == nil || maxRecords! > records.count{
             return records

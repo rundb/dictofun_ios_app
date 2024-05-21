@@ -579,7 +579,9 @@ class BluetoothManager: NSObject, CBPeripheralDelegate, CBCentralManagerDelegate
                 logger?.warning("Notification received from FTS Char: \(ftsChar.uuid.uuidString), with empty value")
                 return
             }
-            ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
+            DispatchQueue.main.async {
+                ftsDelegate.didCharNotify(with: ftsChar.uuid, and: bytesReceived, error: nil)
+            }
         }
         if characteristic.uuid == CBUUID(string: ServiceIds.BAS.batteryLevelCh) {
             logger?.info("Battery level update", metadata: ["level":"\(characteristic.value![0])"])
